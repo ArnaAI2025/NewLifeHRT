@@ -1,0 +1,68 @@
+.patient-dropdown {
+  flex: 1 1 70%;
+}
+
+.mode-types {
+  flex: 1 1 30%;
+}
+
+@media (max-width: 768px) {
+  .patient-dropdown,
+  .mode-types {
+    flex: 1 1 100%;
+  }
+
+  .mode-types {
+    padding-top: 0.5rem;
+  }
+
+  .toggle-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .nav-header-tabs {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}
+.calendar-card {
+  display: inline-block;   // shrink to fit content
+  width: auto !important;  // override full width
+  max-width: fit-content;  // no unnecessary stretching
+  margin: 0 auto;          // optional: center it inside parent
+  padding: 6px;
+  border-radius: 8px;
+
+  ::ng-deep .mat-calendar {
+    width: 250px !important;
+    font-size: 0.8rem;
+  }
+
+  ::ng-deep .mat-calendar-body-cell {
+    height: 32px;
+    font-size: 0.75rem;
+    padding: 0;
+  }
+
+  ::ng-deep .mat-calendar-body-label,
+  ::ng-deep .mat-calendar-table-header th {
+    font-size: 0.7rem;
+  }
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.time-btn {
+  transition: all 0.2s ease;
+}
+
+::ng-deep .mat-calendar-body .mat-calendar-body-label{
+  color: transparent;
+}

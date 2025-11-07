@@ -1,0 +1,227 @@
+<!-- Top Navigation Bar -->
+<app-lead-navigation-bar [isEditMode]="leadId() !== null" [isSaving]="isSaving()" [leadId]="leadId()"
+  [activeView]="activeView()" [isActive]="isActive()" (close)="onClose()" (save)="onSaveInformation()"
+  (addLead)="onClickAddLead()" (saveAndClose)="onSaveAndClose()" (toggleActive)="onToggleActiveClicked()"
+  (deleteLead)="onDeleteClick()"></app-lead-navigation-bar>
+
+<!-- <div
+  class="flex flex-wrap items-center justify-between sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden py-2 px-4">
+
+  <div class="flex items-center space-x-2">
+    <button mat-icon-button (click)="onClose()" class="header-back-button">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="form-header-heading">Lead Management</span>
+  </div>
+  <div class="flex items-center space-x-4 flex items-center space-x-2 ml-auto mt-2 sm:mt-0">
+    <button type="button" mat-flat-button ngClass="secondry-button-add" (click)="onClickAddLead()"
+      class="!py-1 !px-4 text-sm action-button secondry-button-add">
+      Add Lead
+      <mat-icon class="mr-1">add</mat-icon>
+    </button>
+    <button type="submit" mat-flat-button ngClass="primary-btn" (click)="onSubmit()"
+      class="!py-1 !px-4 text-sm primary-btn-add">
+      Save
+    </button>
+
+    <button mat-icon-button [matMenuTriggerFor]="actionMenu"
+      class="hover:text-blue-600 transition-colors icon-action-button">
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </button>
+    <mat-menu #actionMenu="matMenu">
+      <button mat-menu-item (click)="onSaveAndClose()">
+        <span>Save &amp; Close</span>
+      </button>
+      <button mat-menu-item *ngIf="leadId() && isActive()" (click)="onToggleActive(false)">
+        <span>Deactivate</span>
+      </button>
+      <button mat-menu-item *ngIf="leadId() && !isActive()" (click)="onToggleActive(true)">
+        <span>Activate</span>
+      </button>
+      <button mat-menu-item (click)="onDeleteClick()" *ngIf="leadId()">
+        <span>Delete</span>
+      </button>
+    </mat-menu>
+  </div>
+</div> -->
+
+<!-- Main Form -->
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color">
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+
+    <!-- LEAD INFORMATION SECTION -->
+    <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Lead Information</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <!-- Subject -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Subject <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="subject" placeholder="Subject" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('subject')">{{ getFieldError('subject') }}</mat-error>
+        </mat-form-field>
+      </div>
+      <!-- First Name -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">First Name <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="firstName" placeholder="First Name" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('firstName')">{{ getFieldError('firstName') }}</mat-error>
+        </mat-form-field>
+      </div>
+      <!-- Last Name -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Last Name <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="lastName" placeholder="Last Name" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('lastName')">{{ getFieldError('lastName') }}</mat-error>
+        </mat-form-field>
+      </div>
+      <!-- Phone Number -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput type="tel" formControlName="phoneNumber" placeholder="+1 (123) 456-7890" maxlength="12"
+            class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('phoneNumber')">
+            {{ getFieldError('phoneNumber') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <!-- Email -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput type="email" formControlName="email" placeholder="example@email.com" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('email')">{{ getFieldError('email') }}</mat-error>
+        </mat-form-field>
+      </div>
+      <!-- Date of Birth -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput [matDatepicker]="picker" [max]="maxDate" formControlName="dateOfBirth" placeholder="Date of birth"
+            readonly (click)="picker.open()" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Gender</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input type="text" matInput formControlName="gender" placeholder="Select Gender" [matAutocomplete]="genderAuto"/>
+          <mat-autocomplete #genderAuto="matAutocomplete" (optionSelected)="onGenderSelected($event)" [displayWith]="displayGenderLabel">
+            <mat-option *ngFor="let g of genderOptions" [value]="g.id">
+              {{ g.label }}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="isFieldInvalid('gender')">{{ getFieldError('gender') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Sales Person Autocomplete with direct FormControl binding -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">
+          Sales Person <span class="text-red-500">*</span>
+        </label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input type="text" matInput placeholder="Select Sales Person" [matAutocomplete]="salesPersonAuto"
+            formControlName="salesPersonId" [disabled]="isLoadingSalesPerson()"
+            (blur)="userForm.get('salesPersonId')?.markAsTouched()" />
+          <mat-autocomplete #salesPersonAuto="matAutocomplete" (optionSelected)="onSalesPersonSelected($event)"
+            [displayWith]="salesPersonDisplayFn">
+            <mat-option *ngFor="let sp of filteredSalesPersonList" [value]="sp.id">
+              {{ sp.value }}
+            </mat-option>
+          </mat-autocomplete>
+
+          <mat-error *ngIf="isFieldInvalid('salesPersonId')">
+            {{ getFieldError('salesPersonId') }}
+          </mat-error>
+          <mat-hint *ngIf="isLoadingSalesPerson()">Loading Sales Persons...</mat-hint>
+        </mat-form-field>
+      </div>
+
+
+      <!-- High Level Owner -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">High Level Owner</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="highLevelOwner" placeholder="High Level Owner" class="text-sm" />
+        </mat-form-field>
+      </div>
+
+
+      <!-- Tags -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Tags</label>
+        <mat-form-field appearance="outline" class="w-full form-des-input">
+          <textarea matInput formControlName="tags" placeholder="Tags (comma separated)"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Description</label>
+        <mat-form-field appearance="outline" class="w-full form-des-input">
+        <textarea matInput formControlName="description" placeholder="Description"></textarea>
+      </mat-form-field>
+      </div>
+
+    </div>
+
+
+
+    <!-- ADDRESS SECTION -->
+    <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Address Information</h3>
+    <div formGroupName="addressDto" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Address Line 1</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="addressLine1" placeholder="123 Main Street" class="text-sm" />
+        </mat-form-field>
+      </div>
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">City</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="city" placeholder="City" class="text-sm" />
+        </mat-form-field>
+      </div>
+      
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Country</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input type="text" matInput placeholder="Country" formControlName="countryId" [matAutocomplete]="auto"
+            autocomplete="off" (input)="onCountryInput($any($event.target).value)" />
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onCountrySelected($event.option.value)"
+            [displayWith]="displayCountryName">
+            <mat-option *ngFor="let country of filteredcountriesList" [value]="country.id">
+              {{ country.value }}
+            </mat-option>
+          </mat-autocomplete>
+
+          <mat-error *ngIf="isFieldInvalid('countryId', addressForm)">
+            {{ getFieldError('countryId', addressForm) }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+<div class="space-y-2 custom-text-box">
+  <label class="block text-sm font-medium text-gray-700">State</label>
+  <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+    <mat-select formControlName="stateId" placeholder="Select State" [disabled]="allStates.length === 0">
+      <mat-option *ngFor="let state of allStates" [value]="state.id">
+        {{ state.value }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+      
+      
+
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Postal Code</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="postalCode" placeholder="Postal Code" class="text-sm" />
+        </mat-form-field>
+      </div>      
+    </div>
+  </form>
+</div>

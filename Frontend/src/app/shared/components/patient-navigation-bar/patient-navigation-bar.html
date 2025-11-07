@@ -1,0 +1,103 @@
+<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden">
+  <!-- First Row: Back Button, Title, and Action Buttons -->
+  <div class="flex flex-wrap items-center justify-between py-2 px-4">
+    <div class="flex items-center space-x-2">
+      <button *ngIf = "!isPatientLoggedIn()" mat-icon-button (click)="onClose()" class="header-back-button">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <span class="form-header-heading">{{ isEditMode ? 'Edit Patient' : 'Add Patient' }}</span>
+    </div>
+
+    <!-- Action Buttons - Only for Form View -->
+    <div class="flex items-center space-x-4 flex items-center space-x-2 ml-auto mt-2 sm:mt-0" *ngIf = "!isPatientLoggedIn()">
+      @if(isEditMode){
+        <button type="submit" mat-flat-button ngClass="secondry-button-add" (click)="onClickAddPatient()"
+          class="!py-1 !px-4 text-sm action-button secondry-button-add">
+          Add Patient
+          <mat-icon class="mr-1">add</mat-icon>
+        </button>
+      }
+      <button *ngIf="activeView === 'form'" type="submit" mat-flat-button class="primary-btn" (click)="onSubmit()"
+        [disabled]="isSavingValue" [ngClass]="{'disabled': isSavingValue}">
+        {{ isSaving ? 'Saving...' : 'Save'}}
+      </button>
+
+      <button *ngIf="activeView === 'form'" mat-icon-button [matMenuTriggerFor]="actionMenu" class="!w-8 !h-8">
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #actionMenu="matMenu">
+        <button mat-menu-item color="primary" (click)="onSaveAndCloseClick()" [disabled]="isSavingValue"
+          class="flex items-center">
+          {{ isSaving ? 'Saving...' : 'Save & Close' }}
+        </button>
+        <button mat-menu-item *ngIf="isEditMode && !isActive" (click)="onToggleActive(true)">
+          <span>Activate</span>
+        </button>
+        <button mat-menu-item *ngIf="isEditMode && isActive" (click)="onToggleActive(false)">
+          <span>Deactivate</span>
+        </button>
+        <button *ngIf="isEditMode" mat-menu-item (click)="onDeletePatient()">
+            <span>Delete</span>
+          </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <!-- Second Row: Toggle Button -->
+  <div class="flex px-4 py-2 toggle-group-wrapper">
+    <mat-button-toggle-group #toggleGroup="matButtonToggleGroup"
+      [hideSingleSelectionIndicator]="true" (change)="onViewToggle($event)" class="toggle-group responsive-toggle-group">
+      <mat-button-toggle value="form" class="nav-header-tabs" [ngClass]="{
+        'active': activeView === 'form' || !isEditMode,
+        'inactive': isEditMode && activeView !== 'form',
+        'disabled': false
+        }">Form</mat-button-toggle>
+      <mat-button-toggle *ngIf = "!isPatientLoggedIn()" value="counselor"  class="nav-header-tabs" [ngClass]="{
+        'active': isEditMode && activeView === 'counselor',
+        'inactive': isEditMode && activeView !== 'counselor',
+        'disabled': !isEditMode
+        }">Counselor</mat-button-toggle>
+      <mat-button-toggle *ngIf = "!isPatientLoggedIn()" style="width: auto;" value="medical-recommandation" class="nav-header-tabs"  [ngClass]="{
+        'active': isEditMode && activeView === 'medical-recommandation',
+        'inactive': isEditMode && activeView !== 'medical-recommandation',
+        'disabled': !isEditMode
+        }">Medical Recommendation</mat-button-toggle>
+
+        <mat-button-toggle *ngIf = "!isPatientLoggedIn()" style="width: auto;" value="appointments" class="nav-header-tabs"  [ngClass]="{
+        'active': isEditMode && activeView === 'appointments',
+        'inactive': isEditMode && activeView !== 'appointments',
+        'disabled': !isEditMode
+        }">Appointments</mat-button-toggle>
+
+        <mat-button-toggle *ngIf = "!isPatientLoggedIn()" style="width: auto;" value="reminders" class="nav-header-tabs"  [ngClass]="{
+        'active': isEditMode && activeView === 'reminders',
+        'inactive': isEditMode && activeView !== 'reminders',
+        'disabled': !isEditMode
+        }">Reminders</mat-button-toggle>
+
+            <!-- <mat-button-toggle style="width: auto;" value="shipping-address" class="nav-header-tabs" [ngClass]="{
+                    'active': isEditMode && activeView === 'shipping-address',
+                    'inactive': isEditMode && activeView !== 'shipping-address',
+                    'disabled': !isEditMode
+                    }">Shipping Address</mat-button-toggle> -->
+          <mat-button-toggle *ngIf = "!isPatientLoggedIn()" style="width: auto;" value="proposals" class="nav-header-tabs" [ngClass]="{
+                              'active': isEditMode && activeView === 'proposals',
+                              'inactive': isEditMode && activeView !== 'proposals',
+                              'disabled': !isEditMode
+                              }">Proposals</mat-button-toggle>
+          <mat-button-toggle style="width: auto;" value="orders" class="nav-header-tabs" [ngClass]="{
+                                        'active': isEditMode && activeView === 'orders',
+                                        'inactive': isEditMode && activeView !== 'orders',
+                                        'disabled': !isEditMode
+                                        }">Orders</mat-button-toggle>
+          <mat-button-toggle *ngIf = "!isPatientLoggedIn()" style="width: auto;" value="sms" class="nav-header-tabs" [ngClass]="{
+                                                  'active': isEditMode && activeView === 'sms',
+                                                  'inactive': isEditMode && activeView !== 'sms',
+                                                  'disabled': !isEditMode
+                                                  }">SMS</mat-button-toggle>
+
+    </mat-button-toggle-group>
+
+  </div>
+</div>

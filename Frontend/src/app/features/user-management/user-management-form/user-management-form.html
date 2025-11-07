@@ -1,0 +1,394 @@
+<!-- Top Navigation Bar -->
+<app-full-page-loader [visible]="isLoadingPage()" />
+
+<div
+  class="sticky top-0 z-10 flex flex-wrap gap-2 items-center justify-between rounded-lg px-4 py-2 shadow-sm mb-4 bg-white ">
+
+  <div class="flex items-center space-x-2">
+    <button mat-icon-button (click)="onClose()" class="header-back-button">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="form-header-heading">{{ pascalToSpace(userRole[FromPage]) }}</span>
+  </div>
+  <div class="flex items-center space-x-4 flex items-center space-x-2 ml-auto mt-2 sm:mt-0">
+    @if(userId() > 1){
+      <button type="submit" mat-flat-button ngClass="secondry-button-add" (click)="onClickAdd()"
+        class="!py-1 !px-4 text-sm action-button secondry-button-add">
+        Add {{ pascalToSpace(userRole[FromPage]) }}
+        <mat-icon class="mr-1">add</mat-icon>
+      </button>
+    }
+      <button type="submit" mat-flat-button (click)="onSaveInformation()" [disabled]="isDataSaving()" [ngClass]="{'disabled': isDataSaving() }"
+        class="!py-1 !px-4 text-sm primary-btn">
+        {{isDataSaving() ? 'Saving' : 'Save'}}
+      </button>
+
+    <!-- Action Button with Menu -->
+    <button mat-icon-button [matMenuTriggerFor]="actionMenu"
+      class="hover:text-blue-600 transition-colors icon-action-button">
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </button>
+
+      <!-- Action Menu -->
+      <mat-menu #actionMenu="matMenu">
+         <button mat-menu-item (click)="onSaveAndClose()">
+          <span>Save &amp; Close</span>
+        </button>
+        <button mat-menu-item (click)="onToggleActive(true)" *ngIf="userId() > 0 && isDeleted() == true">
+          <span>Activate</span>
+        </button>
+         <button mat-menu-item (click)="onToggleActive(false)"  *ngIf="userId() > 0 && isDeleted() == false">
+          <span>Deactivate</span>
+        </button>
+          <button mat-menu-item (click)="onDeleteClick()" *ngIf="userId() > 0">
+          <span>Delete</span>
+        </button>
+      </mat-menu>
+  </div>
+</div>
+
+
+<!-- Main Form -->
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color">
+  <form [formGroup]="userForm" (ngSubmit)="onSaveInformation()">
+
+    <!-- USER INFORMATION -->
+    <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">User Information</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      
+      <!-- First Name -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">First Name <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="firstName" placeholder="First Name" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('firstName')">{{ getFieldError('firstName') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Last Name -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Last Name <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="lastName" placeholder="Last Name" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('lastName')">{{ getFieldError('lastName') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- User Name -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">User Name <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="userName" placeholder="User Name" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('userName')">
+            {{ getFieldError('userName') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Email, Phone, Password -->
+      <!-- Email -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput type="email" formControlName="email" placeholder="abc@xyz.com" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('email')">{{ getFieldError('email') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Phone -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">
+          Phone <span class="text-red-500">*</span>
+        </label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput type="tel" formControlName="phoneNumber"placeholder="+1 (123) 456-7890" maxlength="12"
+            class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('phoneNumber')">
+            {{ getFieldError('phoneNumber') }}
+          </mat-error>
+        </mat-form-field>
+      </div>      
+      <!-- Password -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Password <span *ngIf="!userId()" class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password"
+                  placeholder="******" class="text-sm">
+          <mat-icon matSuffix (click)="hidePassword = !hidePassword" class="cursor-pointer text-gray-400">
+            {{hidePassword ? 'visibility_off' : 'visibility'}}
+          </mat-icon>
+          <mat-error *ngIf="isFieldInvalid('password')">
+            {{ getFieldError('password') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <!-- Vacation -->
+    <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Administrative Settings</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+
+      <div *ngIf="FromPage == userRole.Doctor || FromPage == userRole.Receptionist || FromPage == userRole.Nurse || FromPage == userRole.SalesPerson"
+        class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">
+          Timezone <span class="text-red-500">*</span>
+        </label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <mat-select formControlName="timezoneId" placeholder="Select Timezone">
+            <mat-option *ngFor="let tz of timeZones" [value]="tz.id">
+              {{ tz.displayName }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="isFieldInvalid('timezoneId')">
+            Timezone is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="FromPage == userRole.Doctor || FromPage == userRole.Receptionist || FromPage == userRole.Nurse" class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Color</label>
+        <div class="form-input">
+          <app-color-picker formControlName="color"></app-color-picker>
+        </div>
+      </div>
+
+      <div class="space-y-2 custom-text-box flex items-center">
+        <div class="custom-checkbox-wrapper">
+          <mat-checkbox formControlName="isVacationApplicable" class="custom-mat-checkbox">
+            Can Apply Holiday?
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- ADDRESS SECTION -->
+    <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Address Information</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <!-- Address Line 1 -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Address Line 1</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="addressLine1" placeholder="123 Main Steet" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('addressLine1')">{{ getFieldError('addressLine1') }}</mat-error>
+        </mat-form-field>
+      </div>
+      <!-- City -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">City </label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="city" placeholder="City Name" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('city')">{{ getFieldError('city') }}</mat-error>
+        </mat-form-field>
+      </div>      
+      <!-- Country -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Country</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input type="text" matInput placeholder="Country" formControlName="countryId" [matAutocomplete]="auto"
+            autocomplete="off" (input)="onCountryInput($any($event.target).value)" />
+      
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onCountrySelected($event.option.value)"
+            [displayWith]="displayCountryName">
+            <mat-option *ngFor="let country of filteredcountriesList" [value]="country.id">
+              {{ country.value }}
+            </mat-option>
+          </mat-autocomplete>
+      
+          <mat-error *ngIf="isFieldInvalid('countryId')">
+            {{ getFieldError('countryId') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <!-- State/Province -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">State/Province</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <mat-select formControlName="stateId" placeholder="Select State"
+            (selectionChange)="onStateSelected($event.value)" [disabled]="allStates.length === 0"
+            [compareWith]="compareStates">
+            <mat-option *ngFor="let state of allStates" [value]="state">
+              {{ state.value }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <!-- Postal Code -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Postal Code</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="postalCode" placeholder="123456" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('postalCode')">{{ getFieldError('postalCode') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+
+      
+    </div>
+
+    <!-- COMMISSION DETAILS -->
+    <div *ngIf="FromPage == userRole.SalesPerson">
+      <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Sales Commission Details</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <!-- Commission Percentage -->
+        <div class="space-y-2 custom-text-box">
+          <label class="block text-sm font-medium text-gray-700">Commission (%)</label>
+          <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+            <input matInput type="text" formControlName="commisionInPercentage" placeholder="10" class="text-sm" appPercentage [minPercentage]="0" [maxPercentage]="100"/>
+          </mat-form-field>
+        </div>
+
+        <div class="space-y-2 custom-text-box flex items-center">
+          <div class="custom-checkbox-wrapper">
+            <mat-checkbox class="custom-mat-checkbox" formControlName="matchAsCommisionRate">Match As Commission
+              Rate</mat-checkbox>
+          </div>
+        </div>
+        <!-- Replace Commission -->
+        <!-- Replace Commission -->
+        <div class="space-y-2 custom-text-box" *ngIf="!userForm.get('matchAsCommisionRate')?.value">
+          <label class="block text-sm font-medium text-gray-700">
+            Replace Commission Rate<span class="text-red-500">*</span>
+          </label>
+          <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+            <input matInput formControlName="replaceCommisionRate" placeholder="a:b;c:d;      " class="text-sm" />
+          </mat-form-field>
+        </div>
+
+
+        <!-- Match As Commission: boolean -->
+
+      </div>
+    </div>
+
+    <!-- DYNAMIC SERVICES -->
+    <div *ngIf="FromPage == userRole.Doctor || FromPage == userRole.Receptionist ||FromPage == userRole.Nurse">
+      <div *ngIf="userForm.get('services')" formGroupName="services">
+        <h3 class="text-lg font-medium text-gray-900 mb-8 uppercase tracking-wide">Consultation and Treatment</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <ng-container *ngFor="let service of availableServices">
+            <div class="custom-checkbox-wrapper">
+              <mat-checkbox [formControlName]="service.serviceName" class="custom-mat-checkbox">
+                {{ service.displayName }}
+              </mat-checkbox>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="mt-8" *ngIf="FromPage == userRole.Doctor">
+        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">DOCTOR INFORMATION</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <!-- Commission Percentage -->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">NPI</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="npi" placeholder="NPI Number" class="text-sm" />
+            </mat-form-field>
+          </div>
+
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">DEA</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="dea" placeholder="DEA Number" class="text-sm" />
+            </mat-form-field>
+          </div>
+          <div class="space-y-2 custom-text-box">
+          <label class="block text-sm font-medium text-gray-700">Doctor Signature</label>
+<div class="flex space-x-6">
+  <!-- Signature Preview Container -->
+  <div
+    class="signature-preview rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden w-48 h-20 border-2 border-gray-300 transition-colors">
+    <ng-container *ngIf="userForm.get('signatureUrl')?.value; else signaturePlaceholder">
+      <img [src]="userForm.get('signatureUrl')?.value" alt="Doctor Signature" class="object-scale-down w-full h-full p-2" />
+
+    </ng-container>
+    <ng-template #signaturePlaceholder>
+      <div class="text-center p-4 text-gray-500">
+        <mat-icon class="text-4xl mb-1">draw</mat-icon>
+        <div class="text-xs">No signature uploaded</div>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Upload Button -->
+  <button mat-flat-button class="primary-btn flex items-center gap-1 text-xs px-3 py-1" type="button"
+    (click)="signatureInput.click()">
+    <mat-icon class="text-sm">upload</mat-icon>
+    {{ userForm.get('signatureUrl')?.value ? 'Change' : 'Upload' }}
+  </button>
+
+  <input type="file" #signatureInput (change)="onSignatureSelected($event)" accept="image/*,.pdf"
+    style="display: none;" />
+</div>
+
+          </div>
+        </div>
+        <!-- ===================== License Information (Similar to Shipping Types) ===================== -->
+      <div class="col-span-full">
+        <h4 class="text-sm font-semibold text-gray-800 mt-2 mb-3 flex items-center gap-2">
+          License Information
+        </h4>
+        <!-- Selector -->
+        <div class="space-y-2 custom-text-box">
+          <label class="block text-sm font-medium text-gray-700">State</label>
+          <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+            <mat-select placeholder="Select State" (selectionChange)="addLicense($event.value)"
+              [disabled]="availableStates.length === 0">
+              <mat-option *ngFor="let state of availableStates" [value]="state">
+                {{ state.value }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div *ngIf="availableStates.length === 0" class="text-xs text-gray-500">
+            No more states available to add.
+          </div>
+        </div>
+        <!-- Selected licenses list -->
+        <div class="w-full">
+          <div class="sleect-tabel shadow-sm p-4">
+            <div *ngIf="licensesArray.controls.length; else emptyLicense">
+              <ul class="divide-y divide-gray-200">
+                <li *ngFor="let group of licenseFormGroups; let i = index" [formGroup]="group" class="py-3 flex items-center gap-3">
+
+                  <!-- State name -->
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm text-gray-900 truncate">
+                      {{ group.get('stateName')?.value }}
+                    </div>
+                  </div>
+                  <!-- License Number -->
+                  <div class="w-2/6">
+                    <mat-form-field appearance="outline" class="w-full custom-qty-field">
+                      <input matInput formControlName="licenseNumber" placeholder="Enter license number" class="text-sm" />
+                      <mat-error *ngIf="group.get('licenseNumber')?.invalid && group.get('licenseNumber')?.touched">
+                        License number is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <!-- Remove -->
+                  <div>
+                    <button mat-icon-button color="warn" type="button" aria-label="Remove license" (click)="removeLicense(i)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </li>
+              </ul>
+              <p class="text-xs text-gray-500 mt-2">
+                Tip: License details are saved with the form. Use the trash icon to remove a license.
+              </p>
+            </div>
+            <ng-template #emptyLicense>
+              <div class="text-sm text-gray-500 border border-dashed border-gray-300 rounded-md p-4">
+                No licenses added yet. Choose one from the list above to get started.
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+        <!-- =================== /License Information ====================== -->
+
+      </div>
+    </div>
+  </form>
+</div>

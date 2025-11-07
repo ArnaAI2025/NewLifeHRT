@@ -1,0 +1,67 @@
+<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden">
+
+    <!-- First Row: Back Button, Title, and Action Buttons -->
+    <div class="flex flex-wrap items-center justify-between py-2 px-4">
+        <!-- Back and Title -->
+        <div class="flex items-center space-x-2">
+            <button mat-icon-button (click)="onClose()" class="header-back-button">
+                <mat-icon>chevron_left</mat-icon>
+            </button>
+            <span class="form-header-heading">Lead Management</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center space-x-4 ml-auto mt-2 sm:mt-0">
+            @if(isEditMode){
+                <button type="button" mat-flat-button (click)="onClickAddLead()"
+                    class="!py-1 !px-4 text-sm action-button secondry-button-add" [disabled]="isSavingValue">
+                    Add Lead
+                    <mat-icon class="ml-1">add</mat-icon>
+                </button>
+            }
+
+            <button *ngIf="activeView === 'form'" mat-flat-button class="primary-btn" (click)="onSubmit()"
+                [disabled]="isSavingValue" [ngClass]="{'disabled': isSavingValue}">
+                {{ isSaving ? 'Saving...' : 'Save' }}
+            </button>
+
+            <!-- Menu Actions -->
+            <button *ngIf="activeView === 'form'" mat-icon-button [matMenuTriggerFor]="actionMenu" class="!w-8 !h-8"
+                [disabled]="isSavingValue">
+                <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+
+            <mat-menu #actionMenu="matMenu">
+                <button mat-menu-item color="primary" (click)="onSaveAndCloseClick()" [disabled]="isSavingValue"
+                    class="flex items-center">
+                    {{ isSaving ? 'Saving...' : 'Save & Close' }}
+                </button>
+                <button mat-menu-item *ngIf="leadId && isEditMode" (click)="onToggleActiveClick()"
+                    [disabled]="isSavingValue">
+                    <span>{{ isActive ? 'Deactivate' : 'Activate' }}</span>
+                </button>
+                <button mat-menu-item *ngIf="leadId && isEditMode" (click)="onDeleteClick()" [disabled]="isSavingValue">
+                    <span>Delete</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+
+    <!-- Second Row: Toggle Button -->
+    <div class="flex px-4 py-2">
+        <mat-button-toggle-group [value]="activeView" (change)="onViewToggle($event)" class="toggle-group" [hideSingleSelectionIndicator]="true">
+            <mat-button-toggle value="form" class="nav-header-tabs"
+                [ngClass]="{'active': activeView === 'form', 'disabled': false,'inactive': activeView != 'form'}">
+                Form
+            </mat-button-toggle>
+            <mat-button-toggle value="sms" class="nav-header-tabs" [disabled]="!isEditMode"
+                [ngClass]="{'active': activeView === 'sms', 'disabled': !isEditMode,'inactive': isEditMode && activeView != 'sms'}">
+                SMS
+            </mat-button-toggle>
+            <mat-button-toggle value="reminders" class="nav-header-tabs" [disabled]="!isEditMode"
+                [ngClass]="{'active': activeView === 'reminders', 'disabled': !isEditMode,'inactive': isEditMode && activeView != 'reminders'}">
+                Reminders
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+</div>

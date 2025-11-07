@@ -1,0 +1,15 @@
+@use "variables" as *;
+
+/* Track (background line when ON) */
+::ng-deep .mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked .mdc-switch__track::after {
+  background-color: $primary-color !important;
+  border-color: $primary-color !important;
+}
+
+/* Thumb (the round handle) */
+::ng-deep .mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked .mdc-switch__handle::after {
+  background-color: $primary-color !important;
+  border-color: $primary-color !important;
+}
+
+

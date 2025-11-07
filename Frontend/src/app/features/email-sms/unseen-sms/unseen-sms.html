@@ -1,0 +1,122 @@
+<div class="card-color rounded-lg shadow-sm flex-wrap gap-4 mb-6 table-view-header border border-gray-200 p-6">
+
+    <!-- Header Section -->
+    <div class="flex items-center flex-wrap gap-4 justify-between mb-6 table-view-header">
+        <div class="flex items-center">
+            <h1 class="list-page-heading">Unseen SMS </h1>
+            <div class="flex items-center space-x-3 filter-input search-box search-box-dsk ml-6">
+                <div class="relative">
+                    <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
+                    <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword"
+                        (input)="applyFilter()" [disabled]="isLoading()"
+                        class="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-64" />
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 justify-end ml-auto">
+            <button mat-flat-button color="primary" (click)="markSelectedMessagesAsRead()"
+                [disabled]="isLoading() || selection.isEmpty()" class="primary-btn-add p-1.5">
+                Mark Selected as Seen
+            </button>
+        </div>
+
+        <div class="flex items-center space-x-3 w-full filter-input search-box-mb">
+                <div class="relative">
+                    <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
+                    <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword"
+                        (input)="applyFilter()" [disabled]="isLoading()"
+                        class="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-64" />
+                </div>
+            </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading()"
+        class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Messages Table -->
+    <div class="overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
+        <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+
+            <!-- Checkbox Column -->
+            <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef
+                    class="!text-left !py-3 !px-4 rounded-tl-xl rounded-bl-xl font-medium text-gray-700">
+                    <mat-checkbox (change)="masterToggle()" [checked]="isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [disabled]="dataSource.filteredData.length === 0 || isLoading()" class="custom-mat-checkbox">
+                    </mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    <mat-checkbox (click)="$event.stopPropagation()" (change)="toggleRowSelection(row)"
+                        [checked]="isSelected(row)" [disabled]="dataSource.filteredData.length === 0 || isLoading()"
+                        class="custom-mat-checkbox">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                <td mat-cell *matCellDef="let element">
+                    <span class="primary-text-color hover:underline cursor-pointer" (click)="onEdit(element)">{{
+                        element.name }}</span>
+                </td>
+            </ng-container>
+
+            <!-- User Type Column -->
+            <ng-container matColumnDef="relatedTo">
+                <th mat-header-cell *matHeaderCellDef>Related To</th>
+                <td mat-cell *matCellDef="let element">{{ element.isPatient ? 'Patient' : 'Lead' }}</td>
+            </ng-container>
+
+            <!-- Phone Number Column -->
+            <ng-container matColumnDef="phoneNumber">
+                <th mat-header-cell *matHeaderCellDef>Phone Number</th>
+                <td mat-cell *matCellDef="let element">{{ element.phoneNumber }}</td>
+            </ng-container>
+
+            <!-- Timestamp Column -->
+            <ng-container matColumnDef="timestamp">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Received At</th>
+                <td mat-cell *matCellDef="let element">{{ element.timestamp | date:'medium' }}</td>
+            </ng-container>
+
+            <!-- Content Summary Column -->
+            <ng-container matColumnDef="contentSummary">
+                <th mat-header-cell *matHeaderCellDef class="text-center rounded-tr-xl rounded-br-xl">Content Summary</th>
+                <td mat-cell *matCellDef="let element">
+                    {{ getDetailedMediaSummary(element) }}
+                </td>
+            </ng-container>
+
+
+            
+
+            <!-- Header and Row Definitions -->
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        </table>
+    </div>
+
+    <div *ngIf="!isLoading() && dataSource.filteredData.length === 0" class="text-center py-12">
+        <div class="flex flex-col items-center">
+            <mat-icon class="text-gray-400 text-6xl mb-2">description</mat-icon>
+            <h3 class="text-lg font-semibold">No unseen sms found</h3>
+        </div>
+    </div>
+
+    <!-- Paginator -->
+    <div class="main-paginator">
+        <div class="paginator-section p-0">
+            <mat-paginator #paginator [pageSizeOptions]="[5, 10, 20, 30]" [pageSize]="5" [showFirstLastButtons]="true"
+                [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()"
+                class="mat-mdc-paginator-container disabled:opacity-50">
+            </mat-paginator>
+        </div>
+    </div>
+</div>

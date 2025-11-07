@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Add Product Strength</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+
+    <div class="space-y-2">
+      <label class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
+      <mat-form-field appearance="outline" class="w-full modal-input-field">
+        <input matInput formControlName="name" class="text-sm" />
+        <mat-error *ngIf="isFieldInvalid('name')"> {{ getFieldError('name') }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="space-y-2">
+      <label class="block text-sm font-medium text-gray-700">Strength</label>
+      <mat-form-field appearance="outline" class="w-full modal-input-field">
+        <input matInput formControlName="strengths" class="text-sm" />
+      </mat-form-field>
+    </div>
+
+
+    <div class="space-y-2">
+      <label class="block text-sm font-medium text-gray-700">Price</label>
+      <mat-form-field appearance="outline" class="w-full modal-input-field">
+        <input matInput type="number" formControlName="price" class="text-sm" />
+      </mat-form-field>
+    </div>
+  </form>
+  <mat-dialog-actions align="end">
+    <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid" class="button-strength-save" >
+      Save
+    </button>
+    <button mat-button mat-dialog-close>Cancel</button>
+  </mat-dialog-actions>
+</mat-dialog-content>

@@ -1,0 +1,1812 @@
+@use "variables" as *;
+@use "sass:color";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+
+/* Custom styles */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Nunito Sans', sans-serif;
+  background-color: $secondary-color;
+}
+
+.m-0 {
+  margin: 0 !important;
+}
+
+/* Override Material Design colors to match your theme */
+.mat-toolbar {
+  background: $header-white !important;
+  color: #374151 !important;
+  border-radius: 8px;
+}
+
+.top-navbar .profile-button {
+  background-color: $primary-color !important;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.bg-card-color {
+  background-color: $card-color !important;
+}
+
+.mat-sidenav {
+  background: #1f2937 !important;
+  color: $header-white !important;
+}
+
+.mat-list-item {
+  color: $header-white !important;
+}
+
+.mat-icon {
+  color: inherit !important;
+  right: 4px;
+}
+
+.mat-menu-panel {
+  background: $header-white !important;
+  color: #374151 !important;
+}
+
+.mat-menu-item {
+  color: #374151 !important;
+}
+
+.mat-menu-item:hover {
+  background-color: #f3f4f6 !important;
+}
+
+.mat-button,
+.mat-icon-button {
+  color: inherit !important;
+}
+
+.mat-tooltip {
+  background: #374151 !important;
+  color: $header-white !important;
+  font-size: 12px !important;
+}
+
+
+/* Material Design overrides */
+.mat-sidenav-container {
+  background: transparent !important;
+}
+
+.mat-drawer-backdrop {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Custom classes for navigation */
+.nav-item-active {
+  background-color: hsl(217, 19%, 27%) !important;
+  color: $header-white !important;
+}
+
+.nav-item-hover:hover {
+  background-color: #4b5563 !important;
+}
+
+.mat-mdc-raised-button.mat-primary {
+  background-color: $primary-color !important;
+}
+
+.blur-overlay {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.4) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.left-content-card {
+  display: flex;
+  height: 156px !important;
+  padding: 16px !important;
+  align-items: center !important;
+  justify-content: center;
+  line-height: 24% !important;
+}
+
+.mat-typography p {
+  margin: 0 !important;
+}
+
+// form heading css
+.form-header-heading {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  /* semi-bold */
+  color: $sidebar-color !important;
+  /* Tailwind gray-600 */
+  margin-left: 10px !important;
+}
+
+// Button CSS Start
+.login-button {
+  color: $header-white;
+  background-color: $primary-color;
+  width: 100%;
+  height: 56px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.default-button {
+  padding: 8px 16px !important;
+  width: 100%;
+  border-radius: 8px !important;
+  color: $header-white !important;
+  background-color: $primary-color !important;
+  height: 60px !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+}
+
+.primary-btn {
+  color: $header-white !important;
+  background-color: $primary-color !important;
+  width: auto !important;
+  height: 42px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.primary-btn.disabled {
+  color: $disabled-pri-text-color !important;
+  background-color: $disabled-pri-bg-color !important;
+  width: auto !important;
+  height: 42px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+.primary-btn-add {
+  color: $header-white !important;
+  background-color: $primary-color !important;
+  width: auto !important;
+  height: 42px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.primary-btn-add.disabled {
+  background-color: $disabled-pri-bg-color !important;
+  color: $disabled-pri-text-color !important;
+  cursor: not-allowed !important;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.secondry-button-add {
+  border: 1px solid $primary-color !important;
+  color: $primary-color !important;
+  border-radius: 6px !important;
+  height: 42px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.secondry-button-add.disabled {
+  color: $disabled-text-color !important;
+  border: 1px solid $disabled-border-color !important;
+  border-radius: 6px !important;
+  height: 42px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.profile-button {
+  background-color: $primary-color;
+  color: $header-white !important;
+  border-radius: 16px;
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-back-button {
+  background-color: $light-primary-color !important;
+  padding: 4px !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.Resend-text-button {
+  color: $primary-color !important;
+}
+
+.Category-button-active {
+  border: 1px solid #255CAB;
+  color: #255CAB;
+  background-color: #E6F0FF;
+}
+
+.Category-button-inactive {
+  border: 1px solid #767676;
+  color: #707070;
+  background-color: #ffffff;
+}
+
+.Category-text-active {
+  color: #255CAB;
+}
+
+// Button CSS End
+.filter-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+}
+
+// form css
+
+.form-heading {
+  font-size: 24px;
+  font-weight: 550;
+  color: #1f2937;
+}
+
+.secondry-button-add .mat-mdc-unelevated-button,
+.mat-mdc-unelevated-button .mdc-button__ripple {
+  border-radius: 6px;
+}
+
+.sleect-tabel {
+  border: 1px solid $form-input-border-color;
+  border-radius: 6px !important;
+  background-color: $header-white;
+}
+
+.form-input .mdc-notched-outline__leading {
+  display: none;
+}
+
+.form-input .mdc-text-field--outlined .mdc-notched-outline .mat-mdc-notch-piece {
+  border: 1px solid $form-input-border-color !important;
+  border-radius: 6px !important;
+  height: 42px !important;
+  align-items: center !important;
+  background-color: $header-white; // Replace $header-white with real value
+}
+
+// description input field
+.form-des-input {
+  border: 1px solid $form-input-border-color !important;
+  border-radius: 6px !important;
+  background-color: $header-white !important;
+
+  &.textarea-error-fix {
+    position: relative;
+    margin-bottom: 6px !important;
+    /* Adjust this value as needed */
+  }
+}
+
+/* Apply to the textarea inside */
+.form-des-input textarea[matInput] {
+  min-height: 60px !important;
+  /* fixed height */
+  max-height: 60px !important;
+  /* prevent auto growth */
+  overflow-y: auto;
+  /* enable scrolling */
+  resize: vertical;
+  /* optional: user can resize manually */
+  line-height: 1.4rem;
+}
+
+/* Hide subscript wrapper (errors/hints/counter area) */
+.form-des-input:not(.textarea-error-fix) .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.form-des-input.textarea-error-fix .mat-mdc-form-field-subscript-wrapper {
+  position: absolute !important;
+  bottom: -22px !important;
+}
+
+.form-des-input.textarea-error-fix .mat-mdc-form-field-error {
+  position: relative !important;
+  display: block !important;
+  margin-top: 2px;
+}
+
+.form-des-input .mdc-text-field .mdc-notched-outline .mat-mdc-notch-piece {
+  display: none !important;
+}
+
+.form-input-text .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex {
+  height: 42px !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  align-items: center !important;
+}
+
+.custom-no-padding {
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: center;
+}
+
+.blue-text {
+  color: $primary-color !important;
+}
+
+.primary-color {
+  background-color: $primary-color;
+}
+
+.focus-border-primay:focus {
+  color: $primary-color;
+}
+
+.card-color {
+  background-color: $card-color;
+}
+
+.font-bold {
+  font-weight: 500 !important;
+}
+
+.checkbox-label-blue {
+  color: $primary-color !important;
+}
+
+.mat-mdc-form-field-error-wrapper {
+  padding: 0 !important;
+}
+
+.add-credit-card {
+  margin-bottom: 0 !important;
+}
+
+// main content CSS
+.main-content {
+  background-color: $secondary-color;
+  margin-left: 272px !important;
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+}
+
+// Listing page CSS Start
+.list-page-heading {
+  font-size: 24px !important;
+  color: #202224 !important;
+  font-weight: 500 !important;
+  margin-bottom: 0 !important;
+}
+
+// Listing page CSS End
+
+// Table CSS
+
+.custom-table thead {
+  background: $table-header-color;
+  border-radius: 8px;
+  color: #202224;
+  border: none !important;
+}
+
+.custom-table th {
+  border: none !important;
+}
+
+.custom-table td {
+  border-bottom: 1px solid $custom-table-header-bor !important;
+  height: 80px;
+  padding: 16px;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  background: $card-color;
+}
+
+.table-right-corner {
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+}
+
+.table-header-group {
+  display: flex;
+  gap: 16px;
+  background: $card-color;
+  justify-content: flex-end;
+  align-items: center;
+  border-radius: 8px;
+}
+
+.custom-no-padding {
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: center;
+}
+
+.th-view {
+  text-align: center;
+  font-weight: 500;
+  font-size: 14px;
+  color: #202224;
+  width: 120px;
+  height: 52px;
+}
+
+.main-paginator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: $card-color;
+}
+
+.paginator-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  background: $card-color;
+  width: 100%;
+}
+
+.paginator-section .mat-mdc-paginator-outer-container {
+  width: 100%;
+}
+
+.paginator-section .mat-mdc-paginator {
+  width: 100%;
+}
+
+.paginator-section .mat-mdc-paginator-outer-container .mat-mdc-paginator-container {
+  justify-content: space-between;
+}
+
+.paginator-section .mdc-text-field {
+  border: 1px solid $primary-color !important;
+  border-radius: 6px;
+  height: 32px !important;
+}
+
+.mat-mdc-paginator-range-label {
+  margin: 0 !important;
+}
+
+.paginator-button {
+  width: 24px;
+  height: 24px;
+  background-color: $light-primary-color;
+  color: #0F172A;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+}
+
+.paginator-button svg {
+  fill: #0F172A;
+  width: 16px;
+  height: 16px;
+}
+
+.paginator-section .mat-mdc-paginator-container {
+  padding: 0 !important;
+  background-color: $card-color !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .paginator-section .mat-mdc-paginator-container,
+::ng-deep .paginator-section .mat-mdc-paginator-container .mat-mdc-paginator-page-size-label {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+::ng-deep .paginator-section .mat-mdc-form-field-flex .mat-mdc-text-field-wrapper .mdc-text-field .mdc-text-field--outlined .mdc-text-field--no-label {
+  width: 72px !important;
+  height: 22px !important;
+}
+
+.mat-mdc-paginator-range-actions .mat-mdc-icon-button {
+  background-color: $light-primary-color !important;
+  color: #0F172A !important;
+
+}
+
+.mat-mdc-paginator-range-actions {
+  gap: 8px;
+}
+
+.mat-mdc-form-field-type-mat-select:not(.mat-form-field-disabled) .mat-mdc-text-field-wrapper {
+  cursor: pointer;
+  align-items: center;
+}
+
+.mat-mdc-icon-button.mat-mdc-button-disabled-interactive {
+  pointer-events: auto;
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  background-color: $light-primary-color !important;
+  color: #0F172A !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mat-mdc-icon-button[aria-disabled] .mat-mdc-paginator-icon {
+  fill: #0F172A !important;
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.paginator-section .mat-mdc-icon-button {
+  padding: 8px !important;
+}
+
+// scroollbar CSS
+/* For Chrome, Edge, and Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  /* width of vertical scrollbar */
+  height: 8px;
+  /* height of horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: $disabled-pri-text-color;
+  /* background of the track */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $primary-color;
+  /* scrollbar color */
+  border-radius: 10px;
+  border: 1px solid $disabled-pri-text-color;
+  /* gives padding around thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: $primary-color;
+  /* color on hover */
+}
+
+.mobile-view-table {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.mobile-table-wapper {
+  border-bottom: 1px solid $custom-table-header-bor;
+  max-width: 600px;
+  display: none;
+}
+
+.user-name {
+  color: $primary-color;
+  padding-right: 8px;
+}
+
+.search-box-mb {
+  display: none;
+}
+
+.search-box-dsk {
+  display: block;
+}
+
+// form CSS Start
+.custom-text-box .mdc-notched-outline {
+  z-index: 0 !important;
+}
+
+
+:host ::ng-deep .secondry-button-add .mat-mdc-unelevated-button,
+.mat-mdc-unelevated-button .mdc-button__ripple {
+  border-radius: 6px;
+}
+
+.icon-action-button {
+  margin-left: 10px;
+
+}
+
+:host ::ng-deep .form-input {
+  // .mdc-notched-outline__leading {
+  //   // display: none;
+  // }
+
+  .mdc-text-field--outlined .mdc-notched-outline .mat-mdc-notch-piece {
+    border: 1px solid;
+    border-color: $form-input-border-color !important;
+    border-radius: 6px !important;
+    height: 42px !important;
+    align-items: center !important;
+    background-color: $header-white;
+  }
+}
+
+::ng-deep .form-input-text .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex {
+  height: 42px !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  align-items: center !important;
+}
+
+
+// patient form prfile picture
+
+/* Profile container (holds image) */
+.profile-container {
+
+  height: 300px;
+  width: 100%;
+  margin: auto;
+  max-width: 500px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+}
+
+/* Profile image */
+.profile-pic {
+  width: 100%;
+  max-height: 400px;
+  height: auto; 
+  border-radius: 12px;
+  margin-bottom: 16px !important;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-pic img {
+  width: 100%;
+  height: auto; 
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Patient form upload button */
+.patient-upload-btn {
+  width: 100%;
+  height: 48px;
+  color: $header-white !important;
+  background-color: $primary-color !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.patient-attachments-table {
+  background: $table-header-color;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+
+
+// top navbar CSS
+.top-navbar {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  background-color: $header-white;
+  border-radius: 8px;
+  z-index: 99;
+}
+
+
+
+//checkbox CSS
+/* Base checkbox style */
+.custom-mat-checkbox .mdc-checkbox__background {
+  border: 2px solid $primary-color !important;
+  background-color: transparent !important;
+}
+
+/* Checked/indeterminate states */
+.custom-mat-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background,
+.custom-mat-checkbox.mat-mdc-checkbox-indeterminate .mdc-checkbox__background {
+  background-color: $primary-color !important;
+  border-color: $primary-color !important;
+}
+
+.custom-mat-checkbox.mat-mdc-checkbox-disabled {
+  .mdc-checkbox__background {
+    border-color: $disabled-border-color !important;
+    pointer-events: none;
+  }
+
+  &.mat-mdc-checkbox-checked .mdc-checkbox__background {
+    background-color: $disabled-pri-bg-color !important;
+  }
+}
+
+/* Completely disable ripple effect */
+.custom-mat-checkbox .mdc-checkbox__state-layer {
+  background-color: transparent !important;
+  opacity: 0 !important;
+  transition: none !important;
+}
+
+/* Prevent hover or press state from reactivating pink */
+.custom-mat-checkbox:hover .mdc-checkbox__state-layer,
+.custom-mat-checkbox:active .mdc-checkbox__state-layer,
+.custom-mat-checkbox.mat-mdc-checkbox-checked:hover .mdc-checkbox__state-layer,
+.custom-mat-checkbox.mat-mdc-checkbox-checked:active .mdc-checkbox__state-layer {
+  background-color: transparent !important;
+  opacity: 0 !important;
+  transition: none !important;
+  box-shadow: none !important;
+}
+
+/* Also remove ripple if it's present */
+.custom-mat-checkbox .mdc-checkbox__ripple {
+  display: none !important;
+}
+
+/* Checkmark */
+.custom-mat-checkbox .mdc-checkbox__checkmark {
+  color: $header-white !important;
+}
+
+// Patient's Agenda checkbox CSS
+.mat-pseudo-checkbox {
+  border-color: $primary-color !important;
+}
+
+.mat-mdc-option .mat-pseudo-checkbox-checked {
+  background-color: $primary-color !important;
+  border-color: $primary-color !important;
+}
+
+// Patient's Agenda checkbox CSS END
+
+/* Label style */
+.custom-mat-checkbox .mat-mdc-checkbox .mdc-label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+  margin-left: 8px;
+}
+
+.main-content {
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+  margin-right: 16px !important;
+}
+
+//  Success-message-start
+.green-snackbar.mat-mdc-snack-bar-container .mat-mdc-snackbar-surface {
+  border: 1px solid #15803d;
+  border-radius: 6px;
+  padding: 0;
+  background-color: #dcfce7;
+  color: #15803d;
+  overflow: hidden;
+}
+
+.green-snackbar.mat-mdc-snack-bar-container .mat-mdc-button-touch-target {
+  background-color: #15803d !important;
+}
+
+.green-snackbar.mat-mdc-snack-bar-container .mdc-button__label {
+  color: $header-white !important;
+}
+
+//  Success-message-end
+
+// Failed-meassage-start
+.red-snackbar.mat-mdc-snack-bar-container .mat-mdc-snackbar-surface {
+  border: 1px solid #dc2626;
+  border-radius: 6px;
+  padding: 0;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  overflow: hidden;
+}
+
+.red-snackbar.mat-mdc-snack-bar-container .mat-mdc-button-touch-target {
+  background-color: #dc2626 !important;
+}
+
+.red-snackbar.mat-mdc-snack-bar-container .mdc-button__label {
+  color: $header-white !important;
+}
+
+// Failed-meassage-end
+
+// Warning-message-start
+.yellow-snackbar.mat-mdc-snack-bar-container .mat-mdc-snackbar-surface {
+  border: 1px solid #ffa000;
+  border-radius: 6px;
+  padding: 0;
+  background-color: #fff8e1;
+  color: #ffa000;
+  overflow: hidden;
+}
+
+.yellow-snackbar.mat-mdc-snack-bar-container .mat-mdc-button-touch-target {
+  background-color: #ffa000 !important;
+}
+
+.yellow-snackbar.mat-mdc-snack-bar-container .mdc-button__label {
+  color: $header-white !important;
+}
+
+// Warning-message-end
+
+.form-checkbox {
+  display: flex;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.uploaded-card {
+  border: 1px solid $uploaded-card;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.attachments-heading {
+  margin-bottom: 0 !important;
+}
+
+.attachments-heading-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.credit-card-checkbox {
+  color: $primary-color !important;
+}
+
+// checkbox CSS end
+
+//Navigation Tabs Design
+.nav-header-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 100px;
+  height: 36px;
+  font-weight: 500;
+  min-width: 150px;
+  max-width: auto;
+  font-size: 14px;
+}
+
+.nav-header-tabs.active {
+  color: $header-white !important;
+  background-color: $primary-color !important;
+  border: none;
+}
+
+.nav-header-tabs.inactive {
+  color: $primary-color !important;
+  background-color: transparent !important;
+  border: 1px solid $primary-color !important;
+}
+
+.nav-header-tabs.disabled {
+  color: $disabled-text-color !important;
+  border: 1px solid $disabled-pri-bg-color !important;
+  pointer-events: none;
+}
+
+
+.mat-button-toggle-checked .mat-button-toggle-button:has(.mat-button-toggle-checkbox-wrapper) {
+  padding-left: 0px !important;
+}
+
+.nav-tabs-wrapper .mat-button-toggle-appearance-standard {
+  padding: 8px;
+  font-size: 14px;
+  color: #6B7280;
+  background-color: transparent;
+  border: none !important;
+  border-radius: 100px !important;
+  width: 150px;
+}
+
+.nav-tabs-wrapper .mat-button-toggle-appearance-standard.mat-button-toggle-checked {
+  padding: 8px;
+  font-size: 14px;
+  color: $header-white !important;
+  background-color: $primary-color;
+  border: none;
+}
+
+.nav-tabs-wrapper .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: normal;
+
+}
+
+.mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+  color: $header-white !important;
+}
+
+.mat-button-toggle-group-appearance-standard {
+  border: none !important;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  color: $header-white !important;
+}
+
+// dialog css
+.mat-mdc-dialog-actions .mat-mdc-button-base+.mat-mdc-button-base {
+  border: 1px solid $primary-color !important;
+  color: $primary-color !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.mat-mdc-dialog-actions.mat-mdc-dialog-actions-align-end,
+.mat-mdc-dialog-actions[align=end] {
+  margin-bottom: 12px !important;
+}
+
+.mat-mdc-dialog-actions {
+  padding: 8px 0 8px 8px !important;
+}
+
+.mat-mdc-dialog-surface {
+  border-radius: 8px !important;
+
+}
+
+.mat-mdc-dialog-container .mat-mdc-dialog-title {
+  margin: 0 !important;
+}
+
+.dialog-for-actions {
+  padding-right: 24px !important;
+}
+
+.mat-mdc-raised-button {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.mat-calendar-period-button {
+  border: 1px solid $primary-color !important;
+  color: $primary-color !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+
+
+
+.button-strength-save {
+  background-color: $primary-color !important;
+  color: $header-white !important;
+  border-radius: 6px !important;
+}
+
+.mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__leading,
+.mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__notch,
+.mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: $primary-color !important;
+}
+
+// dialog css end
+
+// Menu buttons css
+.mat-mdc-menu-panel {
+  border-top-left-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  border-top-right-radius: 0px !important;
+}
+
+// assign counselor modal css
+.mat-typography h2 {
+  margin-bottom: 0;
+}
+
+// select praposal table css & proposal form css
+
+
+.custom-box {
+  text-align: left;
+  /* text-left */
+  width: 100%;
+  /* w-full */
+  background-color: $header-white !important;
+  /* bg-white */
+  border: 1px solid $primary-color !important;
+  border-radius: 0.5rem;
+  /* rounded-lg */
+  padding: 1rem;
+  /* p-4 */
+  transition: all 0.2s ease;
+  /* transition */
+}
+
+.ring-blue-600 {
+  --tw-ring-opacity: none !important;
+  --tw-ring-color: none !important;
+}
+
+.primary-text-color {
+  color: $primary-color !important;
+}
+
+.modal-heading {
+  margin-bottom: 0px !important;
+}
+
+.shipping-form-field {
+  border: 1px solid $form-input-border-color !important;
+  border-radius: 6px !important;
+  align-items: center !important;
+  background-color: $header-white; // Replace $header-white with real value
+}
+
+.add-form-field {
+  border: 2px dashed $form-input-border-color;
+  border-radius: 6px !important;
+  align-items: center !important;
+  background-color: $header-white; // Replace $header-white with real value
+}
+
+
+/* Make Qty input field compact */
+.custom-qty-field .mat-mdc-text-field-wrapper {
+  height: 42px !important;
+  /* match your row height */
+  min-height: 42px !important;
+  padding: 0 !important;
+}
+
+.custom-qty-field .mat-mdc-form-field-infix {
+  padding: 8px 0 !important;
+  /* reduce inner spacing */
+}
+
+.custom-qty-field input.mat-mdc-input-element {
+  text-align: center;
+  padding: 0 8px 0 0;
+  /* add 8px left & right padding */
+  height: 100%;
+}
+
+.custom-qty-field .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+/* Fix overall alignment inside the field */
+.custom-qty-field .mat-mdc-form-field-flex {
+  align-items: center !important;
+  /* centers everything inside */
+}
+
+.custom-qty-field .mat-mdc-form-field-infix {
+  padding: 8px !important;
+  /* inner padding */
+
+}
+
+.custom-qty-field input.mat-mdc-input-element {
+  padding: 0 !important;
+  /* reset browser padding */
+  text-align: center;
+  /* keep your text centered */
+}
+
+
+/* Specifically fix the prefix ($) */
+.custom-sign-alignment {
+  display: flex !important;
+  align-items: flex-start !important;
+  /* top align vertically */
+  padding-right: 0px !important;
+  /* space between $ and number */
+  font-size: 14px !important;
+  /* match input font size */
+  padding-left: 12px !important;
+  /* space from left edge */
+  height: 14px !important;
+  /* full height */
+}
+
+/* Default outline border color */
+.custom-qty-field .mdc-notched-outline__leading,
+.custom-qty-field .mdc-notched-outline__notch,
+.custom-qty-field .mdc-notched-outline__trailing {
+  border-color: $form-input-border-color !important;
+  /* soft gray border */
+}
+
+/* On hover */
+.custom-qty-field.mat-mdc-form-field:hover .mdc-notched-outline__leading,
+.custom-qty-field.mat-mdc-form-field:hover .mdc-notched-outline__notch,
+.custom-qty-field.mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+  border-color: $primary-color !important;
+  /* slightly darker on hover */
+}
+
+/* On focus */
+.custom-qty-field.mat-focused .mdc-notched-outline__leading,
+.custom-qty-field.mat-focused .mdc-notched-outline__notch,
+.custom-qty-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: $primary-color !important;
+  /* blue (or pick another focus color) */
+}
+
+.modal-input-field .mat-mdc-text-field-wrapper {
+  height: 56px !important;
+  min-height: 42px !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  border: 1px solid $form-input-border-color !important;
+  border-radius: 6px;
+  /* optional, rounded corners */
+  background: $header-white;
+}
+
+/* kill Angular Material’s default outline */
+.modal-input-field .mdc-notched-outline {
+  display: none !important;
+}
+
+.modal-input-field input.mat-mdc-input-element {
+  flex: 1;
+  text-align: start !important;
+  padding: 8px !important;
+  border: none !important;
+  /* no inner border */
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+
+/* On focus */
+.modal-input-field.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: $primary-color !important;
+}
+
+.text-area-sms {
+  /* Tailwind equivalents moved to CSS */
+  flex: 1;
+  /* flex-1 */
+  padding: 8px 12px;
+  /* px-3 py-2 */
+  border-radius: 6px;
+  /* rounded-lg */
+  background-color: $header-white;
+  /* bg-gray-50 */
+  border: 1px solid $form-input-border-color;
+  /* border-gray-200 */
+  /* Focus styles */
+  outline: none;
+  /* focus:outline-none */
+}
+
+.text-area-sms:focus {
+  border-color: $primary-color;
+  /* focus:border-indigo-400 */
+  box-shadow: 0 0 0 1px $primary-color;
+  /* focus:ring-2 focus:ring-indigo-400 */
+}
+
+/* Keep your fixed height settings */
+.text-area-sms {
+  min-height: 100px;
+  max-height: 100px;
+  overflow-y: auto !important;
+  resize: none !important;
+  /* remove if you want manual resize */
+  line-height: 1.4rem;
+}
+
+.text-icons-field {
+  height: 42px;
+  /* fixed height */
+  display: flex;
+  /* flex container */
+  align-items: center;
+  /* vertically center items */
+  /* Tailwind converted to CSS */
+  padding: 8px 12px;
+  /* px-3 py-2 */
+  border-radius: 6px;
+  /* rounded-lg */
+  background-color: $header-white;
+  /* bg-white */
+  border: 1px solid $form-input-border-color;
+  /* border-gray-200 */
+  font-size: 18px;
+  /* text-lg */
+  line-height: 1.75rem;
+  /* text-lg line-height */
+  transition: background-color 0.2s ease-in-out;
+  /* smooth hover effect */
+}
+
+.chat-profile-sender {
+  height: 32px;
+  /* h-8 */
+  width: 32px;
+  /* w-8 */
+  border-radius: 50%;
+  /* rounded-full */
+  background-color: rgba(79, 70, 229, 0.1);
+  /* bg-indigo-600 + bg-opacity-10 */
+  color: $primary-color;
+  /* text-indigo-700 */
+  display: flex;
+  /* flex */
+  align-items: center;
+  /* items-center */
+  justify-content: center;
+  /* justify-center */
+  font-size: 14px;
+  /* text-sm (≈0.875rem) */
+  line-height: 20px;
+  /* text-sm line-height */
+  font-weight: 600;
+  /* font-semibold */
+}
+
+.chat-profile-receiver {
+  background: #E6F0FF;
+  /* light gray */
+  color: #1e3a8a;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  /* flex */
+  align-items: center;
+  /* items-center */
+  justify-content: center;
+  /* justify-center */
+  font-size: 14px;
+  /* text-sm (≈0.875rem) */
+  line-height: 20px;
+  /* text-sm line-height */
+  font-weight: 600;
+  height: 32px;
+  /* h-8 */
+  width: 32px;
+  /* w-8 */
+  border-radius: 50%;
+}
+
+.custom-card {
+  display: inline-block;
+  /* shrink to fit content */
+  width: auto;
+  /* adapt to content */
+  max-width: 600px;
+  /* never exceed 600px */
+  background: $header-white;
+  border: 1px solid $form-input-border-color;
+  border-radius: 16px;
+  border-top-left-radius: 2px;
+  padding: 16px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  vertical-align: top;
+  word-wrap: break-word;
+  /* prevent text overflow */
+}
+
+/* Media inside the card */
+.custom-card img,
+.custom-card video {
+  max-width: 100%;
+  /* keep inside card */
+  height: 400px;
+  display: block;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.custom-card audio {
+  max-width: 100%;
+  display: block;
+}
+
+.main-content-bulk-sms {
+  flex: 1;
+  /* flex-1 */
+  padding: 16px;
+  /* p-4 = 16px */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* space-y-4 = 16px */
+  overflow-y: auto;
+  /* overflow-y-auto */
+  scrollbar-width: thin;
+  /* thin-scroll (Firefox) */
+  background-color: $card-color;
+  /* bg-gray-50 */
+  height: 100%;
+  max-height: calc(100vh - 175px);
+  /* full height minus navbar */
+
+}
+
+.main-content-sms {
+  flex: 1;
+  /* flex-1 */
+  padding: 16px;
+  /* p-4 = 16px */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* space-y-4 = 16px */
+  overflow-y: auto;
+  /* overflow-y-auto */
+  scrollbar-width: thin;
+  /* thin-scroll (Firefox) */
+  background-color: $card-color;
+  /* bg-gray-50 */
+  height: 100%;
+  max-height: calc(100vh - 496px);
+  /* full height minus navbar */
+}
+
+
+.sms-heading {
+  font-size: 20px;
+  /* text-xl ≈ 20px */
+  font-weight: 700;
+  /* font-bold */
+  margin: 0 !important;
+  /* m-0 */
+}
+
+.sms-heading-comm {
+  font-size: 20px;
+  /* text-xl ≈ 20px */
+  font-weight: 500;
+  /* font-medium */
+  margin-bottom: 16px;
+}
+
+.custom-label-bulk-sms {
+  display: block;
+  /* block */
+  font-size: 14px;
+  /* text-sm ≈ 14px */
+  font-weight: 500;
+  /* custom (medium) */
+  margin-bottom: 4px;
+  /* mb-1 = 0.25rem = 4px */
+}
+
+.bulk-form-field {
+  border: 1px solid $form-input-border-color !important;
+  border-radius: 6px !important;
+  height: 42px !important;
+  background-color: $header-white; // Replace $header-white with real value
+  padding: 12px !important;
+  /* px-3 py-3 = 12px all sides */
+  outline: none;
+  /* focus:outline-none */
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Focus state */
+.bulk-form-field:focus {
+  box-shadow: 0 0 0 1px $primary-color !important;
+  /* focus:ring-2 + focus:ring-blue-400 */
+  border-color: $primary-color !important;
+  /* match ring color */
+}
+
+.bulk-email-field {
+  display: flex;
+  /* flex */
+  flex-wrap: wrap;
+  /* flex-wrap */
+  align-items: center;
+  /* items-center */
+  gap: 8px;
+  /* gap-2 = 8px */
+  padding: 8px;
+  /* p-2 = 8px */
+  border: 1px solid $form-input-border-color;
+  /* border-gray-200 */
+  border-top-left-radius: 6px;
+  /* rounded-t-lg */
+  border-top-right-radius: 6px;
+  /* rounded-t-lg */
+  border-bottom-left-radius: 0;
+  /* keep bottom straight */
+  border-bottom-right-radius: 0;
+  /* keep bottom straight */
+  background-color: $table-header-color;
+  /* bg-gray-50 */
+}
+
+.thead-bulk-email {
+  border: 1px solid $form-input-border-color;
+  background-color: $table-header-color;
+  border-radius: 6px !important;
+}
+
+.bulk-email-teaxtarea {
+  padding: 12px;
+  /* px-3 py-3 = 12px */
+  background-color: $header-white;
+  /* bg-white */
+  overflow-y: auto;
+  /* thin-scroll behavior */
+  scrollbar-width: thin;
+  /* Firefox */
+  height: 200px;
+  border: 1px solid $form-input-border-color !important;
+  border-radius: 0 0 6px 6px !important;
+  border-top: none !important;
+  /* fixed height */
+  /* optional: to match editor border */
+  /* optional: rounded edges */
+}
+
+.bulk-email-teaxtarea:focus {
+  outline: none !important;
+  /* remove black outline */
+  box-shadow: none !important;
+  /* remove focus ring shadow */
+  border-color: $form-input-border-color !important;
+  /* keep same border as normal */
+}
+
+.bulk-sms-teaxtarea {
+  padding: 12px;
+  /* px-3 py-3 = 12px */
+  background-color: $header-white;
+  height: auto !important;
+  border: 1px solid $form-input-border-color !important;
+  border-radius: 6px !important;
+  /* fixed height */
+  /* optional: to match editor border */
+  /* optional: rounded edges */
+}
+
+.bulk-sms-teaxtarea:focus {
+  outline: none !important;
+  /* remove black outline */
+  box-shadow: none !important;
+  /* remove focus ring shadow */
+  border-color: $form-input-border-color !important;
+  /* keep same border as normal */
+}
+
+/* Thin scroll for WebKit (Chrome, Edge, Safari) */
+.bulk-email-teaxtarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.bulk-email-teaxtarea::-webkit-scrollbar-thumb {
+  background-color: $header-white;
+  /* gray-300 */
+}
+
+
+.header-button {
+  border: 1px solid $form-input-border-color;
+  /* border */
+  background: $header-white;
+  /* bg-gray-50 */
+  border-radius: 6px;
+  /* 0.375rem = 6px */
+  padding: 4px 8px;
+  /* 0.25rem 0.5rem = 4px 8px */
+  font-size: 14px;
+  /* 0.875rem = 14px */
+}
+
+.header-button select {
+  border: 1px solid $form-input-border-color;
+  /* border */
+  background: $header-white;
+  /* bg-gray-50 */
+  border-radius: 6px;
+  /* 0.375rem = 6px */
+  padding: 4px 8px;
+  /* 0.25rem 0.5rem = 4px 8px */
+  font-size: 14px;
+  /* 0.875rem = 14px */
+}
+
+
+
+.primary-color-radio {
+  accent-color: $primary-color; // Modern browsers support this
+}
+
+/* Fallback for browsers that don’t support accent-color */
+.primary-color-radio:checked {
+  background-color: $primary-color !important;
+  border-color: $primary-color !important;
+}
+
+.primary-color-radio:hover {
+  background-color: $primary-color !important;
+  border-color: $primary-color !important;
+}
+
+.primary-color-radio:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px color.adjust($primary-color, $lightness: 30%); 
+  border-color: $primary-color !important;
+}
+
+.read-mode-text{
+  color: #555555 !important;
+}
+
+.header-color{
+  background-color: #1f2937;
+}
+
+.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-select-arrow {
+    color: rgba(0, 0, 0, 0.54) !important; 
+}
+
+.toggle-group-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+}
+mat-button-toggle-group.responsive-toggle-group {
+  display: flex !important;
+  flex-wrap: wrap !important; /* IMPORTANT: allow wrapping */
+  flex-direction: row; /* default direction */
+}
+
+
+@media (min-width: 640px) {
+
+  /* sm:p-6 */
+  .main-content-sms {
+    padding: 24px;
+    /* p-6 = 24px */
+  }
+
+  .sms-heading {
+    font-size: 24px;
+    /* bigger font on sm screens */
+  }
+}
+
+/* For Chrome, Edge, Safari thin-scroll */
+.main-content-sms::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-content-sms::-webkit-scrollbar-thumb {
+  background-color: $card-color;
+  /* gray-300 */
+  border-radius: 9999px;
+}
+
+@media (max-width: 480px) {
+  .main-content-sms {
+    max-height: calc(100vh - 520px);
+    /* adjust for smaller screens */
+  }
+
+  .sms-heading {
+    font-size: 18px !important;
+    /* bigger font on sm screens */
+  }
+
+  .sms-heading-comm {
+    font-size: 18px !important;
+    /* bigger font on sm screens */
+  }
+
+  .main-content-bulk-sms {
+    max-height: calc(100vh - 179px);
+  }
+}
+
+/* For desktop and up (>=1024px) */
+@media (min-width: 1024px) {
+  .sms-heading {
+    font-size: 28px;
+    /* larger for desktops */
+  }
+}
+
+
+// Responsive CSS
+@media (max-width: 768px) {
+  .mat-sidenav.sidebar-nav {
+    .sidebar-collapsed {
+      display: none !important;
+    }
+
+    .sidebar-open,
+    .sidebar-open.collapsed-sidenav-content {
+      margin-left: 0px !important;
+
+    }
+
+    .sidebar-container {
+      width: 16rem !important;
+    }
+
+    &.show {
+      display: block !important;
+    }
+  }
+
+  .toggle-group-wrapper {
+    flex-direction: column;
+  }
+
+  .responsive-toggle-group {
+    flex-direction: column;
+  }
+
+  mat-button-toggle-group.responsive-toggle-group {
+    flex-direction: column !important; /* stack vertically */
+    align-items: stretch; /* make buttons full width */
+  }
+
+  mat-button-toggle-group.responsive-toggle-group .mat-button-toggle {
+    width: 100%; /* full width buttons */
+    margin-bottom: 0.5rem;
+  }
+
+}
+
+@media screen and (max-width: 600px) {
+
+  .main-paginator {
+    flex-wrap: wrap;
+    padding: 0;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .search-box-mb {
+    display: block;
+  }
+
+  .search-box-dsk {
+    display: none;
+  }
+
+  .custom-table-view {
+    display: none;
+  }
+
+  .mobile-table-wapper {
+    display: block;
+  }
+
+  .paginator-section .mat-mdc-paginator-outer-container .mat-mdc-paginator-container {
+    justify-content: space-between;
+    gap: 8px !important;
+  }
+
+  .top-nav-mq {
+    display: flex;
+    justify-content: space-between;
+
+  }
+}
+
+// form media query
+
+
+//Error and Not found page CSS
+.error-pages-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: $secondary-color;
+  font-family: $font-family;
+  padding: 20px; // prevents cutoff on small devices
+}
+
+.error-pages-content {
+  text-align: center;
+  padding: 30px;
+  border-radius: 12px;
+  background-color: $header-white;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  max-width: 600px; // keeps text from spreading too wide
+  width: 100%;
+
+  .logo {
+    width: 120px;
+    max-width: 40%; // auto shrink on smaller screens
+    margin-bottom: 15px;
+  }
+
+  h1 {
+    font-size: 4rem;
+    font-weight: bold;
+    color: $primary-color;
+    margin: 0;
+    padding: 1rem 0rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: $sidebar-color;
+    margin-bottom: 0rem;
+    padding: 1rem 0rem 0.5rem 0rem;
+  }
+
+  p {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: #6c757d;
+    padding-bottom: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .error-pages-content {
+    padding: 20px;
+    max-width: 400px;
+
+    h1 {
+      font-size: 3rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+}

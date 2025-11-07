@@ -1,0 +1,97 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{55EB6DF5-2209-4F8E-9AD4-91F47C01A207}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E6FAC70A-216D-454D-953B-503E3DB49874}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLifeHRT.Common", "Common\NewLifeHRT.Common\NewLifeHRT.Common.csproj", "{C607B186-B6D7-47BA-98D2-FAB4CAC5602B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLifeHRT.Domain", "Common\NewLifeHRT.Domain\NewLifeHRT.Domain.csproj", "{1DC554B6-4266-4DB7-A91C-0924F16A92C1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLifeHRT.External", "Common\NewLifeHRT.External\NewLifeHRT.External.csproj", "{BED16426-1B9A-4AD5-8EDB-C24E575DF821}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLifeHRT.Infrastructure", "Common\NewLifeHRT.Infrastructure\NewLifeHRT.Infrastructure.csproj", "{DB1DF65C-4D78-496E-B298-DD0884D1BA53}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLifeHRT.Tests.Common", "Common\NewLifeHRT.Tests.Common\NewLifeHRT.Tests.Common.csproj", "{675E354A-76E9-42EB-9850-3C4C5EE3B262}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLifeHRT.Application.Services.Tests", "Web API\NewLifeHRT.Application.Services.Tests\NewLifeHRT.Application.Services.Tests.csproj", "{8835C47C-604D-4DAF-80AD-D478A881972F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLifeHRT.API.Controllers", "Web API\NewLifeHRT.API.Controllers\NewLifeHRT.API.Controllers.csproj", "{60172173-B7A0-4ED4-B6A7-451BB7A78BE2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{5676343E-9AE4-4F32-A50D-54C2DC40C1ED}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLifeHRT.Application.Services", "Web API\NewLifeHRT.Application.Services\NewLifeHRT.Application.Services.csproj", "{B8A9BAFE-B758-4CC1-8FE2-36FDA9EB81D5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Background Jobs", "Background Jobs", "{92848EEC-A118-4313-A021-621164ACB10A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLifeHRT.Jobs.Scheduler", "Background Jobs\NewLifeHRT.Jobs.Scheduler\NewLifeHRT.Jobs.Scheduler.csproj", "{B72C11A8-FBB9-4AFB-88A4-350FA6BBC22A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLifeHRT.Background.Console", "Background Jobs\NewLifeHRT.Background.Console\NewLifeHRT.Background.Console.csproj", "{6DE57289-BCC9-48AB-8D9F-6BAFC7D61BF7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C607B186-B6D7-47BA-98D2-FAB4CAC5602B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C607B186-B6D7-47BA-98D2-FAB4CAC5602B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C607B186-B6D7-47BA-98D2-FAB4CAC5602B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C607B186-B6D7-47BA-98D2-FAB4CAC5602B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DC554B6-4266-4DB7-A91C-0924F16A92C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DC554B6-4266-4DB7-A91C-0924F16A92C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DC554B6-4266-4DB7-A91C-0924F16A92C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DC554B6-4266-4DB7-A91C-0924F16A92C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BED16426-1B9A-4AD5-8EDB-C24E575DF821}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BED16426-1B9A-4AD5-8EDB-C24E575DF821}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BED16426-1B9A-4AD5-8EDB-C24E575DF821}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BED16426-1B9A-4AD5-8EDB-C24E575DF821}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB1DF65C-4D78-496E-B298-DD0884D1BA53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB1DF65C-4D78-496E-B298-DD0884D1BA53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB1DF65C-4D78-496E-B298-DD0884D1BA53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB1DF65C-4D78-496E-B298-DD0884D1BA53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{675E354A-76E9-42EB-9850-3C4C5EE3B262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{675E354A-76E9-42EB-9850-3C4C5EE3B262}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{675E354A-76E9-42EB-9850-3C4C5EE3B262}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{675E354A-76E9-42EB-9850-3C4C5EE3B262}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8835C47C-604D-4DAF-80AD-D478A881972F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8835C47C-604D-4DAF-80AD-D478A881972F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8835C47C-604D-4DAF-80AD-D478A881972F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8835C47C-604D-4DAF-80AD-D478A881972F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60172173-B7A0-4ED4-B6A7-451BB7A78BE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60172173-B7A0-4ED4-B6A7-451BB7A78BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60172173-B7A0-4ED4-B6A7-451BB7A78BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60172173-B7A0-4ED4-B6A7-451BB7A78BE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8A9BAFE-B758-4CC1-8FE2-36FDA9EB81D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8A9BAFE-B758-4CC1-8FE2-36FDA9EB81D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8A9BAFE-B758-4CC1-8FE2-36FDA9EB81D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8A9BAFE-B758-4CC1-8FE2-36FDA9EB81D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B72C11A8-FBB9-4AFB-88A4-350FA6BBC22A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B72C11A8-FBB9-4AFB-88A4-350FA6BBC22A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B72C11A8-FBB9-4AFB-88A4-350FA6BBC22A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B72C11A8-FBB9-4AFB-88A4-350FA6BBC22A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DE57289-BCC9-48AB-8D9F-6BAFC7D61BF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DE57289-BCC9-48AB-8D9F-6BAFC7D61BF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DE57289-BCC9-48AB-8D9F-6BAFC7D61BF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DE57289-BCC9-48AB-8D9F-6BAFC7D61BF7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C607B186-B6D7-47BA-98D2-FAB4CAC5602B} = {55EB6DF5-2209-4F8E-9AD4-91F47C01A207}
+		{1DC554B6-4266-4DB7-A91C-0924F16A92C1} = {55EB6DF5-2209-4F8E-9AD4-91F47C01A207}
+		{BED16426-1B9A-4AD5-8EDB-C24E575DF821} = {55EB6DF5-2209-4F8E-9AD4-91F47C01A207}
+		{DB1DF65C-4D78-496E-B298-DD0884D1BA53} = {55EB6DF5-2209-4F8E-9AD4-91F47C01A207}
+		{675E354A-76E9-42EB-9850-3C4C5EE3B262} = {E6FAC70A-216D-454D-953B-503E3DB49874}
+		{8835C47C-604D-4DAF-80AD-D478A881972F} = {E6FAC70A-216D-454D-953B-503E3DB49874}
+		{B8A9BAFE-B758-4CC1-8FE2-36FDA9EB81D5} = {5676343E-9AE4-4F32-A50D-54C2DC40C1ED}
+		{B72C11A8-FBB9-4AFB-88A4-350FA6BBC22A} = {92848EEC-A118-4313-A021-621164ACB10A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {776B6022-59A9-4826-94B9-8F74B1F4C763}
+	EndGlobalSection
+EndGlobal

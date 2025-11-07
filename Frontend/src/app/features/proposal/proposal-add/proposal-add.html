@@ -1,0 +1,602 @@
+<!-- ===== Top Bar / Actions (unchanged behavior) ===== -->
+<app-full-page-loader [visible]="isLoadingPage()"></app-full-page-loader>
+
+<div
+  class="sticky top-0 z-10 flex flex-wrap gap-2 items-center justify-between rounded-lg px-4 py-2 shadow-sm mb-4 bg-white">
+  <div class="flex items-center space-x-2">
+    <button mat-icon-button (click)="onClose()" class="header-back-button">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="form-header-heading"> Proposal
+    </span>
+    <span *ngIf="proposalForm.get('status')?.value"
+      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ml-2"
+      [ngClass]="getStatusClassByEnum(proposalForm.get('status')?.value)">
+      {{ getStatusDisplayText(proposalForm.get('status')?.value) }}
+    </span>
+  </div>
+
+  <div
+    *ngIf="proposalForm.get('status')?.value !== Status.Approved && proposalForm.get('status')?.value !== Status.Canceled">
+    <div class="flex items-center gap-2">
+      <button type="button" mat-raised-button class="!py-1 !px-4 text-sm primary-btn"
+        (click)="onAcceptByPatientProposal()"  *ngIf="proposalForm.get('status')?.value === Status.InReview &&
+         proposalForm.get('status')?.value !== Status.ApprovedByPatient &&
+         proposalForm.get('status')?.value !== Status.RejectedByPatient">
+        Accept By Patient
+      </button>
+
+      <button type="button" mat-raised-button class="!py-1 !px-4 text-sm primary-btn"
+        (click)="onRejectByPatientProposal()" *ngIf="proposalForm.get('status')?.value === Status.InReview &&
+         proposalForm.get('status')?.value !== Status.ApprovedByPatient &&
+         proposalForm.get('status')?.value !== Status.RejectedByPatient">
+        Reject By Patient
+      </button>
+      <!-- Readonly accept/reject -->
+      <div *ngIf="isReadOnlyMode() && proposalForm.get('status')?.value !== Status.Canceled"
+        class="flex items-center gap-2">
+        <button *ngIf="checkStatusInReviewOrAcceptedOrRejectedByPatient()" type="button" mat-flat-button
+          (click)="updateProposalDetails()" class="!py-1 !px-4 text-sm primary-btn"
+          [disabled]="isSavingProposalDetails()" matTooltip="Save protocols data">
+          {{ isSavingProposalDetails() ? 'Saving...' : 'Save' }}
+        </button>
+        <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <!-- Menu Items -->
+        <mat-menu #actionMenu="matMenu">
+          <button mat-menu-item (click)="onAcceptProposal()"
+            [disabled]="isSubmitting() || proposalForm.get('status')?.value === Status.Approved"
+            class="accept-reject-btn">Accept</button>
+          <button mat-menu-item (click)="onCancelProposal()"
+            [disabled]="isSubmitting() || (proposalForm.get('status')?.value === Status.Canceled)"
+            class="accept-reject-btn">Cancel</button>
+          <button mat-menu-item (click)="onRejectProposal()"
+            [disabled]="isSubmitting() || (proposalForm.get('status')?.value === Status.Canceled)"
+            class="accept-reject-btn">Reject</button>
+        </mat-menu>
+      </div>
+
+      <!-- Edit / create actions -->
+      <div *ngIf="!isReadOnlyMode()" class="flex items-center gap-2">
+        @if(isEditMode){
+          <button type="button" mat-flat-button (click)="onClickAdd()"
+            class="!py-1 !px-4 text-sm action-button secondry-button-add">
+            Add Proposal <mat-icon class="mr-1">add</mat-icon>
+          </button>
+        }
+        <button type="submit" mat-flat-button (click)="onSaveInformation()" class="!py-1 !px-4 text-sm primary-btn"
+          [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Saving...' : 'Save' }}
+        </button>
+        <button mat-icon-button [matMenuTriggerFor]="actionMenu"
+          class="hover:text-blue-600 transition-colors icon-action-button">
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+        <mat-menu #actionMenu="matMenu">
+          <button mat-menu-item (click)="onSaveInformation(true)"><span>Save &amp; Close</span></button>
+          <button mat-menu-item (click)="onDeleteClick()" *ngIf="proposalId"><span>Delete</span></button>
+          <button mat-menu-item (click)="onSubmitProposalClick()" *ngIf="proposalId"><span>Submit
+              Proposal</span></button>
+        </mat-menu>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page Body ===== -->
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color"
+  [class.readonly-form]="isReadOnlyMode()">
+
+  <form [formGroup]="proposalForm" (ngSubmit)="onSaveInformation()">
+    <!-- Two-column shell: main + aside (sticky on lg+) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- ===== Main Column ===== -->
+      <div class="lg:col-span-8 space-y-8">
+
+        <!-- PROPOSAL INFORMATION -->
+        <section>
+          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Proposal Information</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Name -->
+            <div class="space-y-2 custom-text-box">
+              <label class="block text-sm font-medium text-gray-700">Proposal Name <span
+                  class="text-red-500">*</span></label>
+              <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput formControlName="name" placeholder="Enter proposal name" class="text-sm"
+                  [readonly]="isReadOnlyMode()" />
+                <mat-error *ngIf="isFieldInvalid('name') && !isReadOnlyMode()">{{ getFieldError('name') }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Patient -->
+            <div class="space-y-2 custom-text-box">
+              <label class="block text-sm font-medium text-gray-700">Patient <span class="text-red-500">*</span></label>
+              <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input *ngIf="isComingFromPatient()" matInput [value]="displayFn(proposalForm.get('patientId')?.value)"
+                  readonly class="text-sm" [disabled]="true" readonly />
+                <ng-container *ngIf="!isComingFromPatient()">
+                  <input type="text" placeholder="Select patient" aria-label="Patient" matInput
+                    formControlName="patientId" [matAutocomplete]="patientAuto"
+                    (input)="!isReadOnlyMode() && filterPatients($any($event.target).value)" class="text-sm"
+                    [readonly]="isReadOnlyMode()" [matAutocompleteDisabled]="isReadOnlyMode()" />
+                  <mat-autocomplete #patientAuto="matAutocomplete" [displayWith]="displayFn">
+                    <mat-option *ngFor="let patient of filteredPatients" [value]="patient">{{ patient.name
+                      }}</mat-option>
+                  </mat-autocomplete>
+                </ng-container>
+                <mat-error *ngIf="isFieldInvalid('patientId') && !isReadOnlyMode()">{{
+                  getFieldError('patientId')}}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Pharmacy -->
+            <div class="space-y-2 custom-text-box">
+              <label class="block text-sm font-medium text-gray-700">Pharmacy <span
+                  class="text-red-500">*</span></label>
+              <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input type="text" placeholder="Select pharmacy" aria-label="Pharmacy" matInput
+                  formControlName="pharmacyId" [matAutocomplete]="pharmacyAuto"
+                  (input)="!isReadOnlyMode() && filterPharmacies($any($event.target).value)" class="text-sm"
+                  [readonly]="isReadOnlyMode()" [matAutocompleteDisabled]="isReadOnlyMode()" />
+                <mat-autocomplete #pharmacyAuto="matAutocomplete" [displayWith]="displayFn">
+                  <mat-option *ngFor="let pharmacy of filteredPharmacies()" [value]="pharmacy">{{ pharmacy.name
+                    }}</mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="isFieldInvalid('pharmacyId') && !isReadOnlyMode()">{{ getFieldError('pharmacyId')
+                  }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Counselor -->
+            <div class="space-y-2 custom-text-box">
+              <label class="block text-sm font-medium text-gray-700">Counselor</label>
+              <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput [value]="displayFn(proposalForm.get('counselorId')?.value)" readonly class="text-sm"
+                  [disabled]="true" readonly />
+              </mat-form-field>
+            </div>
+            <div class="space-y-2 custom-text-box">
+              <label class="block text-sm font-medium text-gray-700">Physician</label>
+              <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput [value]="displayFn(proposalForm.get('physicianId')?.value)" readonly class="text-sm"
+                  [disabled]="true" readonly />
+              </mat-form-field>
+            </div>
+
+            <!-- Therapy Expiration -->
+            <div class="space-y-2 custom-text-box">
+              <label class="block text-sm font-medium text-gray-700">Therapy Expiration</label>
+              <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput [matDatepicker]="therapyPicker" formControlName="therapyExpiration"
+                  placeholder="Select expiration date" readonly (click)="!isReadOnlyMode() && therapyPicker.open()"
+                  (keydown)="preventDateInput($event)" [matTooltip]="!isReadOnlyMode() ? 'Click to select date' : ''"
+                  class="text-sm" />
+                <mat-datepicker-toggle matSuffix [for]="therapyPicker" [disabled]="isReadOnlyMode()">
+                  <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+                </mat-datepicker-toggle>
+                <mat-datepicker #therapyPicker [disabled]="isReadOnlyMode()"></mat-datepicker>
+              </mat-form-field>
+            </div>
+
+            <!-- Coupon -->
+            <div class="space-y-2 custom-text-box">
+              <label class="block text-sm font-medium text-gray-700">Coupon</label>
+              <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input type="text" placeholder="Select coupon or type to search" aria-label="Coupon" matInput
+                  formControlName="couponId" [matAutocomplete]="couponAuto"
+                  (input)="!isReadOnlyMode() && filterCoupons($any($event.target).value)" class="text-sm"
+                  [readonly]="isReadOnlyMode()" [matAutocompleteDisabled]="isReadOnlyMode()" />
+                <mat-autocomplete #couponAuto="matAutocomplete" [displayWith]="displayFn">
+                  <mat-option *ngFor="let coupon of filteredCoupons" [value]="coupon">
+                    {{ coupon.couponName }}
+                    <span class="text-gray-500 text-xs ml-2">
+                      <span *ngIf="coupon.amount && coupon.percentage">(Lesser of ${{ coupon.amount }} or {{
+                        coupon.percentage }}%)</span>
+                      <span *ngIf="coupon.amount && !coupon.percentage">(${{ coupon.amount }} off)</span>
+                      <span *ngIf="!coupon.amount && coupon.percentage">({{ coupon.percentage }}% off)</span>
+                    </span>
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+
+            <!-- Description (full width, compact) -->
+            <div class="space-y-2 custom-text-box md:col-span-2 lg:col-span-3">
+              <label class="block text-sm font-medium text-gray-700">Description</label>
+              <mat-form-field appearance="outline" class="w-full form-des-input">
+                <textarea matInput cdkTextareaAutosize [cdkAutosizeMinRows]="5" [cdkAutosizeMaxRows]="7"
+                  formControlName="description" placeholder="Enter description" class="text-sm"
+                  [readonly]="isReadOnlyMode()"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </section>
+
+        <!-- PRODUCT SELECTION -->
+        <section>
+          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Product Selection</h3>
+
+          <!-- Add Product -->
+          <div class="space-y-2 custom-text-box" *ngIf="!isReadOnlyMode()">
+            <label class="block text-sm font-medium text-gray-700">Add Product</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input type="text" placeholder="Search and select products to add" aria-label="Product" matInput
+                [formControl]="productControl" [matAutocomplete]="productAuto"
+                (input)="filterProducts($any($event.target).value)"
+                [disabled]="!proposalForm.get('pharmacyId')?.value || isLoadingProducts() || isReadOnlyMode()"
+                class="text-sm" />
+              <mat-autocomplete #productAuto="matAutocomplete" [displayWith]="displayProductFn"
+                (optionSelected)="onProductSelected($event)" (opened)="resetProductData()">
+                <mat-option *ngFor="let product of filteredProducts" [value]="product">
+                  {{ product.productName }}
+                  <span *ngIf="product.isColdStorageProduct" class="ml-2 text-blue-600 text-xs">(Cold Product)</span>
+                </mat-option>
+              </mat-autocomplete>
+              <mat-hint *ngIf="!proposalForm.get('pharmacyId')?.value">Select a pharmacy first to add
+                products</mat-hint>
+              <mat-progress-spinner *ngIf="isLoadingProducts()" matSuffix [diameter]="20"></mat-progress-spinner>
+            </mat-form-field>
+          </div>
+
+          <!-- Selected Products Table -->
+          <!-- Selected Products Table (horizontal-scrollable + wider Qty field) -->
+          <div *ngIf="hasSelectedProducts()" class="mt-4">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-md font-medium text-gray-800 mb-0">
+                Selected Products ({{ selectedProducts.length }})
+                <span class="text-sm font-normal text-gray-600 ml-2">
+                  Total: ${{ getProductSubTotal() | number:'1.2-2' }}
+                </span>
+              </h4>
+            </div>
+
+            <!-- Full-bleed scroll area on mobile -->
+            <div class="relative -mx-4 sm:mx-0">
+              <!-- Scroll container -->
+              <div class="w-full overflow-x-auto overflow-y-hidden" style="-webkit-overflow-scrolling: touch;">
+                <!-- Force width > viewport so scrolling kicks in -->
+                <div class="inline-block align-middle w-full">
+                  <mat-table [dataSource]="selectedProducts" class="w-full text-xs sm:text-sm bg-white">
+
+                    <!-- S.No
+                    <ng-container matColumnDef="sno">
+                      <mat-header-cell *matHeaderCellDef class="whitespace-nowrap px-3 py-2 w-16 min-w-16 text-center">
+                        S.No.
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let product; let i = index"
+                        class="whitespace-nowrap px-3 py-3 w-16 min-w-16 text-center">
+                        {{ i + 1 }}
+                      </mat-cell>
+                    </ng-container> -->
+
+                    <!-- Product Name -->
+                    <ng-container matColumnDef="productName">
+                      <mat-header-cell *matHeaderCellDef class="whitespace-nowrap px-3 py-2 min-w-[280px]">
+                        Product Name
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let product" class="px-3 py-3 align-top min-w-[280px]">
+                        <div class="flex flex-col">
+                          <span class="font-medium">{{ product.productName }}</span>
+                          <span *ngIf="product.isColdStorageProduct"
+                            class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-medium bg-blue-100 text-blue-800 w-max mt-1">
+                            Cold Product
+                          </span>
+                        </div>
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="protocol">
+                      <mat-header-cell *matHeaderCellDef class="whitespace-nowrap px-3 py-2 w-40 min-w-40 text-center">
+                        Protocol
+                      </mat-header-cell>
+
+                      <mat-cell *matCellDef="let product; let i = index" class="px-3 py-3 w-40 min-w-40 text-center">
+                        <div class="flex flex-col w-full">
+                          <mat-form-field appearance="outline" class="custom-qty-field w-full min-w-[150px]" *ngIf="product.togglePerUnitPrice
+                                  && checkStatusInReviewOrAcceptedOrRejectedByPatient(); else roProtocol">
+
+                            <input matInput [value]="product.protocol || ''" placeholder="Enter protocol"
+                              class="text-center" (input)="onProtocolChanged(product.id, $event)" />
+                          </mat-form-field>
+
+                          <ng-template #roProtocol>
+                            <strong>{{ product.protocol }}</strong>
+                          </ng-template>
+                        </div>
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Per Unit Price -->
+                    <ng-container matColumnDef="perUnitPrice">
+                      <mat-header-cell *matHeaderCellDef class="whitespace-nowrap px-3 py-2 w-40 min-w-40 text-center">
+                        Per Unit Price
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let product" class="px-3 py-3 w-40 min-w-40 text-center">
+                        <mat-form-field appearance="outline" class="!w-28 sm:!w-32 mx-auto custom-qty-field"
+                          *ngIf="product.togglePerUnitPrice && !isReadOnlyMode(); else roPrice">
+                          <span matPrefix class="custom-sign-alignment">$</span>
+                          <input matInput type="number" step="0.01" [min]="0" [max]="mathMax(product.amount * 2, 9999)"
+                            [value]="product.perUnitPrice"
+                            (input)="updatePerUnitPrice(product.productPharmacyPriceListItemId, +$any($event.target).value)" />
+                        </mat-form-field>
+                        <ng-template #roPrice>
+                          <strong>${{ product.perUnitPrice | number:'1.2-2' }}</strong>
+                        </ng-template>
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Quantity (WIDER INPUT) -->
+                    <ng-container matColumnDef="quantity">
+                      <mat-header-cell *matHeaderCellDef class="whitespace-nowrap px-3 py-2 w-40 min-w-40 text-center">
+                        Qty
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let product" class="px-3 py-3 w-40 min-w-40">
+                        <mat-form-field appearance="outline" class="!w-20 sm:!w-24 custom-qty-field"
+                          *ngIf="!isReadOnlyMode(); else roQty">
+                          <input matInput inputmode="numeric" pattern="[0-9]*" type="number" [min]="1" step="1"
+                            [max]="mathMin(999, 1000)" [value]="product.quantity" appWholeNumber [appWholeNumberMin]="1"
+                            [appWholeNumberMax]="999"
+                            (input)="updateQuantity(product.productPharmacyPriceListItemId, +$any($event.target).value)"
+                            class="text-center" />
+                        </mat-form-field>
+                        <ng-template #roQty><strong>{{ product.quantity }}</strong></ng-template>
+                      </mat-cell>
+
+                    </ng-container>
+
+                    <!-- Amount -->
+                    <ng-container matColumnDef="finalAmount">
+                      <mat-header-cell *matHeaderCellDef class="whitespace-nowrap px-3 py-2 w-32 min-w-32 text-right">
+                        Amount
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let product" class="px-3 py-3 w-32 min-w-32 text-right">
+                        <strong>${{ product.finalAmount | number:'1.2-2' }}</strong>
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Actions -->
+                    <ng-container matColumnDef="actions">
+                      <mat-header-cell *matHeaderCellDef class="whitespace-nowrap px-3 py-2 w-20 min-w-20 text-center">
+                        Actions
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let product" class="px-3 py-3 w-20 min-w-20 text-center">
+                        <mat-slide-toggle [checked]="product.togglePerUnitPrice"
+                          (change)="togglePerUnitPriceModification(product.productPharmacyPriceListItemId, $event.checked)"
+                          [matTooltip]="proposalForm.get('status')?.value === Status.InReview? 'Modify Protocol' : (proposalForm.get('status')?.value === Status.Draft ? 'Modify Per Unit Price' : '')"
+                          [disabled]="(proposalForm.get('status')?.value === Status.Approved || proposalForm.get('status')?.value === Status.Canceled)">
+                        </mat-slide-toggle>
+                        <button mat-icon-button color="warn" class="ml-1" type="button"
+                          (click)="removeProduct(product.productPharmacyPriceListItemId)"
+                          matTooltip="Remove product from proposal" [disabled]="isReadOnlyMode()"
+                          *ngIf="!isReadOnlyMode()">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- Rows -->
+                    <mat-header-row *matHeaderRowDef="displayedColumns" class="bg-white"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                  </mat-table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Empty state -->
+          <div *ngIf="!hasSelectedProducts() && !isReadOnlyMode()" class="text-center py-8 bg-gray-50 rounded-lg">
+            <mat-icon class="text-gray-400 text-4xl mb-2">shopping_cart</mat-icon>
+            <h3 class="text-lg font-medium text-gray-900 mb-1">No products selected</h3>
+            <p class="text-gray-500">Add products from the search field above to build your proposal</p>
+          </div>
+        </section>
+
+        <!-- SHIPPING INFORMATION -->
+        <section *ngIf="filteredShippingMethods().length > 0 && !isLab()">
+          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Shipping Information</h3>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Shipping Method tiles -->
+            <div class="space-y-2 sm:col-span-2 lg:col-span-3">
+              <label class="block text-sm font-medium text-gray-700">Shipping Method</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <button type="button" *ngFor="let method of filteredShippingMethods(); trackBy: trackByShippingMethodId"
+                  (click)="!isReadOnlyMode() && onShippingMethodSelected(method)" class="custom-box mt-2"
+                  [disabled]="isReadOnlyMode()" [class.ring-2]="selectedShippingMethod?.id === method.id"
+                  [class.ring-blue-600]="selectedShippingMethod?.id === method.id">
+                  <div class="font-medium">{{ method.name }}</div>
+                  <div class="mt-1 text-sm text-gray-600">${{ method.value | number:'1.2-2' }}</div>
+                  <div class="mt-3 text-xs"
+                    [ngClass]="selectedShippingMethod?.id === method.id ? 'primary-text-color font-medium' : 'text-gray-500'">
+                    {{ selectedShippingMethod?.id === method.id ? 'Selected' : 'Select' }}
+                  </div>
+                </button>
+              </div>
+              <div *ngIf="hasColdStorageProducts() && !isReadOnlyMode()" class="text-xs primary-text-color mt-1">
+                Options limited due to cold storage products
+              </div>
+            </div>
+
+            <!-- Shipping Cost -->
+            <div class="space-y-2 custom-text-box" *ngIf="hasSelectedShippingMethod()">
+              <label class="block text-sm font-medium text-gray-700">Shipping Cost</label>
+              <mat-form-field appearance="outline" class="w-full form-input form-input-text"
+                *ngIf="toggleModifyShippingValue && !isReadOnlyMode(); else roShip">
+                <input matInput type="number" step="0.01" [min]="0" [max]="mathMax(500, customShippingValue * 2)"
+                  [value]="customShippingValue" (input)="updateCustomShippingValue(+$any($event.target).value)"
+                  class="text-sm" />
+                <span matPrefix class="pl-3">$</span>
+              </mat-form-field>
+              <ng-template #roShip>
+                <div class="flex items-center h-14 px-3 shipping-form-field">
+                  <strong>${{ customShippingValue | number:'1.2-2' }}</strong>
+                </div>
+              </ng-template>
+            </div>
+
+            <!-- Toggle Custom Shipping -->
+            <div class="space-y-2 custom-text-box" *ngIf="hasSelectedShippingMethod()">
+              <label class="block text-sm font-medium text-gray-700">Shipping Options</label>
+              <div class="flex items-center h-14">
+                <div class="custom-checkbox-wrapper">
+                  <mat-checkbox [checked]="toggleModifyShippingValue"
+                    (change)="!isReadOnlyMode() && toggleShippingValueModification($event.checked)"
+                    class="custom-mat-checkbox" [disabled]="isReadOnlyMode()">
+                    Custom Shipping Cost
+                  </mat-checkbox>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shipping Address + Verification -->
+          <div *ngIf="shouldShowAddressSelection()" class="mt-6 space-y-6">
+            <!-- Address tiles -->
+            <div class="space-y-2 custom-text-box">
+              <label class="block text-sm font-medium text-gray-700">Select Address</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <button type="button" *ngFor="let address of shippingAddresses(); trackBy: trackByAddressId"
+                  (click)="!isReadOnlyMode() && onShippingAddressSelected(address.id)" class="custom-box"
+                  [disabled]="isReadOnlyMode()" [class.ring-2]="selectedShippingAddressId === address.id"
+                  [class.ring-blue-600]="selectedShippingAddressId === address.id">
+                  <div class="mt-1 text-sm text-gray-600">{{ getFormattedAddress(address) }}</div>
+                  <div class="mt-3 flex items-center justify-between">
+                    <span class="text-xs"
+                      [ngClass]="selectedShippingAddressId === address.id ? 'primary-text-color font-medium' : 'text-gray-500'">
+                      {{ selectedShippingAddressId === address.id ? 'Selected' : 'Select' }}
+                    </span>
+                    <button type="button" *ngIf="!isReadOnlyMode()"
+                      (click)="openEditAddressModal(address.id); $event.stopPropagation()"
+                      class="text-xs primary-text-color hover:underline">Edit</button>
+                  </div>
+                </button>
+
+                <!-- Add New Address -->
+                <button type="button" *ngIf="!isReadOnlyMode()" (click)="openAddAddressModal()"
+                  class="h-full min-h-[112px] flex flex-col items-center justify-center add-form-field p-4 hover:border-blue-400 hover:bg-blue-50">
+                  <mat-icon class="primary-text-color">add</mat-icon>
+                  <span class="mt-1 text-sm font-medium primary-text-color">Add New Address</span>
+                </button>
+              </div>
+              <mat-error *ngIf="isFieldInvalid('shippingAddressId') && !isReadOnlyMode()">
+                {{ getFieldError('shippingAddressId') }}
+              </mat-error>
+            </div>
+
+            <!-- Independent verification checkbox -->
+            <div *ngIf="selectedShippingAddressId" class="space-y-2 custom-text-box">
+              <label class="block text-sm font-medium text-gray-700">Address Verification</label>
+              <div class="flex items-center justify-between h-14">
+                <div class="custom-checkbox-wrapper">
+                  <mat-checkbox [checked]="isAddressVerified"
+                    (change)="!isReadOnlyMode() && onAddressVerificationChange($event.checked)"
+                    class="custom-mat-checkbox" [disabled]="isReadOnlyMode()">
+                    Address is verified
+                  </mat-checkbox>
+                </div>
+              </div>
+              <mat-hint *ngIf="!isAddressVerified && !isReadOnlyMode()">Please confirm the address is correct before
+                proceeding.</mat-hint>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ===== Aside / Right Rail ===== -->
+      <aside class="lg:col-span-4 space-y-8 lg:sticky lg:top-20 self-start">
+        <!-- PAYMENT OPTIONS -->
+        <section *ngIf="hasCreditCards()">
+          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Payment Options</h3>
+
+          <div class="space-y-4">
+            <!-- Toggle -->
+            <div class="space-y-2 custom-text-box">
+              <div class="custom-checkbox-wrapper">
+                <mat-checkbox [checked]="enableCreditCardPayment"
+                  (change)="!isReadOnlyMode() && toggleCreditCardPayment($event.checked)" class="custom-mat-checkbox"
+                  [disabled]="isReadOnlyMode()">
+                  Pay with Credit Card
+                </mat-checkbox>
+              </div>
+              <div class="text-xs text-gray-600" *ngIf="enableCreditCardPayment">
+                A {{ (creditCardSurchargeRate * 100) | number:'1.2-2' }}% processing fee will be applied to the total.
+              </div>
+            </div>
+
+            <!-- Card picker + fee -->
+            <div class="grid grid-cols-1 gap-4" *ngIf="enableCreditCardPayment">
+              <div class="space-y-2 custom-text-box">
+                <label class="block text-sm font-medium text-gray-700">Select Credit Card</label>
+                <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                  <mat-select placeholder="Choose credit card" [value]="selectedCreditCard"
+                    (selectionChange)="!isReadOnlyMode() && onCreditCardSelected($event.value)" class="text-sm"
+                    [disabled]="isReadOnlyMode()">
+                    <mat-option *ngFor="let card of patientCreditCards()" [value]="card">
+                      {{ getFormattedCardNumber(card.cardNumber) }} - {{ getCardTypeName(card.cardType) }}
+                      <span class="text-gray-500 text-xs ml-2">(Exp: {{ getFormattedExpiryDate(card.month, card.year)
+                        }})</span>
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div *ngIf="selectedCreditCard" class="space-y-2 custom-text-box">
+                <label class="block text-sm font-medium text-gray-700">Processing Fee</label>
+                <div class="flex items-center h-14 px-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <mat-icon class="text-yellow-600 mr-2">info</mat-icon>
+                  <span class="text-sm">
+                    <strong>${{ getCreditCardSurcharge() | number:'1.2-2' }}</strong>
+                    ({{ (creditCardSurchargeRate * 100) | number:'1.2-2' }}% fee)
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ORDER SUMMARY -->
+        <section *ngIf="hasSelectedProducts()">
+          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Order Summary</h3>
+          <div class="bg-gray-50 p-6 pt-4 pb-4 rounded-lg space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Products Subtotal ({{ selectedProducts.length }} items):</span>
+              <span class="font-medium">${{ getProductSubTotal() | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between text-sm" *ngIf="hasSelectedShippingMethod()">
+              <span class="text-gray-600">Shipping ({{ selectedShippingMethod!.name }}):</span>
+              <span class="font-medium">${{ customShippingValue | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between text-sm" *ngIf="enableCreditCardPayment && selectedCreditCard">
+              <span class="text-gray-600">Credit Card Processing Fee:</span>
+              <span class="font-medium text-yellow-700">${{ getCreditCardSurcharge() | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between text-sm text-green-600"
+              *ngIf="hasSelectedCoupon() && getCouponDiscount() > 0">
+              <span>Coupon Discount ({{selectedCoupon?.couponName}}):</span>
+              <span class="font-medium">-${{ getCouponDiscount() | number:'1.2-2' }}</span>
+            </div>
+
+            <hr class="my-4"
+              *ngIf="hasSelectedShippingMethod() || (enableCreditCardPayment && selectedCreditCard) || (hasSelectedCoupon() && getCouponDiscount() > 0)">
+
+            <div class="flex justify-between text-lg font-bold text-gray-900">
+              <span>Grand Total:</span>
+              <span class="primary-text-color">${{ getGrandTotal() | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </form>
+</div>
+
+<!-- Shipping Address Modal -->
+<app-shipping-address-add *ngIf="!isReadOnlyMode()" [isVisible]="showShippingAddressModal"
+  [patientId]="currentPatientId!" [shippingAddressId]="editingShippingAddressId"
+  (addressCreated)="onShippingAddressCreated($event)" (addressUpdated)="onShippingAddressUpdated($event)"
+  (modalClosed)="onShippingAddressModalClosed()">
+</app-shipping-address-add>

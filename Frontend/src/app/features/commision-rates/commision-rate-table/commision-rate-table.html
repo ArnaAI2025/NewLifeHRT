@@ -1,0 +1,173 @@
+<div class="bg-white rounded-lg shadow-sm bg-card-color">
+
+  <div *ngIf="isLoading()" class="relative">
+    <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
+      <div class="flex flex-col items-center">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="mt-2 text-gray-600">Loading Commission Rates...</p>
+      </div>
+    </div>
+  </div>
+  <!-- Table -->
+  <div class="overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
+    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef
+          class="!text-left !py-3 !px-4 rounded-tl-lg rounded-bl-lg font-medium text-gray-700">
+          <mat-checkbox class="custom-mat-checkbox" (change)="toggleSelectAll($event)" [checked]="isAllSelected()"
+            [indeterminate]="isPartialSelected()"></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row" class="!text-left !py-4 !px-4 border-b border-gray-100">
+          <mat-checkbox class="custom-mat-checkbox" [(ngModel)]="row.selected"></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- Product Column (visible only in standalone/pharmacy contexts) -->
+      <ng-container matColumnDef="productName" *ngIf="showProductColumn">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header
+          class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">Product</th>
+        <td mat-cell *matCellDef="let element">
+            <span class="text-gray-800">{{ element.productName }}</span>
+        </td>
+      </ng-container>
+
+      <!-- FromAmount Column -->
+      <ng-container matColumnDef="fromAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header
+          class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">From Amount</th>
+        <td mat-cell *matCellDef="let element">{{ element.fromAmount}}</td>
+      </ng-container>
+
+      <!-- Rate Percentage Column -->
+      <ng-container matColumnDef="ratePercentage">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header
+          class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">Rate %</th>
+        <td mat-cell *matCellDef="let element">{{ element.ratePercentage}}</td>
+      </ng-container>
+
+      <!-- TOAmount Column -->
+      <ng-container matColumnDef="toAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header
+          class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">To Amount</th>
+        <td mat-cell *matCellDef="let element">{{ element.toAmount}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header
+          class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">Status</th>
+          <td mat-cell *matCellDef="let element">
+          <span class="px-2 py-1 rounded-full text-sm font-semibold border border-gray-300" [ngClass]="{
+      'bg-green-100 text-green-800 border-green-300': element.status === 'Active',
+      'bg-gray-100 text-gray-600 border-gray-300': element.status === 'Inactive'
+    }">
+            {{ element.status }}
+          </span>
+        </td>
+      </ng-container>
+
+
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef
+          class="!text-left !py-3 !px-4 !bg-gray-50 font-medium text-gray-700 border-opacity-0 table-right-corner">
+          Actions</th>
+        <td mat-cell *matCellDef="let element">
+          <button class="text-gray-400 hover:text-gray-600 disabled:opacity-50" mat-icon-button
+            [matMenuTriggerFor]="actionMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #actionMenu="matMenu">
+            <button mat-menu-item (click)="editCommisionRate(element.id)">Edit</button>
+            <button mat-menu-item *ngIf="element.status === 'Inactive'"
+              (click)="handleAction('activate', false, element.id)">
+              Activate
+            </button>
+
+            <!-- Show Deactivate only if status is Active -->
+            <button mat-menu-item *ngIf="element.status === 'Active'"
+              (click)="handleAction('deactivate', false, element.id)">
+              Deactivate
+            </button>
+
+            <button mat-menu-item (click)="handleAction('delete', false, element.id)">
+              Delete
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-50"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
+    </table>
+
+    <!-- No Data -->
+    <div class="text-center py-8 " *ngIf="!dataSource.filteredData.length && !isLoading()">
+      <mat-icon class="text-gray-400 text-4xl mb-2">person_off</mat-icon>
+      <p class="text-gray-500" *ngIf="searchKeyword">No results for "{{searchKeyword}}"</p>
+      <p class="text-gray-500" *ngIf="!searchKeyword">No Commission Rates data available.</p>
+    </div>
+  </div>
+
+  <!-- mobile view table card -->
+  <div class="mobile-table-wapper pb-4">
+    <ng-container *ngIf="dataSource.filteredData.length > 0">
+      <div class="flex items-center gap-2">
+        <mat-checkbox class="custom-mat-checkbox" (change)="toggleSelectAll($event)" [checked]="isAllSelected()"
+              [indeterminate]="isPartialSelected()"></mat-checkbox>
+        <span class="font-bold">Details</span>
+      </div>
+      <div class="mobile-view-table" *ngFor = "let element of pagedData">
+        <div class="toggle-table flex items-center gap-4">
+          <div>
+            <mat-checkbox class="custom-mat-checkbox" [(ngModel)]="element.selected"></mat-checkbox>
+          </div>
+          <div>
+            <p class="m-0">{{element.productName}} ({{element.fromAmount}} - {{element.toAmount}})</p>
+            <p class="m-0">{{element.status}}</p>
+          </div>
+        </div>
+        <div>
+          <button class="text-gray-400 hover:text-gray-600 disabled:opacity-50" mat-icon-button
+            [matMenuTriggerFor]="actionMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #actionMenu="matMenu">
+            <button mat-menu-item (click)="editCommisionRate(element.id)">Edit</button>
+            @if(element.status === 'Inactive'){
+              <button mat-menu-item
+                (click)="handleAction('activate', false, element.id)">
+                Activate
+              </button>
+            }
+            @else {
+              <!-- Show Deactivate only if status is Active -->
+              <button mat-menu-item
+                (click)="handleAction('deactivate', false, element.id)">
+                Deactivate
+              </button>
+            }
+            <button mat-menu-item (click)="handleAction('delete', false, element.id)">
+              Delete
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </ng-container>
+    <div *ngIf="!isLoading() && dataSource.filteredData.length === 0" class="text-center py-12">
+      <span *ngIf="searchKeyword">No results for "{{searchKeyword}}"</span>
+    </div>
+  </div>
+
+  <!-- Paginator -->
+  <div class="main-paginator">
+    <div class="paginator-section p-0">
+      <mat-paginator #paginator 
+        [pageSizeOptions]="[5, 10, 20, 30]" [pageSize]="5" 
+        [showFirstLastButtons]="true" [length]="dataSource.filteredData.length || 0"  [disabled]="isLoading()"  class="disabled:opacity-50">
+      </mat-paginator>
+    </div>
+
+  </div>
+</div>

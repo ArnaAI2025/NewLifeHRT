@@ -1,0 +1,49 @@
+
+<!-- Modal wrapper - only show when isVisible is true -->
+<div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" (click)="onCancel()">
+
+  <!-- Modal Content -->
+  <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full relative overflow-y-auto" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 pt-4 pb-4 border-b border-gray-200">
+      <h2 class="text-xl font-semibold text-gray-800 flex items-center proposal-modal-heading">
+        Refund Amount
+      </h2>
+      <button type="button" mat-icon-button (click)="onCancel()" class="text-gray-500 hover:text-gray-700">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6">
+      <form [formGroup]="refundAmountForm" class="space-y-6 relative">
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Refund Amount</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="refundAmount" type="number" placeholder="Enter refund amount"
+                class="text-sm" />
+              <mat-error *ngIf="refundAmountForm.get('refundAmount')?.hasError('required')">
+                Refund amount is required
+              </mat-error>
+              <!-- <mat-error *ngIf="refundAmountForm.get('refundAmount')?.hasError('min')">
+                Refund amount cannot be negative
+              </mat-error> -->
+            </mat-form-field>
+          </div>
+
+        <!-- Footer Buttons -->
+        <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+          <button mat-stroked-button type="button" (click)="onCancel()"
+            class="secondry-button-add">
+            Cancel
+          </button>
+          <button mat-flat-button color="primary" (click)="onSave()" [disabled]="!refundAmountForm.valid" class="primary-btn-add">
+            Save
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+.no-data,
+.error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    color: #666;
+
+    p {
+        font-style: italic;
+        margin: 10px 0;
+    }
+
+    mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 10px;
+    }
+}
+
+.error-message {
+    color: #d32f2f;
+
+    mat-icon {
+        color: #d32f2f;
+    }
+
+    button {
+        margin-top: 15px;
+    }
+}

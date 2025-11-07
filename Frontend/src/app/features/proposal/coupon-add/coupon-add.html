@@ -1,0 +1,107 @@
+<!-- Top Navigation Bar -->
+<div class="flex items-center justify-between rounded-lg px-4 py-2 shadow-sm mb-4 bg-white">
+  <div class="flex items-center space-x-2">
+    <button mat-icon-button (click)="onClose()" class="header-back-button">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="text-sm font-medium text-gray-700">{{ couponId ? 'Edit Coupon' : 'Add Coupon' }}</span>
+  </div>
+  <div class="flex items-center gap-4">
+    <!-- Save Button -->
+     @if(couponId){
+       <button type="submit" mat-flat-button (click)="onAddCoupon()" class="!py-1 !px-4 text-sm secondry-button-add">
+        Add Coupon
+      </button>
+     }
+    <button type="submit" mat-flat-button (click)="onSubmit()" class="!py-1 !px-4 text-sm primary-btn-add" >
+      Save
+    </button>
+
+    <!-- Action Menu -->
+    <button mat-icon-button [matMenuTriggerFor]="actionMenu" class="hover:text-blue-600 transition-colors icon-action-button">
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </button>
+    <mat-menu #actionMenu="matMenu">
+      <!-- Delete option only for edit mode -->
+      <button mat-menu-item (click)="onDeleteClick()" *ngIf="couponId">
+        <span class="blue-text">Delete</span>
+      </button>
+      <button mat-menu-item (click)="onSaveAndClose()">
+        <span class="blue-text">Save &amp; Close</span>
+      </button>
+      <button mat-menu-item *ngIf="couponId && isActive" (click)="onToggleActive(false)">
+        <span class="blue-text">Deactivate</span>
+      </button>
+      <button mat-menu-item *ngIf="couponId && !isActive" (click)="onToggleActive(true)">
+        <span class="blue-text">Activate</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<!-- Main Form -->
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color">
+  <form [formGroup]="couponForm" (ngSubmit)="onSubmit()">
+    <!-- COUPON INFORMATION SECTION -->
+    <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Coupon Information</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <!-- Coupon Name -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Coupon Name <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="couponName" placeholder="Coupon Name" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('couponName')">{{ getFieldError('couponName') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Expiry Date -->
+<div class="space-y-2 custom-text-box">
+  <label class="block text-sm font-medium text-gray-700">
+    Expiry Date <span class="text-red-500">*</span>
+  </label>
+  <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+    <input matInput [matDatepicker]="expiryPicker" [min]="minDate" [max]="maxDate" formControlName="expiryDate"
+      placeholder="Select expiry date" class="text-sm" readonly (click)="expiryPicker.open()" />
+    <mat-datepicker-toggle matSuffix [for]="expiryPicker">
+      <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+    </mat-datepicker-toggle>
+    <mat-datepicker #expiryPicker></mat-datepicker>
+    <mat-error *ngIf="isFieldInvalid('expiryDate')">
+      {{ getFieldError('expiryDate') }}
+    </mat-error>
+  </mat-form-field>
+</div>
+  
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <!-- Amount -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Amount <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput type="number" formControlName="amount" placeholder="0.00" class="text-sm" />
+          <mat-error *ngIf="isFieldInvalid('amount')">{{ getFieldError('amount') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Percentage -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Percentage (%)</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="percentage" type="text"                  
+            inputmode="decimal" placeholder="percentage"class="text-sm" 
+            appPercentage [minPercentage]="0" [maxPercentage]="100" />
+        </mat-form-field>
+      </div>
+
+      <!-- Buget -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Budget</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput type="number" formControlName="buget" placeholder="Budget" class="text-sm" />
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</div>

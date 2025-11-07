@@ -1,0 +1,360 @@
+﻿@using System.Globalization
+@{
+    var usdCulture = new CultureInfo("en-US");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEWLIFE Receipt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            color: #000;
+            background-color: #fff;
+        }
+
+        .receipt-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: table;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .logo-section {
+            display: table-cell;
+            vertical-align: top;
+            width: 50%;
+        }
+
+        .logo-image {
+            max-width: 150px;
+            max-height: 80px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .company-name {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 10px;
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        .receipt-info {
+            display: table-cell;
+            vertical-align: top;
+            text-align: right;
+            width: 50%;
+        }
+
+        .receipt-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #888;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .order-details {
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+            .order-details .label {
+                font-weight: bold;
+                color: #000;
+            }
+
+        /* Info Section */
+        .info-section {
+            display: table;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .info-block {
+            display: table-cell;
+            vertical-align: top;
+            min-width: 140px;
+            width: 50%;
+        }
+
+            .info-block .label {
+                font-weight: bold;
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+
+            .info-block .value {
+                font-size: 13px;
+                color: #333;
+            }
+
+        .description-block {
+            display: table-cell;
+            vertical-align: top;
+            text-align: right;
+            width: 50%;
+        }
+
+        /* Medications */
+        .section-title {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .medications-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+            .medications-table th {
+                background-color: #fff;
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: center;
+                font-size: 11px;
+                font-weight: bold;
+            }
+
+            .medications-table td {
+                border: 1px solid #000;
+                padding: 8px;
+                font-size: 11px;
+                vertical-align: top;
+            }
+
+                .medications-table td.description {
+                    text-align: left;
+                }
+
+                .medications-table td.quantity,
+                .medications-table td.price,
+                .medications-table td.total {
+                    text-align: center;
+                }
+
+        .cold-storage {
+            color: #c00;
+            font-weight: bold;
+            font-size: 9px;
+            display: block;
+            margin-top: 3px;
+        }
+
+        /* Totals */
+        .totals-section {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .totals-table {
+            width: 300px;
+            margin-left: auto;
+            border-collapse: collapse;
+        }
+
+            .totals-table td {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .totals-table .label {
+                text-align: right;
+                font-weight: normal;
+            }
+
+            .totals-table .amount {
+                text-align: right;
+                width: 120px;
+                border: 1px solid #000;
+            }
+
+            .totals-table .total-row .label {
+                font-weight: bold;
+            }
+
+            .totals-table .total-row .amount {
+                font-weight: bold;
+                border: 2px solid #000;
+            }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            text-align: center;
+            font-size: 9px;
+            color: #666;
+        }
+
+        /* Print-friendly adjustments */
+        @@media print {
+            body
+
+        {
+            padding: 20px;
+        }
+
+        .receipt-container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .medications-table th,
+        .medications-table td {
+            page-break-inside: avoid;
+        }
+
+        .totals-section {
+            page-break-inside: avoid;
+        }
+
+        .header,
+        .footer {
+            page-break-inside: avoid;
+        }
+
+        .cold-storage {
+            font-size: 8px;
+        }
+
+        .logo-image {
+            max-width: 150px;
+            max-height: 80px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                @if (!string.IsNullOrWhiteSpace(Model.Logo))
+                {
+                    <img src="@Model.Logo" alt="Company Logo" class="logo-image" />
+                }
+                @* <div class="company-name">NEWLIFE REJUVENATION</div> *@
+                @* <div class="subtitle">HORMONE REPLACEMENT THERAPY</div> *@
+            </div>
+            <div class="receipt-info">
+                <div class="receipt-title">NEWLIFE<br />RECEIPT</div>
+                <div class="order-details">
+                    <div><span class="label">ORDER ID:</span> @Model.Id.ToString()</div>
+                    <div><span class="label">TOTAL AMOUNT:</span> @Model.TotalAmount.ToString("C", usdCulture)</div>
+                    <div><span class="label">CREATE DATE:</span> @Model.CreatedAt.ToString("M/d/yyyy h:mm tt")</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient & Description -->
+        <div class="info-section">
+            <div class="info-block">
+                <div class="label">PATIENT:</div>
+                <div class="value">@(Model.PatientName ?? "")</div>
+            </div>
+            <div class="info-block description-block">
+                <div class="label">DESCRIPTION:</div>
+                <div class="value">@(string.IsNullOrWhiteSpace(Model.Description) ? "" : Model.Description)</div>
+            </div>
+        </div>
+
+        <!-- Medications -->
+        <div class="section-title">MEDICATIONS</div>
+        <table class="medications-table">
+            <thead>
+                <tr>
+                    <th>DESCRIPTION</th>
+                    <th>QUANTITY</th>
+                    <th>UNIT PRICE</th>
+                    <th>TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detail in Model.OrderDetails)
+                {
+                    <tr>
+                        <td class="description">
+                            @(detail.ProductName ?? "")
+                            @if (!string.IsNullOrWhiteSpace(detail.Protocol))
+                            {
+                                <br />
+                                <span style="font-size: 10px; color: #666;">@detail.Protocol</span>
+                            }
+                            @if (detail.IsColdStorageProduct == true)
+                            {
+                                <span class="cold-storage">*SHIPS COLD*</span>
+                            }
+                        </td>
+                        <td class="quantity">@detail.Quantity</td>
+                        <td class="price">@detail.PerUnitAmount.ToString("C", usdCulture)</td>
+                        <td class="total">@((detail.Amount ?? 0).ToString("C", usdCulture))</td>
+                    </tr>
+                }
+                @if (Model.ShippingMethodAmount != null && Model.ShippingMethodAmount > 0)
+                {
+                    <tr>
+                        <td class="description">@(Model.ShippingMethodName ?? "Shipping")</td>
+                        <td class="quantity">1</td>
+                        <td class="price">@Model.ShippingMethodAmount.Value.ToString("C", usdCulture)</td>
+                        <td class="total">@Model.ShippingMethodAmount.Value.ToString("C", usdCulture)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Totals -->
+        <div class="totals-section">
+            <table class="totals-table">
+                <tr>
+                    <td class="label">SUBTOTAL</td>
+                    <td class="amount">@Model.Subtotal.ToString("C", usdCulture)</td>
+                </tr>
+                @if (Model.Surcharge != null && Model.Surcharge > 0)
+                {
+                    <tr>
+                        <td class="label">SURCHARGE (@((Model.Surcharge.Value / Model.Subtotal * 100).ToString("0.00"))%)</td>
+                        <td class="amount">@Model.Surcharge.Value.ToString("C", usdCulture)</td>
+                    </tr>
+                }
+                <tr class="total-row">
+                    <td class="label">TOTAL DUE</td>
+                    <td class="amount">@Model.TotalAmount.ToString("C", usdCulture)</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            We impose a surcharge of 4% on the transaction amount on all credit cards, which is not greater than our cost of acceptance.
+        </div>
+    </div>
+</body>
+</html>

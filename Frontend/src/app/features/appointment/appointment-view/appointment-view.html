@@ -1,0 +1,44 @@
+<div class="appoinment-header mb-4">
+
+    <h1 class="list-page-heading">Appointments</h1>
+
+ <div class="table-header-group">
+     <button type="button" mat-raised-button class="primary-btn-add" (click)="gotoAddAppointment()"><mat-icon>add</mat-icon> Add Appointment</button>
+     <button type="button"
+            mat-stroked-button
+            [matMenuTriggerFor]="doctorFilterMenu"
+            class="secondry-button-add px-2 rounded-md flex items-center gap-1">
+      <span class="hidden max-[640px]:hidden sm:inline">Filter</span>
+      <mat-icon>filter_alt</mat-icon>
+    </button>
+    <mat-menu #doctorFilterMenu="matMenu" xPosition="after" yPosition="below" [overlapTrigger]="false" class="w-[480px] max-w-[90vw]" hasBackdrop="true">
+      <div class="p-3 w-[460px] max-w-[90vw]" (click)="$event.stopPropagation()">
+        <!-- Search box -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput placeholder="Search Doctor" [(ngModel)]="doctorSearch">
+        </mat-form-field>
+
+        <div class="flex items-center justify-end gap-2 mb-2">
+          <button mat-stroked-button (click)="selectAllVisible()">Select All</button>
+          <button mat-stroked-button (click)="clearAll()">Deselect All</button>
+        </div>
+
+        <!-- List -->
+        <div class="max-h-[260px] overflow-auto pr-2">
+          <div *ngFor="let d of filteredDoctors" class="flex items-start gap-2 py-1">
+            <mat-checkbox class="custom-mat-checkbox" [checked]="isChecked(d.id)" (change)="toggleOne(d.id)">
+              <div class="leading-4">
+                <div class="font-medium">{{ d.name }}</div>
+              </div>
+            </mat-checkbox>
+          </div>
+          <div *ngIf="filteredDoctors.length === 0" class="text-sm opacity-70 py-3">No results</div>
+        </div>
+      </div>
+    </mat-menu>
+  </div>
+
+</div>
+<app-appointment-calendar [selectedDoctorIds]="selectedDoctorIds" [filterActive]="filterActive"
+  (doctorsChange)="onDoctorsChange($event)"></app-appointment-calendar>

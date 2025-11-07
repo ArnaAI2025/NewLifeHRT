@@ -1,0 +1,224 @@
+<app-full-page-loader [visible]="isLoading()" />
+<div class="calendar-toolbar appoinment-calendar-header">
+
+  <div class="btn-group flex items-center justify-center space-x-2">
+    <button mat-icon-button color="primary" (click)="clickPrevMonth()" [ngClass]="{'active-btn': activeBtn==='prev'}"
+      aria-label="Previous month">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <button mat-raised-button color="primary" (click)="clickToday()" [ngClass]="{'active-btn': activeBtn!=='today'}">
+      Today
+    </button>
+
+    <button mat-icon-button color="primary" (click)="clickNextMonth()" [ngClass]="{'active-btn': activeBtn==='next'}"
+      aria-label="Next month">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  @if(view() != CalendarView.Agenda){
+  <h2>{{ viewDate | calendarDate:(view() + 'ViewTitle'):'en' }}</h2>
+  }
+  @else{
+  <h2>{{ viewDate | date:'MMMM yyyy' }}</h2>
+  }
+
+  <div class="flex py-2 ">
+    <mat-button-toggle-group #toggleGroup="matButtonToggleGroup" [hideSingleSelectionIndicator]="true"
+      (change)="setView($event.value)" class="toggle-group">
+      <mat-button-toggle [value]="CalendarView.Month" class="nav-header-tabs" [ngClass]="{
+        'active': activeBtnTwo === 'month',
+        'inactive': activeBtnTwo != 'month',
+        }">Month</mat-button-toggle>
+      <mat-button-toggle [value]="CalendarView.Week" class="nav-header-tabs" [ngClass]="{
+        'active': activeBtnTwo === 'week',
+        'inactive': activeBtnTwo != 'week',
+        }">Week</mat-button-toggle>
+      <mat-button-toggle [value]="CalendarView.Day" class="nav-header-tabs" [ngClass]="{
+        'active': activeBtnTwo === 'day',
+        'inactive': activeBtnTwo != 'day',
+        }">Day</mat-button-toggle>
+      <mat-button-toggle [value]="CalendarView.Agenda" class="nav-header-tabs" [ngClass]="{
+        'active': activeBtnTwo === 'agenda',
+        'inactive': activeBtnTwo != 'agenda',
+        }">Agenda</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+</div>
+
+
+<div [ngSwitch]="view()">
+  <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
+    [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="onDayClick($event)"
+    [eventActionsTemplate]="eventActionsTemplate" [excludeDays]="[0,6]">
+
+    <ng-template #monthCellEventsTemplate let-day="day">
+      <div *ngFor="let event of day.events" class="calendar-event" [ngClass]="{'holiday-event': event.isHoliday}">
+        <span class="event-title">
+          <span class="dot" [style.background]="event.color?.primary"></span>
+          {{ event.title }}
+          <div class="pl-5 flex space-x-4 cursor-pointer" *ngIf="!event.isHoliday">
+            <ng-container *ngIf="!isPastEvent(event); else pastEventIcons">
+              <mat-divider vertical="true"></mat-divider>
+              <mat-icon (click)="onEditEvent(event)">edit</mat-icon>
+              <mat-icon (click)="onDeleteEvent(event)">delete</mat-icon>
+              <mat-icon (click)="onEventClick(event)">person</mat-icon>
+            </ng-container>
+
+            <ng-template #pastEventIcons>
+              <mat-icon (click)="onEventClick(event)">person</mat-icon>
+            </ng-template>
+          </div>
+        </span>
+        <ng-container *ngTemplateOutlet="eventActionsTemplate; context: { event: event }">
+        </ng-container>
+      </div>
+    </ng-template>
+
+
+    <ng-template #monthCellTitleTemplate let-day="day">
+      <span class="cal-day-number">{{ day.date | date:'d' }}</span>
+    </ng-template>
+  </mwl-calendar-month-view>
+  <ng-template #eventActionsTemplate let-event="event">
+    <div class="pl-5 flex space-x-4 cursor-pointer" *ngIf="!event.isHoliday">
+      <ng-container *ngIf="!isPastEvent(event); else pastEventActions">
+        <mat-divider vertical="true"></mat-divider>
+        <mat-icon (click)="onEditEvent(event)">edit</mat-icon>
+        <mat-icon (click)="onDeleteEvent(event)">delete</mat-icon>
+        <mat-icon (click)="onEventClick(event)">person</mat-icon>
+      </ng-container>
+
+      <ng-template #pastEventActions>
+        <mat-icon (click)="onEventClick(event)">person</mat-icon>
+      </ng-template>
+    </div>
+  </ng-template>
+
+  <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events"
+    [excludeDays]="[0,6]" (eventClicked)="onDailyWeeklyEventClick($event.event)" [refresh]="refresh">
+  </mwl-calendar-week-view>
+
+  <ng-container *ngSwitchCase="CalendarView.Day">
+    <div *ngIf="!isWeekend(viewDate)" class="day-view-container">
+      <mwl-calendar-day-view [viewDate]="viewDate" [events]="events"
+        (eventClicked)="onDailyWeeklyEventClick($event.event)" [refresh]="refresh">
+      </mwl-calendar-day-view>
+    </div>
+  </ng-container>
+
+  <div *ngSwitchCase="CalendarView.Agenda" class="agenda-view">
+
+
+
+    <div *ngFor="let day of getAgendaDays()" class="agenda-day">
+      <h3>{{ day | date:'EEEE, dd MMMM yyyy' }}</h3>
+      <ul>
+        <li *ngFor="let event of getEventsForDay(day)" [ngClass]="{'holiday-event': event.isHoliday}">
+          <span class="dot" [style.background]="event.color?.primary"></span>
+          <span>{{ event.title }}</span>
+          <div class="pl-5 flex space-x-4 cursor-pointer" *ngIf="!event.isHoliday">
+            <ng-container *ngIf="!isPastEvent(event)">
+              <mat-divider vertical="true"></mat-divider>
+              <mat-icon (click)="onEditEvent(event)">edit</mat-icon>
+              <mat-icon (click)="onDeleteEvent(event)">delete</mat-icon>
+            </ng-container>
+            <mat-icon (click)="onEventClick(event)">person</mat-icon>
+          </div>
+        </li>
+        <li *ngIf="getEventsForDay(day).length === 0">
+          No events
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<ng-template #eventDetailModal let-data>
+  <div class="p-5 bg-white rounded-2xl shadow-xl max-w-sm border border-gray-100">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b pb-3 mb-4">
+      <h2 class="text-base font-semibold text-gray-800">Appointment Details</h2>
+      <span class="text-xs text-gray-500">{{ data.doctorStart | date:'MMM d, yyyy' }}</span>
+    </div>
+
+    <!-- Details -->
+    <div class="grid grid-cols-1 gap-2 text-sm text-gray-700">
+      <div class="flex justify-between">
+        <span class="font-medium text-gray-600">Patient</span>
+        <span>{{ data.patientName }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="font-medium text-gray-600">Doctor</span>
+        <span>{{ data.doctorName }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="font-medium text-gray-600">Service</span>
+        <span>{{ data.serviceName }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="font-medium text-gray-600">Mode</span>
+        <span>{{ data.modeName }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="font-medium text-gray-600">Counselor</span>
+        <span>{{ data.counselorName }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="font-medium text-gray-600">Start</span>
+        <span>{{ data.doctorStart | date:'hh:mm a' }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="font-medium text-gray-600">End</span>
+        <span>{{ data.doctorEnd | date:'hh:mm a' }}</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end space-x-4 mt-5 pt-3 border-t">
+      <button mat-icon-button class="text-blue-600 hover:text-blue-800" (click)="onEditEvent(data)"
+        *ngIf="!isPastEvent(data)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button class="text-red-600 hover:text-red-800" (click)="onDeleteEvent(data)"
+        *ngIf="!isPastEvent(data)">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-icon-button class="text-green-600 hover:text-green-800" (click)="onPatientClick(data)">
+        <mat-icon>person</mat-icon>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+
+<!-- <ng-template #eventDetailModal let-data>
+  <div class="p-6 bg-white rounded-xl shadow-lg max-w-md">
+    <h2 class="text-lg font-semibold mb-4 text-gray-800">Appointment Details</h2>
+
+    <div class="space-y-2 text-sm text-gray-700">
+      <p><span class="font-medium">Patient:</span> {{ data.patientName }}</p>
+      <p><span class="font-medium">Doctor:</span> {{ data.doctorName }}</p>
+      <p><span class="font-medium">Service:</span> {{ data.serviceName }}</p>
+      <p><span class="font-medium">Mode:</span> {{ data.modeName }}</p>
+      <p><span class="font-medium">Counselor:</span> {{ data.counselorName }}</p>
+      <p><span class="font-medium">Start:</span> {{ data.doctorStart | date:'MM-dd-yyyy hh:mm a' }}</p>
+      <p><span class="font-medium">End:</span> {{ data.doctorEnd | date:'MM-dd-yyyy hh:mm a' }}</p>
+    </div>
+
+    <div class="flex justify-end space-x-3 mt-6">
+      <button mat-icon-button class="text-blue-600 hover:text-blue-800" (click)="onEditEvent(data)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button class="text-red-600 hover:text-red-800" (click)="onDeleteEvent(data)">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-icon-button class="text-green-600 hover:text-green-800" (click)="onPatientClick(data)">
+        <mat-icon>person</mat-icon>
+      </button>
+    </div>
+  </div>
+</ng-template> -->

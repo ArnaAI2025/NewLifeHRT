@@ -1,0 +1,10 @@
+{
+  "useEncryption": false,
+  "encryptionKey": "01234567890123456789012345678901",
+  "encryptionIV": "0123456789012345",
+  "appTitle": "NewLife HRT Admin",
+  "apiBaseUrl": "https://localhost:5141/newlifehrt/api/",
+  "tenantName":"newlifehrt",
+  "inactivityTimeLimit": 30,
+  "tokenRefreshBufferTime": 10
+}

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "NewLifeHRT.Background.Console": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+<div class="h-full text-white flex flex-col sidebar-container" [ngClass]="{'sidebar-expanded': !isCollapsed, 'sidebar-collapsed': isCollapsed}">
+
+  <!-- Header -->
+  <div class="p-4 toolbar-background bg-white items-center flex justify-center rounded-tl-xl rounded-tr-xl ">
+    <div class="flex items-center space-x-3" *ngIf="!isCollapsed">
+      <div class="text-center">
+        <div class="flex items-center justify-center  space-x-2">
+          <img src="assets/images/logo.png" alt="NewLife Logo" class="h-14 object-contain" />
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-center" *ngIf="isCollapsed">
+      <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+        <span class="text-white font-bold text-xs">NL</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Items -->
+  <nav class="flex-1 py-4" [ngClass]="{'overflow-y-auto': !isCollapsed}">
+    <ng-container *ngFor="let item of navItems">
+      <div class="mb-1 relative" *hasPermission="[item.permissionResource, item.permissionAction]">
+      <!-- Parent Item -->
+      <div class="px-4 py-2 hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+        [ngClass]="{'bg-gray-700': isActiveRoute(item.route || '')}"
+        (click)="item.children ? toggleSubmenu(item) : navigateTo(item.route || '')"
+        [matTooltip]="isCollapsed ? item.label : ''" matTooltipPosition="right">
+
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <mat-icon class="text-gray-300 text-xl">{{ item.icon }}</mat-icon>
+            <span class="text-sm font-medium" *ngIf="!isCollapsed">{{ item.label }}</span>
+          </div>
+
+          <!-- Expand/Collapse Icon for items with children -->
+          <mat-icon *ngIf="item.children"
+            class="text-gray-400 text-sm transition-transform duration-200" [ngClass]="{'rotate-90': item.isExpanded}">
+            chevron_right
+          </mat-icon>
+        </div>
+      </div>
+
+      <!-- Children Items -->
+      <div *ngIf="item.children && item.isExpanded" class="nav-item-children" [ngClass]="{'overlay-show': isCollapsed}">
+        <div *ngFor="let child of item.children"
+          class="px-4 py-2 hover:bg-gray-700 cursor-pointer transition-colors duration-200 "
+          [ngClass]="{'bg-gray-700': isActiveRoute(child.route || '')}" (click)="navigateTo(child.route || '')">
+          <div class="flex items-center space-x-3">
+            <mat-icon class="text-gray-400 text-sm">{{ child.icon }}</mat-icon>
+            <span class="text-sm">{{ child.label }}</span>
+          </div>
+        </div>
+      </div>
+      </div>
+    </ng-container>
+  </nav>
+</div>

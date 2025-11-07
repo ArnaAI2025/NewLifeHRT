@@ -1,0 +1,206 @@
+.admin-view-container {
+  position: relative;
+  padding: 20px;
+  min-height: 500px;
+
+  // Main loading overlay
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+
+    .loading-text {
+      margin-top: 16px;
+      font-size: 16px;
+      color: #666;
+      font-weight: 500;
+    }
+  }
+
+  // Delete loading overlay
+  .delete-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    color: white;
+
+    p {
+      margin-top: 16px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+
+  .main-content {
+    // Header section
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+
+      .page-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+
+    // Search section
+    .search-section {
+      margin-bottom: 20px;
+
+      .search-field {
+        width: 100%;
+        max-width: 400px;
+      }
+    }
+
+    // Table container
+    .table-container {
+      position: relative;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      // Table loading indicator
+      .table-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+        span {
+          font-size: 14px;
+          color: #666;
+        }
+      }
+
+      &.loading {
+        .admin-table {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+      }
+
+      // Table styles
+      .admin-table {
+        width: 100%;
+        transition: opacity 0.3s ease;
+
+        &.disabled {
+          pointer-events: none;
+        }
+
+        .mat-header-cell {
+          font-weight: 600;
+          color: #333;
+          border-bottom: 2px solid #e0e0e0;
+        }
+
+        .mat-cell {
+          padding: 16px 12px;
+          border-bottom: 1px solid #f0f0f0;
+        }
+
+        .mat-row:hover {
+          background-color: #f8f9fa;
+        }
+
+        // No data message
+        .no-data {
+          text-align: center;
+          padding: 40px 20px !important;
+
+          .no-data-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666;
+            gap: 8px;
+
+            mat-icon {
+              font-size: 48px;
+              width: 48px;
+              height: 48px;
+              color: #ccc;
+            }
+
+            span {
+              font-size: 16px;
+            }
+          }
+        }
+      }
+
+      // Paginator
+      .mat-paginator {
+        border-top: 1px solid #e0e0e0;
+        background: #fafafa;
+        border-radius: 0 0 8px 8px;
+      }
+    }
+  }
+}
+
+// Global loading states
+.mat-button:disabled,
+.mat-icon-button:disabled {
+  opacity: 0.6;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .admin-view-container {
+    padding: 16px;
+
+    .main-content {
+      .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+
+        .page-title {
+          font-size: 20px;
+        }
+      }
+
+      .search-section .search-field {
+        max-width: 100%;
+      }
+    }
+  }
+}

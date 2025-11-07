@@ -1,0 +1,75 @@
+<h2>check</h2>
+
+<app-mat-checkbox
+  label="I agree to the terms"
+  [control]="termsControl"
+  [required]="true"
+  [tooltip]="'Please check to continue'"
+  [hint]="'Required to proceed'"
+></app-mat-checkbox>
+
+<h2>Date Picker</h2>
+<app-mat-datepicker
+  label="Pick a date"
+  placeholder="dd/mm/yyyy"
+  [control]="dateControl"
+  [minDate]="minDate"
+  [maxDate]="maxDate"
+  [required]="true"
+  [touchUi]="true"
+  appearance="fill"
+></app-mat-datepicker>
+
+
+
+<h2>Input Field</h2>
+<app-mat-input
+  label="Full Name"
+  placeholder="Enter your name"
+  type="text"
+  [control]="nameControl"
+  appearance="fill"
+></app-mat-input>
+
+
+<h2>Label</h2>
+<app-label
+  text="Username"
+  [required]="true"
+  tooltip="Enter your unique username"
+  forId="usernameInput"
+  class=""
+></app-label>
+
+
+<h2>Radio Button</h2>
+<app-mat-radio-group
+  label="Gender"
+  [control]="genderControl"
+  [options]="genderOptions"
+></app-mat-radio-group>
+
+
+<h2>Drop Dowm</h2>
+<app-mat-dropdown
+  label="Select City"
+  placeholder="Choose a city"
+  [control]="cityControl"
+  [options]="cityOptions"
+  appearance="fill"
+></app-mat-dropdown>
+
+
+<h2>Textarea</h2>
+<app-mat-textarea
+  label="Description"
+  placeholder="Enter details here..."
+  [control]="descriptionControl"
+  [rows]="6"
+  hint="You can write up to 500 characters"
+  [required]="true"
+  appearance="fill"
+></app-mat-textarea>
+
+
+
