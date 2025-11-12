@@ -23,7 +23,6 @@ namespace NewLifeHRT.Application.Services.Mappings
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                RoleId = roleIds.FirstOrDefault(),
                 RoleIds = roleIds,
                 DEA = user.DEA,
                 NPI = user.NPI,

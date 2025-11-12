@@ -51,7 +51,6 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                 FirstName = "Test",
                 LastName = "User",
                 PhoneNumber = "1234567890",
-                RoleId = 1,
                 RoleIds = new List<int> { 1 }
             };
 
@@ -86,7 +85,10 @@ namespace NewLifeHRT.Application.Services.Tests.Services
         public async Task CreateAsync_Should_ThrowException_When_UserExists()
         {
             // Arrange
-            var createUserRequestDto = new CreateUserRequestDto();
+            var createUserRequestDto = new CreateUserRequestDto
+            {
+                RoleIds = new List<int> { 1 }
+            };
 
             var userRepositoryMock = new Mock<IUserRepository>();
             userRepositoryMock.Setup(repo => repo.ExistAsync(It.IsAny<string>(), It.IsAny<string>()))
@@ -144,7 +146,7 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                .Build();
 
             // Act
-            var result = await userService.GetAllAsync(1);
+            var result = await userService.GetAllAsync(new[] { 1 });
 
             // Assert
             result.Should().NotBeNull();
@@ -170,7 +172,7 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                 .Build();
 
             // Act
-            var result = await userService.GetAllActiveUsersAsync(1);
+            var result = await userService.GetAllActiveUsersAsync(new[] { 1 });
 
             // Assert
             result.Should().NotBeNull();
@@ -290,7 +292,6 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                 LastName = "User",
                 Email = "updated@example.com",
                 PhoneNumber = "0987654321",
-                RoleId = 2,
                 RoleIds = new List<int> { 2 }
             };
 

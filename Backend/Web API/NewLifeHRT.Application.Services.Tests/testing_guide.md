@@ -44,7 +44,7 @@ public async Task CreateAsync_Should_Create_UserSuccessfully()
         FirstName = "Test",
         LastName = "User",
         PhoneNumber = "1234567890",
-        RoleId = 1
+        RoleIds = new List<int> { 1 }
     };
 
     var userRepositoryMock = new Mock<IUserRepository>();

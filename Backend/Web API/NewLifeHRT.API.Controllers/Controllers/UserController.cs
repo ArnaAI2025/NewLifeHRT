@@ -3,6 +3,7 @@ using NewLifeHRT.API.Controllers.Controllers;
 using NewLifeHRT.Application.Services.Interfaces;
 using NewLifeHRT.Application.Services.Models.Request;
 using NewLifeHRT.Domain.Enums;
+using System.Collections.Generic;
 
 namespace MultiTenantTest.Controllers
 {
@@ -15,10 +16,10 @@ namespace MultiTenantTest.Controllers
             _userService = userService;
         }
 
-        [HttpGet("get-all/{roleId?}")]
-        public async Task<IActionResult> GetAll(int? roleId = null)
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAll([FromQuery] List<int>? roleIds = null)
         {
-            var users = await _userService.GetAllAsync(roleId);
+            var users = await _userService.GetAllAsync(roleIds);
             return Ok(users);
         }
 
@@ -69,14 +70,14 @@ namespace MultiTenantTest.Controllers
         [HttpGet("get-all-active-doctors")]
         public async Task<IActionResult> GetAllActiveDoctors()
         {
-            var activeDoctors = await _userService.GetAllActiveUsersAsync((int)AppRoleEnum.Doctor);
+            var activeDoctors = await _userService.GetAllActiveUsersAsync(new[] { (int)AppRoleEnum.Doctor });
             return Ok(activeDoctors);
         }
 
         [HttpGet("get-all-active-sales-person")]
         public async Task<IActionResult> GetAllActiveSalesPerson()
         {
-            var activeDoctors = await _userService.GetAllActiveUsersAsync((int)AppRoleEnum.SalesPerson);
+            var activeDoctors = await _userService.GetAllActiveUsersAsync(new[] { (int)AppRoleEnum.SalesPerson });
             return Ok(activeDoctors);
         }
 
@@ -91,7 +92,7 @@ namespace MultiTenantTest.Controllers
         [HttpPost("get-active-users")]
         public async Task<IActionResult> GetActiveUsers([FromBody] GetActiveUsersRequestDto request)
         {
-            var users = await _userService.GetActiveUsersDropDownAsync(request.RoleId, request.SearchTerm ?? string.Empty);
+            var users = await _userService.GetActiveUsersDropDownAsync(request.RoleIds, request.SearchTerm ?? string.Empty);
             return Ok(users);
         }
 

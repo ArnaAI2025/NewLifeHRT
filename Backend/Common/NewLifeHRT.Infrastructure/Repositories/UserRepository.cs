@@ -36,7 +36,7 @@ namespace NewLifeHRT.Infrastructure.Repositories
             return await _dbSet.Include(u => u.Address).Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<ApplicationRole> GetUserRoleWithPermissionsAsync(int userId)
+        public async Task<List<ApplicationRole>> GetUserRolesWithPermissionsAsync(int userId)
         {
             var user = await _dbSet
                 .Where(u => u.Id == userId)
@@ -48,7 +48,10 @@ namespace NewLifeHRT.Infrastructure.Repositories
 
             return user?.UserRoles
                 .Select(ur => ur.Role)
-                .FirstOrDefault();
+                .Where(role => role != null)
+                .Cast<ApplicationRole>()
+                .Distinct()
+                .ToList() ?? new List<ApplicationRole>();
         }
 
         public async Task<string?> GetUserTimezoneAsync(int userId)

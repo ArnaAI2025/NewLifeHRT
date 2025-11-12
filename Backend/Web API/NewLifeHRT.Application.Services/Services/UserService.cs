@@ -70,9 +70,15 @@ namespace NewLifeHRT.Application.Services.Services
             if (await _userRepository.ExistAsync(createUserRequestDto.UserName, createUserRequestDto.Email))
                 throw new Exception("Username or Email already exists.");
 
-            var resolvedRoleIds = (createUserRequestDto.RoleIds != null && createUserRequestDto.RoleIds.Any())
-                ? createUserRequestDto.RoleIds
-                : (createUserRequestDto.RoleId > 0 ? new List<int> { createUserRequestDto.RoleId } : new List<int>());
+            var resolvedRoleIds = createUserRequestDto.RoleIds?
+                .Where(roleId => roleId > 0)
+                .Distinct()
+                .ToList() ?? new List<int>();
+
+            if (!resolvedRoleIds.Any())
+            {
+                throw new ArgumentException("At least one role must be provided.", nameof(createUserRequestDto.RoleIds));
+            }
 
             var user = new ApplicationUser(createUserRequestDto.UserName, createUserRequestDto.FirstName, createUserRequestDto.LastName, createUserRequestDto.Email, createUserRequestDto.PhoneNumber,
                 createUserRequestDto.Email.ToUpper(), createUserRequestDto.UserName.ToUpper(), createUserRequestDto.DEA, createUserRequestDto.NPI,
@@ -151,12 +157,17 @@ namespace NewLifeHRT.Application.Services.Services
             return new CommonOperationResponseDto<int> { Id = user.Id, Message = "User created successfully" };
         }
 
-        public async Task<List<UserResponseDto>> GetAllAsync(int? roleId)
+        public async Task<List<UserResponseDto>> GetAllAsync(IEnumerable<int>? roleIds = null)
         {
             var includes = new[] { "Address", "UserServices", "Address.Country", "UserRoles" };
 
+            var roleIdList = roleIds?
+                .Where(roleId => roleId > 0)
+                .Distinct()
+                .ToList();
+
             Expression<Func<ApplicationUser, bool>> predicate = u =>
-                (!roleId.HasValue || u.UserRoles.Any(ur => ur.RoleId == roleId.Value));
+                roleIdList == null || roleIdList.Count == 0 || u.UserRoles.Any(ur => roleIdList.Contains(ur.RoleId));
 
             var predicates = new List<Expression<Func<ApplicationUser, bool>>> { predicate };
 
@@ -164,9 +175,22 @@ namespace NewLifeHRT.Application.Services.Services
 
             return users.ToUserResponseDtoList();
         }
-        public async Task<List<DropDownIntResponseDto>> GetAllActiveUsersAsync(int roleId)
+        public async Task<List<DropDownIntResponseDto>> GetAllActiveUsersAsync(IEnumerable<int>? roleIds = null)
         {
-            var users = await _userRepository.FindAsync(a => !a.IsDeleted && a.UserRoles.Any(ur => ur.RoleId == roleId));
+            var roleIdList = roleIds?
+                .Where(roleId => roleId > 0)
+                .Distinct()
+                .ToList();
+
+            var usersQuery = _userRepository.Query()
+                .Where(u => !u.IsDeleted);
+
+            if (roleIdList != null && roleIdList.Any())
+            {
+                usersQuery = usersQuery.Where(u => u.UserRoles.Any(ur => roleIdList.Contains(ur.RoleId)));
+            }
+
+            var users = await usersQuery.ToListAsync();
             return users.ToDropDownUserResponseDtoList();
         }
 
@@ -248,10 +272,15 @@ namespace NewLifeHRT.Application.Services.Services
                 throw new Exception(message);
             }
 
-            var desiredRoleIds = (updateUserRequestDto.RoleIds != null && updateUserRequestDto.RoleIds.Any())
-                ? updateUserRequestDto.RoleIds
-                : (updateUserRequestDto.RoleId > 0 ? new List<int> { updateUserRequestDto.RoleId } : new List<int>());
-            desiredRoleIds = desiredRoleIds.Distinct().ToList();
+            var desiredRoleIds = updateUserRequestDto.RoleIds?
+                .Where(roleId => roleId > 0)
+                .Distinct()
+                .ToList() ?? new List<int>();
+
+            if (!desiredRoleIds.Any())
+            {
+                throw new ArgumentException("At least one role must be provided.", nameof(updateUserRequestDto.RoleIds));
+            }
 
             var existingRoleIds = new List<int>();
             if (_context.UserRoles != null)
@@ -496,12 +525,27 @@ namespace NewLifeHRT.Application.Services.Services
                 };
             }
         }
-        public async Task<List<DropDownIntResponseDto>> GetActiveUsersDropDownAsync(int roleId, string searchTerm = "")
+        public async Task<List<DropDownIntResponseDto>> GetActiveUsersDropDownAsync(IEnumerable<int> roleIds, string searchTerm = "")
         {
             const int maxResults = 7;
 
+            if (roleIds == null)
+            {
+                throw new ArgumentNullException(nameof(roleIds));
+            }
+
+            var roleIdList = roleIds
+                .Where(roleId => roleId > 0)
+                .Distinct()
+                .ToList();
+
+            if (!roleIdList.Any())
+            {
+                throw new ArgumentException("At least one role must be provided.", nameof(roleIds));
+            }
+
             var query = _userRepository.Query()
-                .Where(u => !u.IsDeleted && u.UserRoles.Any(ur => ur.RoleId == roleId));
+                .Where(u => !u.IsDeleted && u.UserRoles.Any(ur => roleIdList.Contains(ur.RoleId)));
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
