@@ -1,0 +1,81 @@
+<!-- Overlay / Backdrop -->
+<div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" (click)="close()">
+
+  <!-- Modal Content -->
+  <div class="bg-white rounded-lg shadow-xl max-w-lg w-full relative overflow-y-auto"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <h2 class="text-xl font-semibold text-gray-800 flex items-center modal-heading">
+        <mat-icon class="mr-2 text-blue-600 credit-card-checkbox">note_alt</mat-icon>
+        {{ getFormTitle() }}
+      </h2>
+      <button type="button" mat-icon-button (click)="close()" class="text-gray-500 hover:text-gray-700">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+
+    <div *ngIf="isLoading() || isSubmitting()"
+         class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6">
+      <form [formGroup]="noteForm" (ngSubmit)="onAddNote()" class="space-y-6 relative">
+
+        <!-- Subject -->
+        <div class="space-y-2 custom-text-box">
+          <label class="block text-sm font-medium text-gray-700">
+            Subject <span class="text-red-500">*</span>
+          </label>
+          <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+            <input matInput formControlName="subject" [readonly]="isViewMode" placeholder="Enter subject" />
+            <mat-error
+              *ngIf="noteForm.get('subject')?.invalid && (noteForm.get('subject')?.dirty || noteForm.get('subject')?.touched)">
+              {{ getErrorMessage('subject') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Note -->
+        <div class="space-y-2 ">
+          <label class="block text-sm font-medium text-gray-700">
+            Note <span class="text-red-500">*</span>
+          </label>
+          <mat-form-field appearance="outline" class="w-full form-des-input textarea-error-fix">
+            <textarea matInput formControlName="note" [readonly]="isViewMode" placeholder="Enter note"
+              rows="4"></textarea>
+            <!-- keep error message -->
+            <mat-error
+              *ngIf="noteForm.get('note')?.invalid && (noteForm.get('note')?.dirty || noteForm.get('note')?.touched)">
+              {{ getErrorMessage('note') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Checkboxes -->
+        <div class="flex gap-8 pt-2">
+          <mat-checkbox formControlName="sendToAdmin" [disabled]="isViewMode" class="flex-grow custom-mat-checkbox">
+            Send to Admin
+          </mat-checkbox>
+          <mat-checkbox formControlName="sendToDoctor" [disabled]="isViewMode" class="flex-grow custom-mat-checkbox">
+            Send to Doctor
+          </mat-checkbox>
+        </div>
+
+        <!-- Footer Buttons -->
+        <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200 mt-8">
+          <button mat-flat-button color="primary" type="submit"
+                  class="primary-btn-add" *ngIf="!isViewMode"
+                  [disabled]="isSubmitting()">
+            Save Note
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

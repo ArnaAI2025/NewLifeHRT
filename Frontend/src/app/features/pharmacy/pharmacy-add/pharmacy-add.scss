@@ -1,0 +1,22 @@
+/* Keep the $ nicely padded & centered; never capture clicks */
+.mat-mdc-form-field-text-prefix {
+    align-self: center;
+    padding-left: 8px;
+    padding-right: 2px;
+    pointer-events: none;
+}
+
+/* Slightly denser Material inputs to cut whitespace */
+.mat-mdc-form-field-infix {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+}
+
+@media (max-width: 640px) {
+    .mat-table .mat-header-row {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: #fff;
+    }
+}

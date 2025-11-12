@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Services\**" />
+	  <EmbeddedResource Remove="Services\**" />
+	  <None Remove="Services\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Data\Migrations\Hospital\" />
+		<Folder Include="Data\Seed\" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="libs\libwkhtmltox.dll" CopyToOutputDirectory="Always" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FFMpegCore" Version="5.2.0" />
+		<PackageReference Include="DinkToPdf" Version="1.0.8" />
+		<PackageReference Include="Finbuckle.MultiTenant.AspNetCore" Version="9.4.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
+    	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6" />
+		<PackageReference Include="RazorEngine.NetCore" Version="3.1.0" />
+		<PackageReference Include="Serilog" Version="4.3.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
+		<PackageReference Include="Twilio" Version="7.13.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\NewLifeHRT.Domain\NewLifeHRT.Domain.csproj" />
+	</ItemGroup>
+
+</Project>

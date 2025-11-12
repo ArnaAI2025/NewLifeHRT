@@ -1,0 +1,59 @@
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 bg-card-color">
+  <div class="flex items-center justify-between flex-wrap gap-4 mb-6 table-view-header">
+    <div class="flex items-center ">
+      <h1 class="list-page-heading">Commission Rates</h1>
+      <div class="flex items-center space-x-3 filter-input search-box search-box-dsk">
+        <!-- Search Input -->
+        <div class="relative ml-6">
+          <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
+          <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword"
+            (input)="applyFilter()" [disabled]="isLoading()"
+            class="pl-10 text-left pr-4 py-2 border border-gray-300 rounded-md  w-64 disabled:bg-gray-100 disabled:cursor-not-allowed" />
+        </div>
+      </div>
+    </div>
+
+
+    <div class="flex items-center gap-4 flex-wrap justify-end ml-auto">
+
+      <div *ngIf="selectedCount > 0"
+        class="p-2 bg-blue-50 border border-blue-200 rounded-md flex items-center justify-between">
+        <div class="flex items-center">
+          <mat-icon class="text-blue-600 mr-2">info</mat-icon>
+          <span class="text-blue-800">{{ selectedCount }} Commission Rate{{ selectedCount > 1 ? 's' : '' }}
+            selected</span>
+        </div>
+      </div>
+
+
+      <button mat-flat-button class="primary-btn-add" (click)="addCommisionRate()" [disabled]="isLoading()">
+        <mat-icon class="mr-1">add</mat-icon>
+        Add Commission Rate
+      </button>
+
+      <!-- Bulk Action Menu -->
+      <div class="table-header-group">
+        <button type="button" [matMenuTriggerFor]="bulkMenu" [ngClass]="{ 'disabled': !hasSelectedRows() }"
+          [disabled]="!hasSelectedRows()" class="secondry-button-add px-2 rounded-md flex items-center gap-1">
+          <span class="hidden max-[640px]:hidden sm:inline">Bulk Action</span> <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+        <mat-menu #bulkMenu="matMenu">
+          <button mat-menu-item (click)="triggerBulkAction('activate')">Activate</button>
+          <button mat-menu-item (click)="triggerBulkAction('deactivate')">Deactivate</button>
+          <button mat-menu-item (click)="triggerBulkAction('delete')">Delete</button>
+        </mat-menu>
+      </div>
+      <div class="flex items-center space-x-3 w-full filter-input search-box-mb">
+        <!-- Search Input -->
+        <div class="relative">
+          <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
+          <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword"
+            (input)="applyFilter()" [disabled]="isLoading()"
+            class="pl-10 text-left pr-4 py-2 border border-gray-300 rounded-md w-full bg-transparent disabled:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed !bg-transparent" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-commision-rate-table #commisionRateTable context="standalone">
+  </app-commision-rate-table>
+</div>

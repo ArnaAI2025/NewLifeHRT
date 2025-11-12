@@ -1,0 +1,429 @@
+<app-full-page-loader [visible]="isLoadingPage()" />
+<!-- Header -->
+<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden px-4 pt-2">
+  <!-- First Row: Back + Title & Right Actions -->
+  <div class="flex flex-wrap items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <!-- Back Button -->
+      <button mat-icon-button class="bg-blue-100 rounded-full p-2 header-back-button" (click)="goBack()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <!-- Title -->
+      <span class="form-header-heading">Product</span>
+    </div>
+
+    <!-- Right Side Buttons -->
+    <div class="flex items-center space-x-4 flex items-center space-x-2 ml-auto mt-2 sm:mt-0">
+      @if(isEditMode()){
+        <!-- Add Product Button -->
+        <button type="submit" mat-flat-button (click)="navigateToAddProduct()"
+          class="!py-1 !px-4 text-sm action-button secondry-button-add">
+          Add Product
+          <mat-icon class="mr-1">add</mat-icon>
+        </button>
+      }
+
+      <!-- Publish Button -->
+      <button *ngIf="isEditMode() && showPublish()" mat-stroked-button
+        class="!text-xs !py-1 !px-4 font-semibold secondry-button-add" (click)="publishProduct()">
+        Publish
+      </button>
+
+      <!-- Save Button -->
+      <button mat-flat-button class="primary-btn-add !text-xs !py-1 !px-4 font-semibold" (click)="submitForm()">
+        Save
+      </button>
+
+      <!-- Dropdown Arrow Only -->
+      <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+      <!-- Menu Items -->
+      <mat-menu #actionMenu="matMenu">
+        <button mat-menu-item (click)="submitForm(true)">
+          <span>Save &amp; Close</span>
+        </button>
+        <button mat-menu-item *ngIf="isEditMode() && showActivate()" (click)="activateProduct()">
+          <span>Activate</span>
+        </button>
+
+        <button mat-menu-item *ngIf="isEditMode() && showDeactivate()" (click)="deActivateProduct()">
+          <span>Deactivate</span>
+        </button>
+
+        <button mat-menu-item *ngIf="isEditMode()" (click)="deleteProduct()">
+          <span>Delete</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <!-- Second Row: Tabs -->
+  <div class="flex py-2 ">
+    <mat-button-toggle-group #toggleGroup="matButtonToggleGroup" 
+      [hideSingleSelectionIndicator]="true" (change)="updateTab($event)" class="toggle-group">
+      <mat-button-toggle value="product" class="nav-header-tabs" [ngClass]="{
+        'active': activeTab === 'product' || !isEditMode(),
+        'inactive': isEditMode() && activeTab !== 'product',
+        'disabled': false
+        }">Product</mat-button-toggle>
+        <mat-button-toggle value="strengths"  class="nav-header-tabs" [ngClass]="{
+        'active': isEditMode() && activeTab === 'strengths',
+        'inactive': isEditMode() && activeTab !== 'strengths',
+        'disabled': !isEditMode()
+        }">Strengths</mat-button-toggle>
+        <mat-button-toggle value="priceList"  class="nav-header-tabs" [ngClass]="{
+        'active': isEditMode() && activeTab === 'priceList',
+        'inactive': isEditMode() && activeTab !== 'priceList',
+        'disabled': !isEditMode()
+        }">Price List Items</mat-button-toggle>
+        <mat-button-toggle value="commissionRate"  class="nav-header-tabs" [ngClass]="{
+        'active': isEditMode() && activeTab === 'commissionRate',
+        'inactive': isEditMode() && activeTab !== 'commissionRate',
+        'disabled': !isEditMode()
+        }">Commission Rates</mat-button-toggle>
+    </mat-button-toggle-group> 
+  </div>
+</div>
+<!-- Form -->
+<div class="card-color p-6 rounded-lg shadow-sm border border-gray-200">
+  <ng-container [ngSwitch]="activeTab">
+    <ng-container *ngSwitchCase="'product'">
+      <form [formGroup]="productForm">
+
+        <!-- Product IDentification -->
+        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">PRODUCT IDENTIFICATION</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <!-- Product ID -->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Product ID <span
+                class="text-red-500">*</span></label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="productId" class="text-sm" />
+              <mat-error *ngIf="isFieldInvalid('productId')">{{ getFieldError('productId') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Name -->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="name" class="text-sm" />
+              <mat-error *ngIf="isFieldInvalid('name')"> {{ getFieldError('name') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Lab Code -->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Lab Code</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="labCode" class="text-sm" />
+            </mat-form-field>
+          </div>
+
+          <!--Status-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              Status<span class="text-red-500">*</span>
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="status" [disabled]="true">
+                <mat-option value="Draft">Draft</mat-option>
+                <mat-option value="Active">Active</mat-option>
+                <mat-option value="Retired">Retired</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Lab Corp -->
+          <div class="space-y-2 custom-text-box flex items-center">
+            <div class="flex items-center">
+              <mat-checkbox class="custom-mat-checkbox" formControlName="labCorp">Lab Corp</mat-checkbox>
+            </div>
+          </div>
+                    <div class="space-y-2 custom-text-box flex items-center">
+            <div class="flex items-center">
+              <mat-checkbox class="custom-mat-checkbox" formControlName="isColdStorageProduct">Is Cold Storage Product</mat-checkbox>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Classification -->
+        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">CLASSIFICATION</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <!--Parent-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              Parent
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="parent" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let parent of parentOptions()" [value]="parent.id">
+                  {{ parent.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!--Type-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              Type <span class="text-red-500">*</span>
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="type" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let type of typeOptions()" [value]="type.id">
+                  {{ type.name }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="productForm.get('type')?.hasError('required')">
+                Type is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--Category 1-->
+
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              Category 1
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="category1" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let category of categoryOptions()" [value]="category.id">
+                  {{ category.name }}
+                </mat-option>
+              </mat-select>
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--Category 2-->
+
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              Category 2
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="category2" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let category of categoryOptions()" [value]="category.id">
+                  {{ category.name }}
+                </mat-option>
+              </mat-select>
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--Category 3-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              Category 3
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="category3" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let category of categoryOptions()" [value]="category.id">
+                  {{ category.name }}
+                </mat-option>
+              </mat-select>
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+
+        </div>
+
+        <!--Product Description-->
+        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">PRODUCT DESCRIPTION</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <!--Description-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Description</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="description" class="text-sm" />
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--Protocol-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Protocol</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="protocol" class="text-sm" />
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--Scheduled-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              Scheduled
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="scheduled" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let option of yesNoDefaultOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+
+
+
+        </div>
+
+        <!--Web Display Information-->
+        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">WEB DISPLAY INFORMATION</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <!--Web Product Name-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Web Product Name</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="webProductName" class="text-sm" />
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--Web Product Description-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Web Product Description</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="webProductDescription" class="text-sm" />
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--Web Popular Medicine-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              Web Popular Medicine
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="webPopularMedicine" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let option of yesNoDefaultOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--Web Form-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              Web Form
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="webForm" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let webform of webformOptions()" [value]="webform.id">
+                  {{ webform.name }}
+                </mat-option>
+              </mat-select>
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--Web Strengths-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Web Strengths</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="webStrengths" class="text-sm" />
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--Web Cost-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Web Cost</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="webCost" class="text-sm" />
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+        </div>
+
+        <!--Calculator-->
+        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">CALCULATOR</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+
+          <!--Enable Calculator-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              Enable Calculator
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="enableCalculator" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let option of yesNoDefaultOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--New Enable Calculator-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              New Enable Calculator
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="newEnableCalculator" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let option of yesNoDefaultOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+          <!--PBP Enable-->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              PBP Enable
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <mat-select formControlName="pbpEnable" canSelectNullableOptions>
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let option of yesNoDefaultOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+              <mat-error></mat-error>
+            </mat-form-field>
+          </div>
+
+        </div>
+
+      </form>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'strengths'">
+      <app-product-strength-view [productId]="productId!"></app-product-strength-view>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'priceList'">
+      <app-price-list-item-container *ngIf="isEditMode() && productId" context="product" [entityId]="productId">
+      </app-price-list-item-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'commissionRate'">
+      <app-commision-rate-container *ngIf="isEditMode() && productId" context="product" [entityId]="productId">
+      </app-commision-rate-container>
+    </ng-container>
+
+  </ng-container>
+</div>

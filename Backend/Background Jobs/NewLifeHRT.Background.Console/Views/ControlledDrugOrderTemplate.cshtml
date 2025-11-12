@@ -1,0 +1,283 @@
+﻿@using RazorEngine.Text;
+@{
+    var positions = new[] { "left", "center", "right" };
+    var random = new Random();
+    var randomPosition = positions[random.Next(positions.Length)];
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Model.PharmacyName</title>
+    <style>
+        *{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 20px;
+            color: #000;
+        }
+
+        .header {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .order-info {
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-size: 12px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .two-column {
+            display: flex;
+            display: -webkit-box;
+            justify-content: space-between;
+        }
+
+            .two-column > table {
+                width: 48%;
+            }
+
+            .two-column > .right-table {
+                margin-left: 30px;
+            }
+
+        .medication-note {
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .medication-table th {
+            background-color: #f2f2f2;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .medication-table td {
+            text-align: center;
+        }
+
+        .bold-text {
+            font-weight: 600;
+        }
+
+        .footer-section {
+            margin-top: 30px;
+            padding-top: 10px;
+        }
+
+        .signature-section {
+            width: 30%;
+        }
+
+        .signature-section.right {
+            float: right;
+        }
+        .signature-section.left {
+            float: left;
+        }
+        .signature-section.center {
+            margin: auto;
+        }
+
+        .signature-label {
+            font-size: 9pt;
+            width: 100%;
+            display: block;
+        }
+
+        .signature-image-container img {
+            max-height: 50px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .signature-image-container hr {
+            border: 1px solid #000;
+            margin: 0 auto 2px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        @Model.PharmacyName
+    </div>
+    <div class="order-info">
+        Order #@Model.OrderId | Sent: @(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))
+    </div>
+
+    <div class="two-column">
+        <table>
+            <tr>
+                <th colspan="2">Patient Information</th>
+            </tr>
+            <tr>
+                <td class="bold-text">Name</td>
+                <td>@Model.Patient?.FirstName @Model.Patient?.LastName</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Date of Birth</td>
+                <td>@(string.Format("{0:yyyy-MM-dd}", Model.Patient?.DateOfBirth))</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Gender</td>
+                <td>@Model.Patient?.Gender</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Phone</td>
+                <td>@Model.Patient?.Phone</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Email</td>
+                <td>@Model.Patient.Email</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Address</td>
+                <td>@Model.Patient?.Address1@(!string.IsNullOrEmpty(Model.Patient?.Address1) && !string.IsNullOrEmpty(Model.Patient?.City) ? ", " : "")@Model.Patient.City@(!string.IsNullOrEmpty(Model.Patient?.City) && !string.IsNullOrEmpty(Model.Patient?.State) ? ", " : "")@Model.Patient.State @Model.Patient.Zip</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Country</td>
+                <td>@Model.Patient?.Country</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Allergies</td>
+                <td>@Model.Patient?.Allergies</td>
+            </tr>
+        </table>
+
+        <table class="right-table">
+            <tr>
+                <th colspan="2">Prescriber Information</th>
+            </tr>
+            <tr>
+                <td class="bold-text">Name</td>
+                <td>@Model.Prescriber?.FirstName @Model.Prescriber?.LastName</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Clinic</td>
+                <td>@Model.Prescriber?.Clinic</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Email</td>
+                <td>@Model.Prescriber?.Email</td>
+            </tr>
+            <tr>
+                <td class="bold-text">NPI</td>
+                <td>@Model.Prescriber?.Npi</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="two-column">
+        <table>
+            <tr>
+                <th colspan="2">Order Details</th>
+            </tr>
+            <tr>
+                <td class="bold-text">Order Date</td>
+                <td>@(string.Format("{0:yyyy-MM-dd HH:mm}", Model.Details?.OrderDate))</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Document Type</td>
+                <td>@Model.Details?.DocumentType</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Interface</td>
+                <td>@Model.Details?.Interface</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Priority</td>
+                <td>@Model.Details?.Priority</td>
+            </tr>
+        </table>
+
+        <table class="right-table">
+            <tr>
+                <th colspan="2">Shipping Details</th>
+            </tr>
+            <tr>
+                <td class="bold-text">Delivery Method</td>
+                <td>@Model.ShippingDetails.ShippingMethod</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Email Notification</td>
+                <td>@(Model.ShippingDetails.EmailNotifications ? "Yes" : "No")</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Free Shipping</td>
+                <td>@(Model.ShippingDetails.FreeShipping ? "Yes" : "No")</td>
+            </tr>
+            <tr>
+                <td class="bold-text">Signature Required</td>
+                <td>@(Model.ShippingDetails.SignatureRequired ? "Yes" : "No")</td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="medication-table">
+        <tr>
+            <th colspan="7">Medication Details</th>
+        </tr>
+        <tr>
+            <th>Drug Name</th>
+            <th>Strength</th>
+            <th>Form</th>
+            <th>Quantity</th>
+            <th>Quantity Units</th>
+            <th>Days Supply</th>
+            <th>Directions</th>
+        </tr>
+        @foreach (var item in Model.MedicationDetails)
+        {
+            <tr>
+                <td>@item.DrugName</td>
+                <td>@item.Strength</td>
+                <td>@item.Form</td>
+                <td>@item.Quantity</td>
+                <td>@item.QuantityUnits</td>
+                <td>@item.DaysSupply</td>
+                <td>@item.Directions</td>
+            </tr>
+        }
+    </table>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Prescriber?.SignatureUrl))
+    {
+        <div class="footer-section">
+            <div class="signature-section @randomPosition">
+                <div class="signature-image-container">
+                    <img src="@Model.Prescriber.SignatureUrl" alt="Physician Signature"/>
+                    <hr/>
+                </div>
+                <span class="signature-label">Physician Signature</span>
+            </div>
+        </div>
+    }
+</body>
+</html>

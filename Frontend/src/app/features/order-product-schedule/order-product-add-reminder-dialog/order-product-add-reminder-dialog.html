@@ -1,0 +1,61 @@
+<div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+  <div class="flex items-center justify-between p-4 border-b border-gray-200">
+    <h2 class="text-lg font-semibold text-gray-800">Add Reminder</h2>
+    <button mat-icon-button (click)="onCancel()" class="text-gray-500 hover:text-gray-700">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="p-6">
+    <form [formGroup]="reminderForm" class="space-y-6">
+
+      <!-- Date Field -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700">Date</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <input matInput [matDatepicker]="picker" [matDatepickerFilter]="disablePastDates" formControlName="date" placeholder="Select date">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="reminderForm.get('date')?.hasError('required')">
+            Date is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Time Field -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700">Time</label>
+        <input type="time"
+          class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          formControlName="time" required>
+        <div *ngIf="reminderForm.get('time')?.hasError('required')" class="text-red-500 text-xs mt-1">
+          Time is required
+        </div>
+      </div>
+
+      <!-- Description Field -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea matInput rows="3" placeholder="Enter description" formControlName="description"
+          class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none">
+        </textarea>
+        <mat-error *ngIf="reminderForm.get('description')?.hasError('required')">
+          Description is required
+        </mat-error>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+        <button mat-stroked-button type="button" (click)="onCancel()" class="secondry-button-add">
+          Cancel
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="onSave()"
+          [disabled]="!reminderForm.valid || isSaving" class="primary-btn-add">
+          <span *ngIf="!isSaving">Save</span>
+          <span *ngIf="isSaving">Saving...</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

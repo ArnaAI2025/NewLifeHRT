@@ -1,0 +1,116 @@
+<!-- Header -->
+<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden px-4 pt-2">
+  <!-- First Row: Back + Title & Right Actions -->
+  <div class="flex flex-wrap items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <!-- Back Button -->
+      <button mat-icon-button class="bg-blue-100 rounded-full p-2 header-back-button" (click)="goBack()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <!-- Title -->
+      <span class="form-header-heading">Pharmacy Configuration</span>
+    </div>
+
+    <!-- Right Side Buttons -->
+    <div class="flex items-center space-x-4 flex items-center space-x-2 ml-auto mt-2 sm:mt-0">
+      @if(isEditMode()){
+        <!-- Add Product Button -->
+        <button type="submit" mat-flat-button class="!py-1 !px-4 text-sm action-button secondry-button-add"
+          (click)="navigateToAddPharmacyConfiguration()">
+          Add Pharmacy Configuration
+          <mat-icon class="mr-1">add</mat-icon>
+        </button>
+      }
+
+      <!-- Save Button -->
+      <button mat-flat-button class="primary-btn-add !text-xs !py-1 !px-4 font-semibold" (click)="submitForm()">
+        Save
+      </button>
+
+      <!-- Dropdown Arrow Only -->
+      <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+      <!-- Menu Items -->
+      <mat-menu #actionMenu="matMenu">
+        <button mat-menu-item (click)="submitForm(true)">
+          <span>Save &amp; Close</span>
+        </button>
+        <button mat-menu-item *ngIf="showActivate()" (click)="activateConfig()">
+          <span>Activate</span>
+        </button>
+
+        <button mat-menu-item *ngIf="showDeactivate()" (click)="deactivateConfig()">
+          <span>Deactivate</span>
+        </button>
+
+        <button mat-menu-item *ngIf="showDelete()" (click)="deleteConfig()">
+          <span>Delete</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</div>
+
+<div class="card-color p-6 rounded-lg shadow-sm border border-gray-200">
+  <ng-container>
+    <form [formGroup]="pharmacyConfigurationForm">
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <!--Status-->
+        <div class="space-y-2 custom-text-box">
+          <label class="block text-sm font-medium text-gray-700">
+            Pharmacy<span class="text-red-500">*</span>
+          </label>
+          <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+            <mat-select formControlName="pharmacy" [disabled]="isEditMode()">
+              <mat-option *ngFor="let p of pharmacies()" [value]="p.id">
+                {{ p.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="pharmacyConfigurationForm.get('pharmacy')?.hasError('required')">
+              Pharmacy is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="space-y-2 custom-text-box">
+          <label class="block text-sm font-medium text-gray-700">
+            Type<span class="text-red-500">*</span>
+          </label>
+          <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+            <mat-select formControlName="type">
+              <mat-option *ngFor="let t of integrationTypes()" [value]="t.id">
+                {{ t.value }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="pharmacyConfigurationForm.get('type')?.hasError('required')">
+              Type is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" *ngIf="integrationKeys().length">
+        <ng-container *ngFor="let key of integrationKeys()">
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">
+              {{ key.label }}<span class="text-red-500">*</span>
+            </label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput [formControlName]="getKeyControlName(key.id)" />
+              <mat-error *ngIf="pharmacyConfigurationForm.get(getKeyControlName(key.id))?.touched">
+                {{
+                  pharmacyConfigurationForm.get(getKeyControlName(key.id))?.hasError('required') ? (key.label + ' is required') :
+                  pharmacyConfigurationForm.get(getKeyControlName(key.id))?.hasError('whitespace') ? (key.label + ' cannot be empty or only spaces') :
+                  ''
+                }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </ng-container>
+      </div>
+    </form>
+  </ng-container>
+</div>

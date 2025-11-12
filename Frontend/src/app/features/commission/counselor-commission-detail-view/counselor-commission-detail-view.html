@@ -1,0 +1,268 @@
+<!-- Sticky header bar -->
+<div
+    class="sticky top-0 z-10 flex flex-wrap gap-2 items-center justify-between px-4 py-2 shadow-sm mb-4 bg-white border-b">
+    <div class="flex items-center space-x-2">
+        <button mat-icon-button (click)="back()" class="header-back-button">
+            <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="form-header-heading">Counselor Commission</span>
+    </div>
+</div>
+
+<!-- Page Body -->
+<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 bg-card-color relative">
+    <!-- Inline loader -->
+    <div *ngIf="isLoading" class="absolute inset-0 bg-white/70 flex items-center justify-center rounded-lg">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Content -->
+    <form *ngIf="detail as d">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Main column -->
+            <div class="lg:col-span-12 space-y-10">
+                <!-- Counselor & Order Info -->
+                <section>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">
+                        Counselor & Order Info
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="space-y-2 custom-text-box">
+                            <label class="block text-sm font-medium text-gray-700">Sales Person</label>
+                            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                                <input matInput type="text" [value]="d.counselorName || '-'" class="text-sm read-mode-text"
+                                    [readonly]="readOnlyMode" [disabled]="readOnlyMode" />
+                            </mat-form-field>
+                        </div>
+
+                        <div class="space-y-2 custom-text-box">
+                            <label class="block text-sm font-medium text-gray-700">Commission Pay Status</label>
+                            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                                <input matInput type="text" [value]="fmtBool(d.commissionPayStatus)" class="text-sm read-mode-text"
+                                    [readonly]="readOnlyMode" [disabled]="readOnlyMode" />
+                            </mat-form-field>
+                        </div>
+
+                        <div class="space-y-2 custom-text-box">
+                            <label class="block text-sm font-medium text-gray-700">Related To Order</label>
+                            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                                <input matInput type="text" [value]="d.ordersName || '-'" class="text-sm read-mode-text"
+                                    [readonly]="readOnlyMode" [disabled]="readOnlyMode" />
+                            </mat-form-field>
+                        </div>
+
+                        <div class="space-y-2 custom-text-box">
+                            <label class="block text-sm font-medium text-gray-700">Week Summary</label>
+                            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                                <input matInput type="text" [value]="d.weekSummary || '-'" class="text-sm read-mode-text"
+                                    [readonly]="readOnlyMode" [disabled]="readOnlyMode" />
+                            </mat-form-field>
+                        </div>
+
+                        <div class="space-y-2 custom-text-box">
+                            <label class="block text-sm font-medium text-gray-700">Patient Name</label>
+                            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                                <input matInput type="text" [value]="d.patientName || '-'" class="text-sm read-mode-text"
+                                    [readonly]="readOnlyMode" [disabled]="readOnlyMode" />
+                            </mat-form-field>
+                        </div>
+
+                        <div class="space-y-2 custom-text-box">
+                            <label class="block text-sm font-medium text-gray-700">Pharmacy Name</label>
+                            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                                <input matInput type="text" [value]="d.pharmacyName || '-'" class="text-sm read-mode-text"
+                                    [readonly]="readOnlyMode" [disabled]="readOnlyMode" />
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Financials -->
+<section>
+    <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">
+        Financials
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Syringe -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Syringe</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.syringe)" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- Net Sales -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Net Sales</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.subTotalAmount)" class="text-sm read-mode-text"
+                    [readonly]="readOnlyMode" [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- Shipping -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Shipping</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.shipping)" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- Surcharge -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Surcharge</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.surcharge)" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- Discount -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Discount</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.discount)" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- Total Amount -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Total Amount</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.totalAmount)" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+    </div>
+</section>
+
+<!-- Commission -->
+<section>
+    <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">
+        Commission Calculations
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Commission Applied Total</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.commissionAppliedTotal)" class="text-sm read-mode-text"
+                    [readonly]="readOnlyMode" [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Commission Payable</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.commissionPayable)" class="text-sm read-mode-text"
+                    [readonly]="readOnlyMode" [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <!-- Commission Calculations (full row) -->
+    <div class="mt-4 space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Commission Calculations</label>
+        <mat-form-field appearance="outline" class="w-full form-des-input">
+            <textarea matInput rows="12" class="text-sm leading-relaxed read-mode-text" [readonly]="readOnlyMode"
+                [disabled]="readOnlyMode">{{ d.commissionCalculationDetails || '-' }}</textarea>
+        </mat-form-field>
+    </div>
+</section>
+
+<!-- CTC -->
+<section>
+    <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">
+        CTC Calculations
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- CTC -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">CTC</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.ctc)" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- CTC + Commission -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">CTC + Commission</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.ctcPlusCommission)" class="text-sm read-mode-text"
+                    [readonly]="readOnlyMode" [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- Net Profit -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Net Profit (CTC - Commission)</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="fmtMoney(d.netAmount)" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- Profit / Loss -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Profit / Loss</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="profitOrLossLabel" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- Profit / Loss Amount -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Profit / Loss Amount</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="profitOrLossAmount" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- Is Price Overridden -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Is Price Overridden</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="isPriceOverriddenLabel" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+
+        <!-- Is Price Missing -->
+        <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Is Price Missing</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+                <input matInput type="text" [value]="isMissingPriceLabel" class="text-sm read-mode-text" [readonly]="readOnlyMode"
+                    [disabled]="readOnlyMode" />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <!-- CTC Calculations (textarea full row) -->
+    <div class="mt-4 space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">CTC Calculations</label>
+        <mat-form-field appearance="outline" class="w-full form-des-input">
+            <textarea matInput rows="12" class="text-sm leading-relaxed read-mode-text" [readonly]="readOnlyMode"
+                [disabled]="readOnlyMode">{{ d.ctcCalculationDetails || '-' }}</textarea>
+        </mat-form-field>
+    </div>
+</section>
+
+
+            </div>
+        </div>
+    </form>
+
+    <!-- No Data -->
+    <div *ngIf="!isLoading && !detail" class="text-center py-10 text-gray-500">
+        No details available.
+    </div>
+</div>

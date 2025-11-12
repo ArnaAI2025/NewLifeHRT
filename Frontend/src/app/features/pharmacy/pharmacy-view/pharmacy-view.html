@@ -1,0 +1,213 @@
+<!-- Main Pharmacy Table -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 bg-card-color">
+
+  <div class="flex items-center justify-between flex-wrap gap-4 mb-6 table-view-header">
+    <div class="flex items-center ">
+      <h1 class="list-page-heading">Pharmacies</h1>
+      <div class="flex items-center space-x-3 filter-input search-box search-box-dsk">
+        <div class="relative ml-6">
+          <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
+          <input matInput type="text" [(ngModel)]="searchKeyword" (input)="applyFilter()"
+            placeholder="Filters by keywords" [disabled]="isLoading()"
+            class="pl-10 text-left pr-4 py-2 border border-gray-300 rounded-md  w-64 disabled:bg-gray-100 disabled:cursor-not-allowed" />
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 flex-wrap justify-end ml-auto">
+      <div *ngIf="selectedCount > 0"
+        class="p-2 bg-blue-50 border border-blue-200 rounded-md flex items-center justify-between">
+        <div class="flex items-center">
+          <mat-icon class="text-blue-600 mr-2">info</mat-icon>
+          <span class="text-blue-800">{{ selectedCount }} Pharmac{{ selectedCount > 1 ? 'ies' : 'y' }} selected</span>
+        </div>
+      </div>
+
+
+      <button mat-flat-button class="primary-btn-add" [disabled]="isLoading()" (click)="navigateToAdd()"
+        [ngClass]="{'disabled': isLoading()}">
+        <mat-icon class="mr-1">add</mat-icon>
+        Add Pharmacy
+      </button>
+
+      <!-- Bulk Action Menu -->
+      <div class="table-header-group">
+        <button type="button" [matMenuTriggerFor]="bulkMenu" [disabled]="!hasSelectedRows()"
+          class="secondry-button-add px-2 rounded-md flex items-center gap-1"
+          [ngClass]="{'disabled': !hasSelectedRows()}">
+          <span class="hidden max-[640px]:hidden sm:inline">Bulk Action</span> <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+        <mat-menu #bulkMenu="matMenu">
+          <button mat-menu-item (click)="bulkAction('activate')">Activate</button>
+          <button mat-menu-item (click)="bulkAction('deactivate')">Deactivate</button>
+          <button mat-menu-item (click)="bulkAction('delete')">Delete</button>
+        </mat-menu>
+      </div>
+
+    </div>
+    <div class="flex items-center space-x-3 w-full filter-input search-box-mb">
+      <!-- Search Input -->
+      <div class="relative">
+        <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
+        <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword" (input)="applyFilter()"
+          [disabled]="isLoading()"
+          class="pl-10 text-left pr-4 py-2 border border-gray-300 rounded-md w-full bg-transparent disabled:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed !bg-transparent" />
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading()" class="relative">
+    <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
+      <div class="flex flex-col items-center">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="mt-2 text-gray-600">Loading pharmacies...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
+    <table mat-table [dataSource]="dataSource" matSort class="custom-table">
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef
+          class="!text-left !py-3 !px-4 rounded-tl-lg rounded-bl-lg font-medium text-gray-700">
+          <mat-checkbox class="custom-mat-checkbox" (change)="toggleSelectAll($event)" [checked]="isAllSelected()"
+            [indeterminate]="isPartialSelected()"></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row" class="!text-left !py-4 !px-4 border-b border-gray-100">
+          <mat-checkbox class="custom-mat-checkbox" [(ngModel)]="row.selected"></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header
+          class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">Name</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="primary-text-color hover:underline cursor-pointer" (click)="navigateToEdit(element.id)"
+            [class.pointer-events-none]="isLoading()"> {{ element.name }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Currency -->
+      <ng-container matColumnDef="currency">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header
+          class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">Currency</th>
+        <td mat-cell *matCellDef="let element">{{ element.currencyName }}</td>
+      </ng-container>
+
+      <!-- Start Date -->
+      <ng-container matColumnDef="startDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header
+          class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">Start Date</th>
+        <td mat-cell *matCellDef="let element">{{ element.startDate | mmddyyyyDate }}</td>
+      </ng-container>
+
+      <!-- End Date -->
+      <ng-container matColumnDef="endDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header
+          class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">End Date</th>
+        <td mat-cell *matCellDef="let element">{{ element.endDate | mmddyyyyDate }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header
+          class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">Status</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="px-2 py-1 rounded-full text-sm font-semibold border" [ngClass]="{
+      'bg-green-100 text-green-800 border-green-300': element.isActive,
+      'bg-gray-100 text-gray-600 border-gray-300': !element.isActive
+    }">
+            {{ element.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+
+
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef
+          class="!text-left !py-3 !px-4 !bg-gray-50 font-medium text-gray-700 border-opacity-0 table-right-corner">
+          Actions</th>
+        <td mat-cell *matCellDef="let element">
+          <button class="text-gray-400 hover:text-gray-600 disabled:opacity-50" mat-icon-button
+            [matMenuTriggerFor]="actionMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #actionMenu="matMenu">
+            <button mat-menu-item (click)="navigateToEdit(element.id)">Edit</button>
+            <button *ngIf="!element.isActive" mat-menu-item
+              (click)="performAction('activate', element)">Activate</button>
+            <button *ngIf="element.isActive" mat-menu-item
+              (click)="performAction('deactivate', element)">Deactivate</button>
+            <button mat-menu-item (click)="performAction('delete', element)">Delete</button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-50"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
+
+    </table>
+    <!-- No Data -->
+    <div class="text-center py-8 " *ngIf="!dataSource.filteredData.length && !isLoading()">
+      <mat-icon class="text-gray-400 text-4xl mb-2">person_off</mat-icon>
+      <p class="text-gray-500" *ngIf="searchKeyword">No results for "{{searchKeyword}}"</p>
+      <p class="text-gray-500" *ngIf="!searchKeyword">No pharmacy data available.</p>
+    </div>
+  </div>
+
+  <!-- mobile view table card -->
+  <div class="mobile-table-wapper pb-4">
+    <ng-container *ngIf="dataSource.filteredData.length > 0">
+      <div class="flex items-center gap-2">
+        <mat-checkbox class="custom-mat-checkbox" (change)="toggleSelectAll($event)" [checked]="isAllSelected()"
+          [indeterminate]="isPartialSelected()"></mat-checkbox>
+        <span class="font-bold">Details</span>
+      </div>
+      <div class="mobile-view-table" *ngFor="let element of pagedData">
+        <div class="toggle-table flex items-center gap-4">
+          <div>
+            <mat-checkbox class="custom-mat-checkbox" [(ngModel)]="element.selected"></mat-checkbox>
+          </div>
+          <div>
+            <p class="m-0"><span class="user-name" (click)="navigateToEdit(element.id)"
+              [class.pointer-events-none]="isLoading()">{{element.name}}</span>({{ element.isActive ? 'Active' : 'Inactive' }})
+            </p>
+            <p class="m-0">{{element.currencyName}}</p>
+          </div>
+        </div>
+        <div>
+          <button class="text-gray-400 hover:text-gray-600 disabled:opacity-50" mat-icon-button
+            [matMenuTriggerFor]="actionMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #actionMenu="matMenu">
+            <button mat-menu-item (click)="navigateToEdit(element.id)">Edit</button>
+            <button *ngIf="!element.isActive" mat-menu-item (click)="performAction('activate', element)">Activate</button>
+            <button *ngIf="element.isActive" mat-menu-item
+              (click)="performAction('deactivate', element)">Deactivate</button>
+            <button mat-menu-item (click)="performAction('delete', element)">Delete</button>
+          </mat-menu>
+        </div>
+      </div>
+    </ng-container>
+    <div *ngIf="!isLoading() && dataSource.filteredData.length === 0" class="text-center py-12">
+      <span *ngIf="searchKeyword">No results for "{{searchKeyword}}"</span>
+    </div>
+  </div>
+
+  <!-- Paginator -->
+  <div class="main-paginator">
+    <div class="paginator-section p-0">
+      <mat-paginator #paginator
+      [pageSizeOptions]="[5, 10, 20, 30]" [pageSize]="5"
+      [showFirstLastButtons]="true" [length]="dataSource.filteredData.length || 0"  [disabled]="isLoading()"  class="mat-mdc-paginator-container disabled:opacity-50">
+    </mat-paginator>
+    </div>
+  </div>
+</div>

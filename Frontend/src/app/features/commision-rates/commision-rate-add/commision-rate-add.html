@@ -1,0 +1,130 @@
+<app-full-page-loader [visible]="isLoadingPage()" />
+<div
+  class="flex flex-wrap items-center justify-between sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden py-2 px-4">
+  <div class="flex items-center space-x-2">
+    <button mat-icon-button class="header-back-button" (click)="goBack()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="form-header-heading">Commission Rate</span>
+  </div>
+
+  <div class="flex items-center space-x-4 flex items-center space-x-2 ml-auto mt-2 sm:mt-0">
+    @if(isEditMode){
+      <button type = "button" mat-flat-button (click)="addCommisionRate()" class="!py-1 !px-4 text-sm action-button secondry-button-add">
+        <mat-icon class="mr-1">add</mat-icon>
+        Add Commission Rate
+      </button>
+    }
+    <button type="submit" mat-flat-button class="!py-1 !px-4 text-sm primary-btn-add"
+      (click)="submitForm()">
+      Save
+    </button>
+
+    <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+      <mat-icon class="hover:text-blue-600 transition-colors icon-action-button">keyboard_arrow_down</mat-icon>
+    </button>
+
+    <mat-menu #actionMenu="matMenu">
+      <button mat-menu-item (click)="submitForm(true)">
+        <span>Save &amp; Close</span>
+      </button>
+
+      <ng-container *ngIf="isEditMode">
+        <button mat-menu-item *ngIf="statusValue === 'Inactive'" (click)="activateCommisionRate()">
+          <span>Activate</span>
+        </button>
+
+        <button mat-menu-item *ngIf="statusValue === 'Active'" (click)="deactivateCommisionRate()">
+          <span>Deactivate</span>
+        </button>
+
+        <button mat-menu-item (click)="deleteCommisionRate()">
+          <span>Delete</span>
+        </button>
+      </ng-container>
+    </mat-menu>
+  </div>
+</div>
+
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color">
+  <form [formGroup]="commisionRateForm">
+
+    <!-- Section 1: Commision Rate Information -->
+    <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">
+      Commission Rate Information
+    </h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+
+      <!-- Product -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Product <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <mat-select formControlName="productId" placeholder="Select Product">
+            <mat-option *ngFor="let product of products()" [value]="product.id">{{ product.name }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="commisionRateForm.get('productId')?.hasError('required')">
+            Product is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- From Amount -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">From Amount <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="fromAmount" type="number" (keydown)="preventNonNumeric($event)"
+            placeholder="Enter amount" class="text-sm">
+          <mat-error *ngIf="commisionRateForm.get('fromAmount')?.hasError('required')">
+            From Amount is required
+          </mat-error>
+          <mat-error *ngIf="commisionRateForm.get('fromAmount')?.hasError('invalidNumber')">
+            Only numbers allowed
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- To Amount -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">To Amount <span class="text-red-500">*</span></label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput formControlName="toAmount" type="number" (keydown)="preventNonNumeric($event)"
+            placeholder="Enter amount" class="text-sm">
+          <mat-error *ngIf="commisionRateForm.get('toAmount')?.hasError('required')">
+            To Amount is required
+          </mat-error>
+          <mat-error *ngIf="commisionRateForm.get('toAmount')?.hasError('invalidNumber')">
+            Only numbers allowed
+          </mat-error>
+          <mat-error *ngIf="commisionRateForm.get('toAmount')?.hasError('amountRange')">
+            From Amount cannot be greater than To Amount
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Rate % -->
+      <div class="space-y-2 custom-text-box">
+  <label class="block text-sm font-medium text-gray-700">Rate %</label>
+  <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+    <input matInput formControlName="ratePercentage" type="text"                  
+      inputmode="decimal" placeholder="Enter rate percentage"class="text-sm" 
+      appPercentage [minPercentage]="0" [maxPercentage]="100" />
+    <mat-error *ngIf="commisionRateForm.get('ratePercentage')?.hasError('invalidNumber')">
+      Only numbers allowed
+    </mat-error>
+  </mat-form-field>
+</div>
+
+
+      <!-- Status -->
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">Status</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <mat-select formControlName="status" placeholder="Select status" [disabled]="true">
+            <mat-option value="Active">Active</mat-option>
+            <mat-option value="Inactive">Inactive</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</div>
