@@ -15,6 +15,7 @@ namespace NewLifeHRT.Application.Services.Models.Request
         public string Email { get; set; }
         public string? PhoneNumber { get; set; }
         public int RoleId { get; set; }
+        public List<int>? RoleIds { get; set; }
         public AddressDto? Address { get; set; }
         public string? DEA { get; set; }
         public string? NPI { get; set; }

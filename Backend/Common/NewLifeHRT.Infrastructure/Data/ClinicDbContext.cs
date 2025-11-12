@@ -19,6 +19,7 @@ namespace NewLifeHRT.Infrastructure.Data
         }
         public ClinicDbContext() { }
         public DbSet<UserOtp> UserOtps { get; set; }
+        public DbSet<ApplicationUserRole> UserRoles { get; set; }
         public DbSet<Address> Addresses {  get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Permission> Permissions { get; set; }
@@ -104,6 +105,7 @@ namespace NewLifeHRT.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new ApplicationRole.RoleConfiguration());
+            modelBuilder.ApplyConfiguration(new ApplicationUserRole.ApplicationUserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new ApplicationUser.ApplicationUserConfiguration());
             modelBuilder.ApplyConfiguration(new Permission.PermissionConfiguration());
             modelBuilder.ApplyConfiguration(new RolePermission.RolePermissionConfiguration());

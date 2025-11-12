@@ -11,6 +11,7 @@ using NewLifeHRT.Tests.Common.Builders.Data;
 using NewLifeHRT.Tests.Common.Fixtures;
 using NewLifeHRT.Tests.Common.Mocks;
 using NewLifeHRT.Tests.Common.Tests;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -50,7 +51,8 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                 FirstName = "Test",
                 LastName = "User",
                 PhoneNumber = "1234567890",
-                RoleId = 1
+                RoleId = 1,
+                RoleIds = new List<int> { 1 }
             };
 
             var userRepositoryMock = new Mock<IUserRepository>();
@@ -288,7 +290,8 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                 LastName = "User",
                 Email = "updated@example.com",
                 PhoneNumber = "0987654321",
-                RoleId = 2
+                RoleId = 2,
+                RoleIds = new List<int> { 2 }
             };
 
             var user = _userBuilder.WithId(1).Build();

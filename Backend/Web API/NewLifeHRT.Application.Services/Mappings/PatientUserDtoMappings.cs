@@ -25,6 +25,7 @@ namespace NewLifeHRT.Application.Services.Mappings
                 Address = patientRequest.Address,
                 Password = tempPassword,
                 RoleId = patientRoleId,
+                RoleIds = new List<int> { patientRoleId },
                 UserName = patientRequest.Email,
                 MustChangePassword = true
             };
@@ -41,6 +42,7 @@ namespace NewLifeHRT.Application.Services.Mappings
                 Email = patientRequest.Email,
                 PhoneNumber = patientRequest.PhoneNumber,
                 RoleId = (int)AppRoleEnum.Patient,
+                RoleIds = new List<int> { (int)AppRoleEnum.Patient },
                 Address = patientRequest.Address,
             };
         }

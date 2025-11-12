@@ -13,6 +13,8 @@ namespace NewLifeHRT.Application.Services.Mappings
     {
         public static UserResponseDto ToUserResponseDto(this ApplicationUser user)
         {
+            var roleIds = user.UserRoles?.Select(ur => ur.RoleId).Distinct().ToArray() ?? Array.Empty<int>();
+
             return new UserResponseDto
             {
                 Id = user.Id,
@@ -21,7 +23,8 @@ namespace NewLifeHRT.Application.Services.Mappings
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                RoleId = user.RoleId,
+                RoleId = roleIds.FirstOrDefault(),
+                RoleIds = roleIds,
                 DEA = user.DEA,
                 NPI = user.NPI,
                 CommisionInPercentage = user.CommisionInPercentage,
