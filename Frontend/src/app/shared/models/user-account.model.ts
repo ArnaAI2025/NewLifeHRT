@@ -3,7 +3,7 @@ export interface UserAccount {
   email: string;
   fullname: string;
   tenant: string;
-  role: string;
+  roles: string[];
   permissions: string[];
   issuer: string;
   audience: string[];

@@ -7,7 +7,7 @@ export interface UserFormModel {
   password: string;
   email: string;
   phoneNumber: string;
-  roleId: number;
+  roleIds: number[];
   address: Address;
   dea: string;
   npi: string;
