@@ -2,7 +2,6 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSidenavContent, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { TopNavbarComponent } from '../top-navbar/top-navbar';
 import { SidebarComponent } from '../sidebar/sidebar';
 import { filter } from 'rxjs';
 
@@ -14,7 +13,6 @@ import { filter } from 'rxjs';
     CommonModule,
     MatSidenavModule,
     RouterModule,
-    TopNavbarComponent,
     SidebarComponent
   ],
   templateUrl: './main-layout.html',

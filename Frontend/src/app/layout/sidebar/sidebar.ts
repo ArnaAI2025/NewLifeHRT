@@ -1,10 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule, Router } from '@angular/router';
 import { PermissionAction, PermissionResource } from '../../shared/constants/permissions.enums';
 import { HasPermissionDirective } from "../../shared/directives/has-permission.directive";
+import { UserAccount } from '../../shared/models/user-account.model';
+import { UserAccountService } from '../../shared/services/user-account.service';
 
 interface NavItem {
   label: string;
@@ -30,10 +32,12 @@ interface NavItem {
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss'
 })
-export class SidebarComponent {
-  @Input() isCollapsed = false; // Add this Input
+export class SidebarComponent implements OnInit {
+  @Input() isCollapsed = false;
+  @Output() toggleSidebar = new EventEmitter<void>();
+  userAccount: UserAccount | null = null;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private userAccountService: UserAccountService) {}
 
   navItems: NavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
@@ -82,10 +86,18 @@ export class SidebarComponent {
 
   ];
 
+  ngOnInit(): void {
+    this.userAccount = this.userAccountService.getUserAccount();
+  }
+
   toggleSubmenu(item: NavItem) {
     if (item.children) {
       item.isExpanded = !item.isExpanded;
     }
+  }
+
+  onToggleSidebar(): void {
+    this.toggleSidebar.emit();
   }
 
   navigateTo(route: string) {
@@ -96,5 +108,20 @@ export class SidebarComponent {
 
   isActiveRoute(route: string): boolean {
     return this.router.url === route;
+  }
+
+  get userInitials(): string {
+    if (!this.userAccount?.fullname) {
+      return '';
+    }
+
+    const names = this.userAccount.fullname.trim().split(' ');
+    if (names.length === 1) {
+      return names[0].slice(0, 2).toUpperCase();
+    }
+
+    const first = names[0].charAt(0).toUpperCase();
+    const last = names[names.length - 1].charAt(0).toUpperCase();
+    return `${first}${last}`;
   }
 }
