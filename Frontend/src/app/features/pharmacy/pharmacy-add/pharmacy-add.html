@@ -202,24 +202,25 @@
                 <div *ngIf="getSelectedShippingMethodsControls.length; else emptyShipping">
                   <!-- Header Row -->
                   <div class="flex items-center gap-3 py-2 px-2 border-b border-gray-200 font-semibold text-gray-700">
-                    <div class="flex-1">Type</div>
-                    <div class="w-36">Amount</div>
-                    <div class="w-36">Cost of Shipping</div>
-                    <div></div> <!-- For Remove button -->
+                    <div class="col-type">Type</div>
+                    <div class="col-amount">Amount</div>
+                    <div class="col-cost">Cost of Shipping</div>
+                    <div class="col-code">Service Code</div>
+                    <div class="col-action"></div> <!-- For Remove button -->
                   </div>
                   <ul class="divide-y divide-gray-200">
                     <li *ngFor="let group of getSelectedShippingMethodsControls; let i = index" [formGroup]="group"
                       class="py-3 flex items-center gap-3">
                   
                       <!-- Type name -->
-                      <div class="flex-1 min-w-0">
+                      <div class="col-type">
                         <div class="text-sm text-gray-900 truncate">
                           {{ group.get('value')?.value }}
                         </div>
                       </div>
                     
                       <!-- Amount -->
-                      <div class="w-36">
+                      <div class="col-amount">
                         <mat-form-field appearance="outline" class="w-full !w-20 sm:!w-24 custom-qty-field">
                           <span matPrefix class="text-gray-500 px-2 pointer-events-none custom-sign-alignment">$</span>
                           <input matInput type="number" inputmode="decimal" step="0.01" min="0" formControlName="amount"
@@ -231,7 +232,7 @@
                       </div>
                     
                       <!-- Cost of Shipping -->
-                      <div class="w-36">
+                      <div class="col-cost">
                         <mat-form-field appearance="outline" class="w-full !w-20 sm:!w-24 custom-qty-field">
                           <span matPrefix class="text-gray-500 px-2 pointer-events-none custom-sign-alignment">$</span>
                           <input matInput type="number" inputmode="decimal" step="0.01" min="0"
@@ -241,9 +242,16 @@
                           </mat-error>
                         </mat-form-field>
                       </div>
-                    
+
+                      <!-- Service Code -->
+                      <div class="col-code">
+                        <mat-form-field appearance="outline" class="w-full !w-20 sm:!w-24 custom-qty-field">
+                          <input matInput type="text" formControlName="serviceCode" maxlength="50"/>
+                        </mat-form-field>
+                      </div>
+
                       <!-- Remove -->
-                      <div>
+                      <div class="col-action">
                         <button mat-icon-button color="warn" aria-label="Remove type" (click)="removeShippingMethod(i)">
                           <mat-icon>delete</mat-icon>
                         </button>

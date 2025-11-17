@@ -53,7 +53,7 @@ namespace NewLifeHRT.External.Clients
             }
         }
 
-        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        public static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

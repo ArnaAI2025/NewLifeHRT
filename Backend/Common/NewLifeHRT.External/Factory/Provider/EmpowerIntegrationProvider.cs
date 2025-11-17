@@ -25,7 +25,8 @@ namespace NewLifeHRT.External.Factory.Provider
         private readonly AzureBlobStorageSettings _azureBlobStorageSettings;
         private readonly IRefillDateCalculator _calculator;
 
-        public EmpowerIntegrationProvider(EmpowerApiClient client, ClinicDbContext clinicDbContext, ITemplateContentGenerator templateContentGenerator, IPdfConverter pdfConverter, IOptions<AzureBlobStorageSettings> azureBlobStorageSettings, IRefillDateCalculator calculator)        {
+        public EmpowerIntegrationProvider(EmpowerApiClient client, ClinicDbContext clinicDbContext, ITemplateContentGenerator templateContentGenerator, IPdfConverter pdfConverter, IOptions<AzureBlobStorageSettings> azureBlobStorageSettings, IRefillDateCalculator calculator)
+        {
             _client = client;
             _clinicDbContext = clinicDbContext;
             _templateContentGenerator = templateContentGenerator;
@@ -44,7 +45,7 @@ namespace NewLifeHRT.External.Factory.Provider
             _client.Initialize(configData);
 
             var failedTrackings = await _clinicDbContext.OrderProcessingApiTrackings
-                .Where(t => t.OrderId == orderId && t.Status == OrderProcessingApiTrackingStatusEnum.Failed)
+                .Where(t => t.OrderId == orderId && t.Status == OrderProcessingApiTrackingStatusEnum.Failed && !t.IsFromWebhook)
                 .Include(t => t.Transactions)
                 .ToListAsync();
 
@@ -120,7 +121,7 @@ namespace NewLifeHRT.External.Factory.Provider
                     if (requiresScheduleCode)
                     {
                         
-                        foreach (var od in order.OrderDetails.Where(x => x.ProductPharmacyPriceListItem?.LifeFileScheduledCodeId != null))
+                        foreach (var od in order.OrderDetails)
                         {
                             var input = new RefillInputModel
                             {
@@ -155,7 +156,7 @@ namespace NewLifeHRT.External.Factory.Provider
                         Id = Guid.NewGuid(),
                         OrderProcessingApiTrackingId = tracking.Id,
                         Endpoint = "/NewRx/EasyRx",
-                        Payload = JsonSerializer.Serialize(empEasyRxRequest),
+                        Payload = JsonSerializer.Serialize(empEasyRxRequest,EmpowerApiClient._jsonOptions),
                         Status = empEasyRxResponse?.Type == ResponseTypeEnum.Success
                             ? OrderProcessingApiTrackingStatusEnum.Success
                             : OrderProcessingApiTrackingStatusEnum.Failed,

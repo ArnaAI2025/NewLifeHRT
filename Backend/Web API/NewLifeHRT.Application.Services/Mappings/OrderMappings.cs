@@ -46,13 +46,14 @@ namespace NewLifeHRT.Application.Services.Mappings
                 Status = (int)order.Status,
                 IsActive = order.IsActive,
                 IsPharmacyActive = order.Pharmacy?.IsActive,
-                CourierServiceId = order.PharmacyOrderTracking?.CourierServiceName.HasValue == true ? (int?)order.PharmacyOrderTracking.CourierServiceName : null,
-                TrackingNumber = order.PharmacyOrderTracking?.TrackingNumber,
+                CourierServiceId = order.CourierServiceId,
+                TrackingNumber = order.TrackingNumber,
                 PharmacyOrderNumber = order.PharmacyOrderNumber,
                 RefundAmount = order.RefundAmount,
                 SettledAmount = order.SettledAmount,
                 LastSettlementDate = order.LastSettlementDate,
                 CreatedAt = order.CreatedAt,
+                OrderNumber = order.OrderNumber,
                 OrderDetails = order.OrderDetails?.Select(od => new OrderDetailResponseDto
                 {
                     Id = od.Id,
@@ -220,8 +221,8 @@ namespace NewLifeHRT.Application.Services.Mappings
                 //Signed = order.Signed,
                 Status = (int)order.Status,
                 IsPharmacyActive = order.Pharmacy?.IsActive,
-                CourierServiceId = order.PharmacyOrderTracking?.CourierServiceName.HasValue == true ? (int?)order.PharmacyOrderTracking.CourierServiceName : null,
-                TrackingNumber = order.PharmacyOrderTracking?.TrackingNumber,
+                CourierServiceId = order.CourierServiceId,
+                TrackingNumber = order.TrackingNumber,
                 PharmacyOrderNumber = order.PharmacyOrderNumber,
                 CreatedAt = order.CreatedAt,
                 OrderDetails = order.OrderDetails?.Select(od => new OrderDetailResponseDto

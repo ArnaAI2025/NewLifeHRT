@@ -14,6 +14,7 @@ namespace NewLifeHRT.Domain.Entities
         public Guid PharmacyId { get; set; }
         public int? PhysicianId { get; set; }
         public int CounselorId { get; set; }
+        public int? CourierServiceId { get; set; }
         public bool? Signed { get; set; }
         public string? PharmacyOrderNumber { get; set; }
         public Guid? CouponId { get; set; }
@@ -43,7 +44,10 @@ namespace NewLifeHRT.Domain.Entities
         public decimal? SettledAmount { get; set; }
         public DateTime? LastSettlementDate { get; set; }
         public OrderStatus? Status { get; set; }
+        public string? OrderNumber { get; set; }
+        public string? TrackingNumber { get; set; }
         public virtual Patient Patient { get; set; }
+        public virtual CourierService CourierService { get; set; }
         public virtual Pharmacy Pharmacy { get; set; }
         public virtual Coupon Coupon { get; set; }
         public virtual PatientCreditCard PatientCreditCard { get; set; }
@@ -51,7 +55,6 @@ namespace NewLifeHRT.Domain.Entities
         public virtual PharmacyShippingMethod PharmacyShippingMethod { get; set; }
         public virtual ApplicationUser Counselor { get; set; }
         public virtual ApplicationUser Physician { get; set; }
-        public virtual PharmacyOrderTracking PharmacyOrderTracking { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
         public virtual ICollection<CommissionsPayable> CommissionsPayables { get; set; } = new List<CommissionsPayable>();
         public virtual ICollection<OrderProductRefillDetail> OrderProductRefillDetails { get; set; } = new List<OrderProductRefillDetail>();
@@ -137,7 +140,12 @@ namespace NewLifeHRT.Domain.Entities
                        .WithMany(p => p.Orders)          
                        .HasForeignKey(o => o.ProposalId) 
                        .OnDelete(DeleteBehavior.Restrict)
-                       .IsRequired(false);               
+                       .IsRequired(false);
+
+                builder.HasOne(o => o.CourierService)
+                       .WithMany(c => c.Orders)
+                       .HasForeignKey(o => o.CourierServiceId)
+                       .OnDelete(DeleteBehavior.Restrict);
             }
         }
     }

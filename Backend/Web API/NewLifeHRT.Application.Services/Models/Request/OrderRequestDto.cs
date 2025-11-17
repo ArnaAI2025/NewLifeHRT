@@ -43,6 +43,6 @@ namespace NewLifeHRT.Application.Services.Models.Request
         public bool? Signed { get; set; }
         public string? PharmacyOrderNumber { get; set; }
         public List<OrderDetailRequestDto> OrderDetails { get; set; } = new List<OrderDetailRequestDto>();
-        public PharmacyOrderTrackingDto PharmacyOrderTracking { get; set; }
+        public int? CourierServiceId { get; set; }
     }
 }

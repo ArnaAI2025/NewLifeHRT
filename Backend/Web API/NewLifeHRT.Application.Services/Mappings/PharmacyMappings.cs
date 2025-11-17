@@ -80,7 +80,8 @@ namespace NewLifeHRT.Application.Services.Mappings
                         ShippingMethodId = sm.ShippingMethodId,
                         Value = sm.ShippingMethod?.Name ?? string.Empty,
                         Amount = sm.Amount,
-                        CostOfShipping = sm.CostOfShipping
+                        CostOfShipping = sm.CostOfShipping,
+                        ServiceCode = sm.ServiceCode
                     })
                     .ToArray() ?? Array.Empty<PharmacyShippingResponseDto>()
             };

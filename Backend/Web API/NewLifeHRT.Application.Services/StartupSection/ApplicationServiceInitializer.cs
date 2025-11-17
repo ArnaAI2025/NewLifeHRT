@@ -59,7 +59,6 @@ namespace NewLifeHRT.Application.Services.StartupSection
             services.AddScoped<IHolidayService, HolidayService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IOrderDetailService, OrderDetailService>();
-            services.AddScoped<IPharmacyOrderTrackingService, PharmacyOrderTrackingService>();
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<IPoolService, PoolService>();
             services.AddScoped<IPoolDetailService, PoolDetailService>();

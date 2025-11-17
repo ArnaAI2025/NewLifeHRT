@@ -39,7 +39,7 @@ namespace NewLifeHRT.External.Factory.Provider
                 _client.Initialize(configData);
 
                 var failedTrackings = await _clinicDbContext.OrderProcessingApiTrackings
-                .Where(t => t.OrderId == orderId && t.Status == OrderProcessingApiTrackingStatusEnum.Failed)
+                .Where(t => t.OrderId == orderId && t.Status == OrderProcessingApiTrackingStatusEnum.Failed && !t.IsFromWebhook)
                 .Include(t => t.Transactions)
                 .ToListAsync();
 

@@ -6,6 +6,5 @@ export interface UserDisplay {
   mobileNumber: string;
   country: string;
   isDeleted? : boolean;
-  roles: string[];
 }
 

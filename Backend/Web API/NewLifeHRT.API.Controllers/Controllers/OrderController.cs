@@ -220,5 +220,12 @@ namespace NewLifeHRT.API.Controllers.Controllers
             return Ok(result);
         }
 
+        [HttpGet("get-all-courier-services")]
+        public async Task<IActionResult> GetAllCourierServices()
+        {
+            var result = await _orderService.GetAllCourierServicesAsync();
+            return Ok(result);
+        }
+
     }
 }

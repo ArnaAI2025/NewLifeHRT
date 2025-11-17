@@ -9,12 +9,8 @@ using System.Threading.Tasks;
 
 namespace NewLifeHRT.Infrastructure.Repositories
 {
-    public class PharmacyOrderTrackingRepository : Repository<PharmacyOrderTracking, ClinicDbContext>, IPharmacyOrderTrackingRepository
+    public class OrderProcessingApiTransactionRepository : Repository<OrderProcessingApiTransaction, ClinicDbContext>, IOrderProcessingApiTransactionRepository
     {
-        public PharmacyOrderTrackingRepository(
-            ClinicDbContext context
-        ) : base(context)
-        {
-        }
+        public OrderProcessingApiTransactionRepository(ClinicDbContext context) : base(context) { }
     }
 }

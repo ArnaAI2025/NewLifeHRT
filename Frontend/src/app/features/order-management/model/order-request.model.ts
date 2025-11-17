@@ -6,10 +6,7 @@ export interface OrderDetailRequestDto {
   perUnitAmount: number;
   totalAmount: number;
 }
-export interface PharmacyOrderTrackingDto {  
-  trackingNumber? : string | null;
-  courierServiceId? : number | null;
-}
+
 export interface OrderRequestDto {
   name: string;
   patientId: string;
@@ -40,7 +37,7 @@ export interface OrderRequestDto {
   orderPaidDate?: Date | null;
   orderFulFilled?: Date | null;
   signed? : boolean;
+  courierServiceId? : number | null;
   orderDetails: OrderDetailRequestDto[];
- pharmacyOrderTracking : PharmacyOrderTrackingDto;
- pharmacyOrderNumber? : string | null;
+  pharmacyOrderNumber? : string | null;
 }

@@ -38,20 +38,11 @@ namespace NewLifeHRT.Application.Services.Services
         /// Generates both Access Token (JWT) and Refresh Token.
         /// Includes tenant context, user identity, and role permissions.
         /// </summary>
-        public Task<TokenResponseDto> GenerateTokensAsync(ApplicationUser user, IEnumerable<ApplicationRole> rolesWithPermissions)
+        public Task<TokenResponseDto> GenerateTokensAsync(ApplicationUser user, ApplicationRole roleWithPermissions)
         {
-            if (rolesWithPermissions == null)
+            if (roleWithPermissions == null)
             {
-                throw new InvalidOperationException("Roles with permissions are required to generate tokens.");
-            }
-
-            var roleList = rolesWithPermissions
-                .Where(role => role != null)
-                .ToList();
-
-            if (!roleList.Any())
-            {
-                throw new InvalidOperationException("Roles with permissions are required to generate tokens.");
+                throw new InvalidOperationException("Role with permissions is required to generate tokens.");
             }
 
             var tenantContext = _tenantAccessor.MultiTenantContext
@@ -87,25 +78,22 @@ namespace NewLifeHRT.Application.Services.Services
             };
 
             // Add user role and all associated permissions.
-            foreach (var role in roleList)
+            if (!string.IsNullOrWhiteSpace(roleWithPermissions.Name))
             {
-                var roleName = role?.Name;
-                if (!string.IsNullOrWhiteSpace(roleName))
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, roleName!));
-                }
+                claims.Add(new Claim(ClaimTypes.Role, roleWithPermissions.Name));
             }
 
-            var permissionNames = roleList
-                .Where(role => role.RolePermissions != null)
-                .SelectMany(role => role.RolePermissions
-                    .Select(permission => permission?.Permission?.PermissionName))
-                .Where(name => !string.IsNullOrWhiteSpace(name))
-                .Distinct(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var permissionName in permissionNames)
+            if (roleWithPermissions.RolePermissions != null)
             {
-                claims.Add(new Claim("permission", permissionName!));
+                var permissionNames = roleWithPermissions.RolePermissions
+                    .Select(permission => permission?.Permission?.PermissionName)
+                    .Where(name => !string.IsNullOrWhiteSpace(name))
+                    .Distinct(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var permissionName in permissionNames)
+                {
+                    claims.Add(new Claim("permission", permissionName!));
+                }
             }
 
             // ---------- Token Signing ----------

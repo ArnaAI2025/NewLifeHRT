@@ -47,7 +47,7 @@ namespace NewLifeHRT.External.Factory.Provider
             _client.Initialize(configData,type);
 
             var failedTrackings = await _clinicDbContext.OrderProcessingApiTrackings
-                .Where(t => t.OrderId == orderId && t.Status == OrderProcessingApiTrackingStatusEnum.Failed)
+                .Where(t => t.OrderId == orderId && t.Status == OrderProcessingApiTrackingStatusEnum.Failed && !t.IsFromWebhook)
                 .Include(t => t.Transactions)
                 .ToListAsync();
 
@@ -99,7 +99,7 @@ namespace NewLifeHRT.External.Factory.Provider
             if (requiresScheduleCode)
             {
 
-                foreach (var od in order.OrderDetails.Where(x => x.ProductPharmacyPriceListItem?.LifeFileScheduledCodeId != null))
+                foreach (var od in order.OrderDetails)
                 {
                     var input = new RefillInputModel
                     {
@@ -153,7 +153,7 @@ namespace NewLifeHRT.External.Factory.Provider
                     Id = Guid.NewGuid(),
                     OrderProcessingApiTrackingId = tracking.Id,
                     Endpoint = "/lfapi/v1/order",
-                    Payload = JsonSerializer.Serialize(request),
+                    Payload = JsonSerializer.Serialize(request,LifeFileApiClient._jsonOptions),
                     CreatedAt = DateTime.UtcNow,
                     CreatedBy = "System"
                 };

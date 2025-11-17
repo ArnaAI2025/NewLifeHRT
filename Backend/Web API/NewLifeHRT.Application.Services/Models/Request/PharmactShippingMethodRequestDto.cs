@@ -12,5 +12,6 @@ namespace NewLifeHRT.Application.Services.Models.Request
         public Guid? Id { get; set; }
         public decimal Amount { get; set; }
         public decimal CostOfShipping { get; set; }
+        public string? ServiceCode { get; set; }
     }
 }

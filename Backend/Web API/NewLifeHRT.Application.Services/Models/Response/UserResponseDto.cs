@@ -15,7 +15,7 @@ namespace NewLifeHRT.Application.Services.Models.Response
         public string LastName { get; set; }
         public string Email { get; set; }
         public string? PhoneNumber { get; set; }
-        public int[] RoleIds { get; set; } = Array.Empty<int>();
+        public int RoleId { get; set; }
         public string? DEA { get; set; }
         public string? NPI { get; set; }
         public decimal? CommisionInPercentage { get; set; }

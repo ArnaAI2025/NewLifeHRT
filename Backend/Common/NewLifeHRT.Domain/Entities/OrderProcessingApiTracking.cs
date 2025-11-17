@@ -15,6 +15,7 @@ namespace NewLifeHRT.Domain.Entities
         public int IntegrationTypeId { get; set; }
         public OrderProcessingApiTrackingStatusEnum Status { get; set; }
         public int? Sequence { get; set; }
+        public bool IsFromWebhook { get; set; }
         public virtual Order Order { get; set; }
         public virtual IntegrationType IntegrationType { get; set; }
         public virtual ICollection<OrderProcessingApiTransaction> Transactions { get; set; } = new List<OrderProcessingApiTransaction>();
@@ -43,6 +44,10 @@ namespace NewLifeHRT.Domain.Entities
                        .WithMany()
                        .HasForeignKey(o => o.IntegrationTypeId)
                        .OnDelete(DeleteBehavior.Restrict);
+
+                builder.Property(o => o.IsFromWebhook)
+                        .HasDefaultValue(false)
+                        .IsRequired();
             }
         }
     }

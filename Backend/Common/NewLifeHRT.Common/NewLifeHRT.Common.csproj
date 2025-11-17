@@ -20,4 +20,10 @@
 		<None Include="Services\Llm\Prompts\**\*" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="Services\Llm\Prompts\refill_date.v1.txt">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 </Project>

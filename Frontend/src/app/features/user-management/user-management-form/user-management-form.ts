@@ -81,7 +81,6 @@ export class UserManagementFormComponent implements OnInit {
 
   userForm!: FormGroup;
   userRole = UserRole;
-  roleOptions: { id: number; name: string }[] = [];
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly confirmationDialogService = inject(
@@ -101,7 +100,6 @@ export class UserManagementFormComponent implements OnInit {
     serviceName: string;
     displayName: string;
   }[] = [];
-  clinicServicesLoaded = false;
   allStates: DropDownResponseDto[] = [];
   isLoadingStates = signal(false);
   hidePassword:boolean = true;
@@ -120,7 +118,7 @@ export class UserManagementFormComponent implements OnInit {
     password: '',
     email: '',
     phoneNumber: '',
-    roleIds: [],
+    roleId: 0,
     address: {
       addressLine1: '',
       city: '',
@@ -150,22 +148,28 @@ export class UserManagementFormComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.roleOptions = this.buildRoleOptions();
-
     this.activatedRoute.paramMap.subscribe(async (params) => {
       const fromPageParam = params.get('fromPage');
-      this.FromPage = this.resolveRoleId(fromPageParam);
-      const userIdParam = params.get('userId');
-      this.userId.set(userIdParam !== null ? Number(userIdParam) : 0);
-
-      if (this.userId() === 0 && !this.userModel.roleIds.length && this.FromPage) {
-        this.userModel.roleIds = [this.FromPage];
-      }
+      this.FromPage =
+        UserRole[fromPageParam as keyof typeof UserRole] || fromPageParam || '';
+      this.userId.set(
+        params.get('userId') !== null ? Number(params.get('userId')) : 0
+      );
     });
-
     this.initializeForm();
     this.loadTimeZones();
     this.loadCountries();
+    if (
+      this.FromPage === UserRole.Doctor ||
+      this.FromPage === UserRole.Receptionist ||
+      this.FromPage === UserRole.Nurse
+    ) {
+      await this.clinicServiceByRoleType();
+      this.userForm.get('timezoneId')?.setValidators([Validators.required]);
+      this.userForm.get('timezoneId')?.updateValueAndValidity();
+      this.userForm.get('color')?.setValidators([Validators.required]);
+      this.userForm.get('color')?.updateValueAndValidity();
+    }
 
     if (this.userId() > 0) {
       await this.userManagementService.getUserById(this.userId()).subscribe({
@@ -298,7 +302,7 @@ loadCountries(): Promise<void> {
       email: data.email,
       phoneNumber: data.phoneNumber ?? '',
       signatureUrl: data.signatureUrl ?? '',
-      roleIds: data.roleIds ?? [],
+      roleId: data.roleId,
       address: {
         addressLine1: data.address?.addressLine1 ?? '',
         city: data.address?.city ?? '',
@@ -347,7 +351,6 @@ loadCountries(): Promise<void> {
       password: this.userId() > 0 ? [''] : ['', [Validators.required, Validators.minLength(6)]],
       email: ['', [Validators.required, Validators.email,CustomEmailValidator]],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^(\+?1\s?)?(\([2-9][0-9]{2}\)|[2-9][0-9]{2})[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$/)]],
-      roleIds: [this.getInitialRoleSelection(), [Validators.required]],
       dea: [''],
       npi: [''],
       commisionInPercentage: [null],
@@ -378,8 +381,6 @@ loadCountries(): Promise<void> {
     this.userForm.valueChanges.subscribe((value) =>
       this.updateModelFromForm(value)
     );
-
-    this.watchRoleSelectionChanges();
   }
 
   private addDynamicServiceControls(): void {
@@ -396,158 +397,6 @@ loadCountries(): Promise<void> {
     });
 
     this.cdRef.detectChanges();
-  }
-
-  private getInitialRoleSelection(): number[] {
-    if (Array.isArray(this.userModel.roleIds) && this.userModel.roleIds.length) {
-      return [...this.userModel.roleIds];
-    }
-
-    return this.FromPage ? [this.FromPage] : [];
-  }
-
-  private normalizeRoleSelection(selection: unknown): number[] {
-    if (Array.isArray(selection)) {
-      return selection
-        .map((value) => Number(value))
-        .filter((value) => !Number.isNaN(value));
-    }
-
-    if (typeof selection === 'number') {
-      return [selection];
-    }
-
-    return [];
-  }
-
-  private hasAnyRole(roleIds: number[], targetRoles: number[]): boolean {
-    return targetRoles.some((role) => roleIds.includes(role));
-  }
-
-  private watchRoleSelectionChanges(): void {
-    const roleControl = this.userForm.get('roleIds');
-    if (!roleControl) {
-      return;
-    }
-
-    const initialRoles = this.normalizeRoleSelection(roleControl.value);
-    this.applyRoleSpecificValidators(initialRoles);
-    this.ensureClinicServicesLoaded(initialRoles);
-
-    roleControl.valueChanges.subscribe((selection) => {
-      const roleIds = this.normalizeRoleSelection(selection);
-      this.applyRoleSpecificValidators(roleIds);
-      this.ensureClinicServicesLoaded(roleIds);
-    });
-  }
-
-  private applyRoleSpecificValidators(roleIds: number[]): void {
-    const timezoneControl = this.userForm.get('timezoneId');
-    const colorControl = this.userForm.get('color');
-
-    const requireTimezone = this.hasAnyRole(roleIds, [
-      UserRole.Doctor,
-      UserRole.Receptionist,
-      UserRole.Nurse,
-      UserRole.SalesPerson,
-    ]);
-
-    const requireColor = this.hasAnyRole(roleIds, [
-      UserRole.Doctor,
-      UserRole.Receptionist,
-      UserRole.Nurse,
-    ]);
-
-    if (timezoneControl) {
-      if (requireTimezone) {
-        timezoneControl.setValidators([Validators.required]);
-      } else {
-        timezoneControl.clearValidators();
-      }
-      timezoneControl.updateValueAndValidity({ emitEvent: false });
-    }
-
-    if (colorControl) {
-      if (requireColor) {
-        colorControl.setValidators([Validators.required]);
-      } else {
-        colorControl.clearValidators();
-      }
-      colorControl.updateValueAndValidity({ emitEvent: false });
-    }
-  }
-
-  private ensureClinicServicesLoaded(roleIds: number[]): void {
-    if (this.clinicServicesLoaded) {
-      return;
-    }
-
-    if (this.hasAnyRole(roleIds, [
-      UserRole.Doctor,
-      UserRole.Receptionist,
-      UserRole.Nurse,
-    ])) {
-      this.clinicServicesLoaded = true;
-      this.clinicServiceByRoleType();
-    }
-  }
-
-  private buildRoleOptions(): { id: number; name: string }[] {
-    return Object.keys(UserRole)
-      .filter((key) => Number.isNaN(Number(key)))
-      .map((key) => ({
-        id: UserRole[key as keyof typeof UserRole],
-        name: this.pascalToSpace(key),
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  private resolveRoleId(param: string | null): number {
-    if (!param) {
-      return 0;
-    }
-
-    const numericValue = Number(param);
-    if (!Number.isNaN(numericValue) && numericValue > 0) {
-      return numericValue;
-    }
-
-    const enumValue = UserRole[param as keyof typeof UserRole];
-    return typeof enumValue === 'number' ? enumValue : 0;
-  }
-
-  getSelectedRoleNames(): string[] {
-    const selectedIds = this.normalizeRoleSelection(
-      this.userForm?.get('roleIds')?.value
-    );
-
-    return selectedIds
-      .map(
-        (id) => this.roleOptions.find((option) => option.id === id)?.name ?? ''
-      )
-      .filter((name) => !!name);
-  }
-
-  hasAnySelectedRole(roleIds: number[]): boolean {
-    const selectedIds = this.normalizeRoleSelection(
-      this.userForm?.get('roleIds')?.value
-    );
-
-    return this.hasAnyRole(selectedIds, roleIds);
-  }
-
-  getSelectedRolesDisplay(): string {
-    const names = this.getSelectedRoleNames();
-    if (names.length) {
-      return names.join(', ');
-    }
-
-    const fallbackRole = (UserRole as Record<number, string>)[this.FromPage];
-    if (typeof fallbackRole === 'string') {
-      return this.pascalToSpace(fallbackRole);
-    }
-
-    return 'User';
   }
   private applyReplaceCommissionValidators(isMatch: boolean): void {
     if (this.FromPage !== UserRole.SalesPerson) {
@@ -575,7 +424,6 @@ loadCountries(): Promise<void> {
       email: this.userModel.email,
       phoneNumber: this.userModel.phoneNumber,
       signatureUrl: this.userModel.signatureUrl,
-      roleIds: this.userModel.roleIds,
       dea: this.userModel.dea,
       npi: this.userModel.npi,
       commisionInPercentage: this.userModel.commisionInPercentage,
@@ -646,7 +494,6 @@ loadCountries(): Promise<void> {
       password: formValue.password || '',
       email: formValue.email || '',
       phoneNumber: formValue.phoneNumber || '',
-      roleIds: this.normalizeRoleSelection(formValue.roleIds),
       dea: formValue.dea || '',
       npi: formValue.npi || '',
       commisionInPercentage: formValue.commisionInPercentage || null,
@@ -709,20 +556,13 @@ loadCountries(): Promise<void> {
         .filter((service) => servicesGroup?.get(service.serviceName)?.value)
         .map((service) => service.id);
 
-      const selectedRoleIds = this.normalizeRoleSelection(formValue.roleIds);
-      if (!selectedRoleIds.length && this.FromPage) {
-        selectedRoleIds.push(this.FromPage);
-      }
-
       formData.append('UserName', formValue.userName);
       formData.append('FirstName', formValue.firstName.trim());
       formData.append('LastName', formValue.lastName.trim());
       formData.append('Email', formValue.email);
       formData.append('PhoneNumber', formValue.phoneNumber || '');
       formData.append('Password', formValue.password);
-      selectedRoleIds.forEach((roleId) =>
-        formData.append('RoleIds', roleId.toString())
-      );
+      formData.append('RoleId', this.FromPage.toString());
       formData.append('DEA', formValue.dea || '');
       formData.append('NPI', formValue.npi || '');
       formData.append(
@@ -891,7 +731,6 @@ loadCountries(): Promise<void> {
       password: 'Password',
       email: 'Email',
       phoneNumber: 'Phone Number',
-      roleIds: 'Roles',
       dea: 'DEA Number',
       npi: 'NPI Number',
       commisionInPercentage: 'Commission Percentage',
@@ -919,7 +758,7 @@ loadCountries(): Promise<void> {
       password: '',
       email: '',
       phoneNumber: '',
-      roleIds: this.FromPage ? [this.FromPage] : [],
+      roleId: 0,
       dea: '',
       npi: '',
       commisionInPercentage: 0,

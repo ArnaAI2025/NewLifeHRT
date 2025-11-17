@@ -193,6 +193,7 @@ async fetchDropdownData(): Promise<void> {
               value: [sm.value],
               amount: [sm.amount ?? null, [Validators.required, Validators.min(0)]],
               costOfShipping: [sm.costOfShipping ?? null, [Validators.required, Validators.min(0)]],
+              serviceCode: [sm.serviceCode ?? null],
             })
           );
 
@@ -234,6 +235,7 @@ async fetchDropdownData(): Promise<void> {
         value: [method.value],
         amount: [null, [Validators.required, Validators.min(0)]],
         costOfShipping: [null, [Validators.required, Validators.min(0)]],
+        serviceCode: [null],
       })
     );
 
@@ -357,6 +359,7 @@ get getSelectedShippingMethodsControls(): FormGroup[] {
         id : sm.id,
         amount: sm.amount,
         costOfShipping: sm.costOfShipping,
+        serviceCode: sm.serviceCode,
       })),
     };
 

@@ -27,7 +27,7 @@ namespace NewLifeHRT.Application.Services.Services
 
             var predicates = new List<Expression<Func<OrderProcessingApiTracking, bool>>>
             {
-                x => x.Order.Status == OrderStatus.LifeFileError
+                x => x.Order.Status == OrderStatus.LifeFileError && !x.IsFromWebhook
             };
 
             var errorTrackings = await _orderProcessingApiTrackingRepository.FindWithIncludeAsync(

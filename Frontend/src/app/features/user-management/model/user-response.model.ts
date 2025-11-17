@@ -7,7 +7,7 @@ export interface UserResponseDto {
   lastName: string;
   email: string;
   phoneNumber?: string;
-  roleIds: number[];
+  roleId: number;
   dea?: string;
   npi?: string;
   commisionInPercentage?: number;

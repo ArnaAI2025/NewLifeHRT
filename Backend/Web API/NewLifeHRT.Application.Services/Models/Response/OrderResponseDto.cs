@@ -52,6 +52,6 @@ namespace NewLifeHRT.Application.Services.Models.Response
         public decimal? RefundAmount { get; set; }
         public decimal? SettledAmount { get; set; }
         public DateTime? LastSettlementDate { get; set; }
-
+        public string? OrderNumber { get; set; }
     }
 }

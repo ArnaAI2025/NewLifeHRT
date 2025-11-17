@@ -70,18 +70,8 @@ namespace NewLifeHRT.Application.Services.Services
             if (await _userRepository.ExistAsync(createUserRequestDto.UserName, createUserRequestDto.Email))
                 throw new Exception("Username or Email already exists.");
 
-            var resolvedRoleIds = createUserRequestDto.RoleIds?
-                .Where(roleId => roleId > 0)
-                .Distinct()
-                .ToList() ?? new List<int>();
-
-            if (!resolvedRoleIds.Any())
-            {
-                throw new ArgumentException("At least one role must be provided.", nameof(createUserRequestDto.RoleIds));
-            }
-
             var user = new ApplicationUser(createUserRequestDto.UserName, createUserRequestDto.FirstName, createUserRequestDto.LastName, createUserRequestDto.Email, createUserRequestDto.PhoneNumber,
-                createUserRequestDto.Email.ToUpper(), createUserRequestDto.UserName.ToUpper(), createUserRequestDto.DEA, createUserRequestDto.NPI,
+                createUserRequestDto.Email.ToUpper(), createUserRequestDto.UserName.ToUpper(), createUserRequestDto.RoleId, createUserRequestDto.DEA, createUserRequestDto.NPI,
                 createUserRequestDto.CommisionInPercentage, createUserRequestDto.MatchAsCommisionRate, createUserRequestDto.ReplaceCommisionRate, createUserRequestDto.IsVacationApplicable, createUserRequestDto.TimezoneId, createUserRequestDto.Color, createUserRequestDto.PatientId, createUserRequestDto.MustChangePassword, userId.ToString(), DateTime.UtcNow);
             Console.WriteLine($"user=> {createUserRequestDto.Email},\n password ==> {createUserRequestDto.Password}");
 
@@ -95,24 +85,6 @@ namespace NewLifeHRT.Application.Services.Services
                 throw new Exception($"Failed to create user account. {errorMessage}");
             }
 
-            if (resolvedRoleIds.Any() && _context.Roles != null)
-            {
-                var roleNames = await _context.Roles
-                    .Where(r => resolvedRoleIds.Contains(r.Id))
-                    .Select(r => r.Name)
-                    .ToListAsync();
-
-                if (roleNames.Any())
-                {
-                    var roleResult = await _userManager.AddToRolesAsync(user, roleNames);
-                    if (!roleResult.Succeeded)
-                    {
-                        var errorMessage = string.Join("; ", roleResult.Errors.Select(e => e.Description));
-                        throw new Exception($"Failed to assign roles to user. {errorMessage}");
-                    }
-                }
-            }
-
             // Handle signature upload with timestamp-based file name
             if (createUserRequestDto.SignatureFile != null)
             {
@@ -123,14 +95,8 @@ namespace NewLifeHRT.Application.Services.Services
                 await _userManager.UpdateAsync(user);
             }
 
-            var isPatient = resolvedRoleIds.Contains((int)AppRoleEnum.Patient);
-
-            user.UserRoles = resolvedRoleIds.Distinct()
-                .Select(roleId => new ApplicationUserRole { UserId = user.Id, RoleId = roleId })
-                .ToList();
-
             // Address creation for non-patient users
-            if (createUserRequestDto.Address != null && !isPatient)
+            if (createUserRequestDto.Address != null && createUserRequestDto.RoleId != (int)AppRoleEnum.Patient)
             {
                 var address = new Domain.Entities.Address(createUserRequestDto.Address.AddressLine1, createUserRequestDto.Address.AddressType, createUserRequestDto.Address.City,
                     createUserRequestDto.Address.PostalCode, createUserRequestDto.Address.CountryId, createUserRequestDto.Address.StateId, userId.ToString(), DateTime.UtcNow, true);
@@ -157,17 +123,12 @@ namespace NewLifeHRT.Application.Services.Services
             return new CommonOperationResponseDto<int> { Id = user.Id, Message = "User created successfully" };
         }
 
-        public async Task<List<UserResponseDto>> GetAllAsync(IEnumerable<int>? roleIds = null)
+        public async Task<List<UserResponseDto>> GetAllAsync(int? roleId)
         {
-            var includes = new[] { "Address", "UserServices", "Address.Country", "UserRoles" };
-
-            var roleIdList = roleIds?
-                .Where(roleId => roleId > 0)
-                .Distinct()
-                .ToList();
+            var includes = new[] { "Address", "UserServices", "Address.Country" };
 
             Expression<Func<ApplicationUser, bool>> predicate = u =>
-                roleIdList == null || roleIdList.Count == 0 || u.UserRoles.Any(ur => roleIdList.Contains(ur.RoleId));
+                (!roleId.HasValue || u.RoleId == roleId.Value);
 
             var predicates = new List<Expression<Func<ApplicationUser, bool>>> { predicate };
 
@@ -175,22 +136,9 @@ namespace NewLifeHRT.Application.Services.Services
 
             return users.ToUserResponseDtoList();
         }
-        public async Task<List<DropDownIntResponseDto>> GetAllActiveUsersAsync(IEnumerable<int>? roleIds = null)
+        public async Task<List<DropDownIntResponseDto>> GetAllActiveUsersAsync(int roleId)
         {
-            var roleIdList = roleIds?
-                .Where(roleId => roleId > 0)
-                .Distinct()
-                .ToList();
-
-            var usersQuery = _userRepository.Query()
-                .Where(u => !u.IsDeleted);
-
-            if (roleIdList != null && roleIdList.Any())
-            {
-                usersQuery = usersQuery.Where(u => u.UserRoles.Any(ur => roleIdList.Contains(ur.RoleId)));
-            }
-
-            var users = await usersQuery.ToListAsync();
+            var users = await _userRepository.FindAsync(a => !a.IsDeleted && a.RoleId == roleId);
             return users.ToDropDownUserResponseDtoList();
         }
 
@@ -207,7 +155,7 @@ namespace NewLifeHRT.Application.Services.Services
         {
             var user = await _userRepository.GetWithIncludeAsync(
                 id,
-                new[] { "Address", "UserServices", "LicenseInformations", "LicenseInformations.State", "UserRoles" });
+                new[] { "Address", "UserServices", "LicenseInformations", "LicenseInformations.State" });
 
             if (user == null) return null;
             if (!string.IsNullOrWhiteSpace(user.SignaturePath))
@@ -272,68 +220,6 @@ namespace NewLifeHRT.Application.Services.Services
                 throw new Exception(message);
             }
 
-            var desiredRoleIds = updateUserRequestDto.RoleIds?
-                .Where(roleId => roleId > 0)
-                .Distinct()
-                .ToList() ?? new List<int>();
-
-            if (!desiredRoleIds.Any())
-            {
-                throw new ArgumentException("At least one role must be provided.", nameof(updateUserRequestDto.RoleIds));
-            }
-
-            var existingRoleIds = new List<int>();
-            if (_context.UserRoles != null)
-            {
-                existingRoleIds = await _context.UserRoles
-                    .Where(ur => ur.UserId == user.Id)
-                    .Select(ur => ur.RoleId)
-                    .ToListAsync();
-            }
-
-            var rolesToRemove = existingRoleIds.Except(desiredRoleIds).ToList();
-            var rolesToAdd = desiredRoleIds.Except(existingRoleIds).ToList();
-
-            if (rolesToRemove.Any() && _context.Roles != null)
-            {
-                var roleNamesToRemove = await _context.Roles
-                    .Where(r => rolesToRemove.Contains(r.Id))
-                    .Select(r => r.Name)
-                    .ToListAsync();
-
-                if (roleNamesToRemove.Any())
-                {
-                    var removeResult = await _userManager.RemoveFromRolesAsync(user, roleNamesToRemove);
-                    if (!removeResult.Succeeded)
-                    {
-                        var errorMessage = string.Join("; ", removeResult.Errors.Select(e => e.Description));
-                        throw new Exception($"Failed to remove roles from user. {errorMessage}");
-                    }
-                }
-            }
-
-            if (rolesToAdd.Any() && _context.Roles != null)
-            {
-                var roleNamesToAdd = await _context.Roles
-                    .Where(r => rolesToAdd.Contains(r.Id))
-                    .Select(r => r.Name)
-                    .ToListAsync();
-
-                if (roleNamesToAdd.Any())
-                {
-                    var addResult = await _userManager.AddToRolesAsync(user, roleNamesToAdd);
-                    if (!addResult.Succeeded)
-                    {
-                        var errorMessage = string.Join("; ", addResult.Errors.Select(e => e.Description));
-                        throw new Exception($"Failed to assign roles to user. {errorMessage}");
-                    }
-                }
-            }
-
-            user.UserRoles = desiredRoleIds
-                .Select(roleId => new ApplicationUserRole { UserId = user.Id, RoleId = roleId })
-                .ToList();
-
             // Update core user fields
             user.UserName = updateUserRequestDto.UserName;
             user.FirstName = updateUserRequestDto.FirstName;
@@ -341,6 +227,7 @@ namespace NewLifeHRT.Application.Services.Services
             user.Email = updateUserRequestDto.Email;
             user.NormalizedEmail = updateUserRequestDto.Email.ToUpper().ToString();
             user.PhoneNumber = updateUserRequestDto.PhoneNumber;
+            user.RoleId = updateUserRequestDto.RoleId;
             user.DEA = updateUserRequestDto.DEA;
             user.NPI = updateUserRequestDto.NPI;
             user.CommisionInPercentage = updateUserRequestDto.CommisionInPercentage;
@@ -525,27 +412,12 @@ namespace NewLifeHRT.Application.Services.Services
                 };
             }
         }
-        public async Task<List<DropDownIntResponseDto>> GetActiveUsersDropDownAsync(IEnumerable<int> roleIds, string searchTerm = "")
+        public async Task<List<DropDownIntResponseDto>> GetActiveUsersDropDownAsync(int roleId, string searchTerm = "")
         {
             const int maxResults = 7;
 
-            if (roleIds == null)
-            {
-                throw new ArgumentNullException(nameof(roleIds));
-            }
-
-            var roleIdList = roleIds
-                .Where(roleId => roleId > 0)
-                .Distinct()
-                .ToList();
-
-            if (!roleIdList.Any())
-            {
-                throw new ArgumentException("At least one role must be provided.", nameof(roleIds));
-            }
-
             var query = _userRepository.Query()
-                .Where(u => !u.IsDeleted && u.UserRoles.Any(ur => roleIdList.Contains(ur.RoleId)));
+                .Where(u => !u.IsDeleted && u.RoleId == roleId);
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {

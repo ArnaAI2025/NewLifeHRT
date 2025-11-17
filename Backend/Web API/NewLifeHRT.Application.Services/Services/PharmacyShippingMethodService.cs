@@ -40,6 +40,7 @@ namespace NewLifeHRT.Application.Services.Services
                 Amount = r.Amount,
                 CostOfShipping = r.CostOfShipping,
                 ShippingMethodId = r.shippingMethodId,
+                ServiceCode = r.ServiceCode,
                 IsActive = true,
                 CreatedAt = utcNow,
                 CreatedBy = userId.ToString()
@@ -74,6 +75,7 @@ namespace NewLifeHRT.Application.Services.Services
                         existing.ShippingMethodId = req.shippingMethodId;
                         existing.Amount = req.Amount;
                         existing.CostOfShipping = req.CostOfShipping;
+                        existing.ServiceCode = req.ServiceCode;
                         existing.UpdatedAt = DateTime.UtcNow;
                         existing.UpdatedBy = userId.ToString();
                     }
@@ -84,6 +86,7 @@ namespace NewLifeHRT.Application.Services.Services
                     {
                         PharmacyId = pharmacyId,
                         ShippingMethodId = r.shippingMethodId,
+                        ServiceCode = r.ServiceCode,
                         Amount = r.Amount,
                         CostOfShipping = r.CostOfShipping,
                         IsActive = true,

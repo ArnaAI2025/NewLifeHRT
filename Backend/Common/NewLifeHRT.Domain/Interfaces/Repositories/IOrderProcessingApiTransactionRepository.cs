@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NewLifeHRT.Domain.Interfaces.Repositories
 {
-    public interface IPharmacyOrderTrackingRepository : IRepository<PharmacyOrderTracking>
+    public interface IOrderProcessingApiTransactionRepository : IRepository<OrderProcessingApiTransaction>
     {
     }
 }

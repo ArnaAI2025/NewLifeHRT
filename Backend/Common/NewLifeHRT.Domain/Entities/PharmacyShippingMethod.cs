@@ -16,6 +16,7 @@ namespace NewLifeHRT.Domain.Entities
         public Guid PharmacyId { get; set; }
         public decimal Amount { get; set; }
         public decimal CostOfShipping { get; set; }
+        public string? ServiceCode { get; set; }
         public virtual Pharmacy Pharmacy { get; set; }
         public virtual ICollection<Proposal> Proposals { get; set; } = new List<Proposal>();
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();

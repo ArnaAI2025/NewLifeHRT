@@ -117,9 +117,22 @@
             margin-bottom: 2px;
         }
 
-        .signature-image-container hr {
-            border: 1px solid #000;
-            margin: 0 auto 2px 0;
+        .signature-line {
+            position: relative;
+            width: 100%;
+        }
+
+        .signature-line hr {
+           border: 1px solid #000;
+           margin: 0;
+           width: 100%;
+        }
+
+        .signature-line .signature-label {
+           display: block;
+           margin-top: 4px;
+           font-size: 10pt;
+           text-align: right;
         }
     </style>
 </head>
@@ -129,7 +142,7 @@
         @Model.PharmacyName
     </div>
     <div class="order-info">
-        Order #@Model.OrderId | Sent: @(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))
+        Order #:@Model.OrderId | Sent: @(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))
     </div>
 
     <div class="two-column">
@@ -273,8 +286,10 @@
             <div class="signature-section @randomPosition">
                 <div class="signature-image-container">
                     <img src="@Model.Prescriber.SignatureUrl" alt="Physician Signature"/>
-                    <hr/>
                 </div>
+            </div>
+            <div class="signature-line">
+                <hr/>
                 <span class="signature-label">Physician Signature</span>
             </div>
         </div>

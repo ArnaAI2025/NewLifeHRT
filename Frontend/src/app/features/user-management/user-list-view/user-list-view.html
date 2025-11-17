@@ -145,19 +145,6 @@
           {{ element.country }}
         </td>
       </ng-container>
-      <ng-container matColumnDef="roles">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header
-          class="!text-left !py-3 !px-4 !bg-gray-50 font-medium text-gray-700 border-opacity-0">Roles</th>
-        <td mat-cell *matCellDef="let element" class="space-x-1 space-y-1">
-          <ng-container *ngIf="element.roles?.length; else noRoles">
-            <span *ngFor="let role of element.roles"
-              class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 mr-1 mb-1">
-              {{ role }}
-            </span>
-          </ng-container>
-          <ng-template #noRoles>—</ng-template>
-        </td>
-      </ng-container>
       <ng-container matColumnDef="status">
   <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
   <td mat-cell *matCellDef="let row">

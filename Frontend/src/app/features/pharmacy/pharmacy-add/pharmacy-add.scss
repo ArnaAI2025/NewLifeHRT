@@ -1,22 +1,42 @@
 /* Keep the $ nicely padded & centered; never capture clicks */
 .mat-mdc-form-field-text-prefix {
-    align-self: center;
-    padding-left: 8px;
-    padding-right: 2px;
-    pointer-events: none;
+  align-self: center;
+  padding-left: 8px;
+  padding-right: 2px;
+  pointer-events: none;
 }
 
 /* Slightly denser Material inputs to cut whitespace */
 .mat-mdc-form-field-infix {
-    padding-top: 6px !important;
-    padding-bottom: 6px !important;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+.col-type {
+  width: 55%;
+}
+
+.col-amount {
+  width: 10%;
+}
+
+.col-cost {
+  width: 10%;
+}
+
+.col-code {
+  width: 20%;
+}
+
+.col-action {
+  width: 5%;
 }
 
 @media (max-width: 640px) {
-    .mat-table .mat-header-row {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: #fff;
-    }
+  .mat-table .mat-header-row {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #fff;
+  }
 }

@@ -17,6 +17,7 @@ namespace NewLifeHRT.External.StartupSection
         {
             services.AddHttpClient<ISmsService, TwilioSmsService>();
             services.AddScoped<IAudioConverter, AudioConverter>();
+            services.AddScoped<IWebhookOrderService, WebhookOrderService>();
             return services;
         }
     }

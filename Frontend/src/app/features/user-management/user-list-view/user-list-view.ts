@@ -55,7 +55,7 @@ export class UserListViewComponent implements OnInit, AfterViewInit {
   @Input() userRoleTypeId!: number;
   public UserRole = UserRole;
 
-  displayedColumns: string[] = ['select', 'fullName', 'userName', 'email', 'mobileNumber', 'country', 'roles', 'status', 'actions'];
+  displayedColumns: string[] = ['select', 'fullName', 'userName', 'email', 'mobileNumber', 'country','status', 'actions'];
 
   dataSource = new MatTableDataSource<UserDisplay>();
   searchKeyword = '';
@@ -105,8 +105,7 @@ export class UserListViewComponent implements OnInit, AfterViewInit {
         data.userName.toLowerCase().includes(value) ||
         data.email.toLowerCase().includes(value) ||
         data.mobileNumber.toLowerCase().includes(value) ||
-        data.country.toLowerCase().includes(value) ||
-        data.roles.some((role) => role.toLowerCase().includes(value))
+        data.country.toLowerCase().includes(value)
       );
     };
     this.paginator.page.subscribe((event: PageEvent) => {
@@ -121,8 +120,6 @@ export class UserListViewComponent implements OnInit, AfterViewInit {
       switch (property) {
       case 'status':
         return item.isDeleted ? 'Inactive' : 'Active';
-      case 'roles':
-        return item.roles.join(', ');
       default:
         return (item as any)[property];
       }
@@ -170,24 +167,8 @@ export class UserListViewComponent implements OnInit, AfterViewInit {
       email: user.email,
       mobileNumber: user.phoneNumber,
       country: user.address?.country || '—',
-      isDeleted: user.isDeleted || false,
-      roles: this.mapRoleIdsToNames(user.roleIds)
+      isDeleted: user.isDeleted || false
     }));
-  }
-
-  private mapRoleIdsToNames(roleIds: number[] | undefined): string[] {
-    if (!Array.isArray(roleIds)) {
-      return [];
-    }
-
-    const roleNames = roleIds
-      .map((roleId) => {
-        const roleName = (UserRole as Record<number, string>)[roleId];
-        return typeof roleName === 'string' ? this.pascalToSpace(roleName) : '';
-      })
-      .filter((roleName) => !!roleName);
-
-    return Array.from(new Set(roleNames));
   }
 
 async loadAdminDataAsync(): Promise<void> {
@@ -195,7 +176,7 @@ async loadAdminDataAsync(): Promise<void> {
   this.selection.clear();
   try {
     const apiResponse = await firstValueFrom(
-      this.userManagementService.getAllUsers([this.userRoleTypeId])
+      this.userManagementService.getAllUsers(this.userRoleTypeId)
     );
     this.dataSource.data = this.formatAdminFromApi(apiResponse);
     this.dataSource.filter = '';  

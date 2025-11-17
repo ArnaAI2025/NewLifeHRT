@@ -1694,6 +1694,67 @@ namespace NewLifeHRT.Infrastructure.Data.Seed
 
                 return migrationBuilder;
             }
+
+            public static MigrationBuilder InsertCourierServices(MigrationBuilder migrationBuilder)
+            {
+                var createdAt = DateTime.UtcNow;
+
+                migrationBuilder.InsertData(
+                    table: "CourierServices",
+                    columns: new[] { "Id", "Name", "Abbreviation", "CreatedAt", "CreatedBy", "IsActive" },
+                    values: new object[,]
+                    {
+                        { 1, "Federal Express", "FDX", createdAt, "system", true },
+                        { 2, "United States Postal Service", "USPS", createdAt, "system", true },
+                        { 3, "United Parcel Service", "UPS", createdAt, "system", true }
+                    });
+
+                return migrationBuilder;
+            }
+
+            public static MigrationBuilder UpdateCourierServicesAndTrackingNumberInOrder(MigrationBuilder migrationBuilder)
+            {
+                migrationBuilder.Sql(@"
+                    DECLARE @Map TABLE (InputName VARCHAR(50), Abbrev VARCHAR(10));
+                
+                    INSERT INTO @Map (InputName, Abbrev)
+                    VALUES 
+                        ('FedEx', 'FDX'),
+                        ('USPS', 'USPS'),
+                        ('UPS', 'UPS');
+                
+                   
+                    UPDATE O
+                    SET 
+                        O.TrackingNumber = P.TrackingNumber,
+                        O.CourierServiceId = C.Id
+                    FROM [Orders] O
+                    INNER JOIN PharmacyOrderTrackings P
+                        ON P.OrderId = O.Id
+                    LEFT JOIN @Map M
+                        ON P.CourierServiceName = M.InputName
+                    LEFT JOIN CourierServices C
+                        ON C.Abbreviation = M.Abbrev
+                    WHERE 
+                        (O.TrackingNumber IS NULL OR O.CourierServiceId IS NULL);
+                ");
+
+                return migrationBuilder;
+            }
+
+            public static MigrationBuilder UpdateOrderNumberInOrders(MigrationBuilder migrationBuilder)
+            {
+                migrationBuilder.Sql(@"UPDATE Orders
+                    SET OrderNumber = UPPER(
+                        LEFT(REPLACE(CONVERT(varchar(40), NEWID()), '-', ''), 12)
+                    )
+                    WHERE OrderNumber IS NULL;
+                ");
+
+                return migrationBuilder;
+            }
+
+
         }
 
     }

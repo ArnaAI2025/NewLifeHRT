@@ -27,31 +27,21 @@ namespace NewLifeHRT.Infrastructure.Repositories
 
         public async Task<List<ApplicationUser>> GetAllAsync()
         {
-            return await _dbSet.Include(u => u.Address).Include(u => u.UserRoles).ToListAsync();
+            return await _dbSet.Include(u => u.Address).ToListAsync();
         }
 
 
         public async Task<ApplicationUser?> GetByIdAsync(int id)
         {
-            return await _dbSet.Include(u => u.Address).Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == id);
+            return await _dbSet.Include(u => u.Address).FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<List<ApplicationRole>> GetUserRolesWithPermissionsAsync(int userId)
+        public async Task<ApplicationRole> GetUserRoleWithPermissionsAsync(int userId)
         {
             var user = await _dbSet
-                .Where(u => u.Id == userId)
-                .Include(u => u.UserRoles)
-                    .ThenInclude(ur => ur.Role)
-                        .ThenInclude(r => r.RolePermissions)
-                            .ThenInclude(rp => rp.Permission)
+                .Where(u => u.Id == userId).Include("Role.RolePermissions.Permission")
                 .FirstOrDefaultAsync();
-
-            return user?.UserRoles
-                .Select(ur => ur.Role)
-                .Where(role => role != null)
-                .Cast<ApplicationRole>()
-                .Distinct()
-                .ToList() ?? new List<ApplicationRole>();
+            return user?.Role;
         }
 
         public async Task<string?> GetUserTimezoneAsync(int userId)
@@ -62,13 +52,13 @@ namespace NewLifeHRT.Infrastructure.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<(bool EmailExists, bool PhoneExists)> ExistAsync(string phoneNumber, string email, int? excludePatientId = null)
+        public async Task<(bool EmailExists, bool PhoneExists)> ExistAsync(string phoneNumber, string email, int? excludeUserId = null)
         {
             var query = _dbSet.AsQueryable();
 
-            if (excludePatientId.HasValue)
+            if (excludeUserId.HasValue)
             {
-                query = query.Where(p => p.Id != excludePatientId.Value);
+                query = query.Where(p => p.Id != excludeUserId.Value);
             }
 
             var emailExists = await query.AnyAsync(p => p.Email == email && !p.IsDeleted);

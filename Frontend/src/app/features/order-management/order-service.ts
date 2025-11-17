@@ -12,6 +12,7 @@ import { OrderReceiptResponse } from "./model/order-receipt-response.model";
 import { MarkReadyToLifeFileResponseDto } from "./model/mark-ready-lifefile-response.model";
 import { OrderPaymentRequestDto } from "./model/order-payment-request.model";
 import { OrderPaymentResponseDto } from "./model/order-payment-response.model";
+import { DropDownResponseDto } from "../../shared/models/drop-down-response.model";
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private baseHttp = inject(HttpService);
@@ -76,16 +77,14 @@ export class OrderService {
     }
     return this.baseHttp.get<OrderReceiptResponse>(url);
   }
-
   markReadyToLifeFile(id: string): Observable<MarkReadyToLifeFileResponseDto> {
     const url = `${ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.markReadyToLifeFile)}/${id}`;
     return this.baseHttp.patch<MarkReadyToLifeFileResponseDto>(url, {});
   }
-    generateCommission(id: string): Observable<MarkReadyToLifeFileResponseDto> {
+  generateCommission(id: string): Observable<MarkReadyToLifeFileResponseDto> {
     const url = `${ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.generateCommission)}/${id}`;
     return this.baseHttp.patch<MarkReadyToLifeFileResponseDto>(url, {});
   }
-
   updateOrderPayment(payload: OrderPaymentRequestDto): Observable<OrderPaymentResponseDto> {
     const url = `${ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.updatePayment)}`;
     return this.baseHttp.patch<OrderPaymentResponseDto>(url, payload);
@@ -98,11 +97,12 @@ export class OrderService {
     const url = `${ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.processRefund)}/${orderId}`;
     return this.baseHttp.post<CommonOperationResponseDto>(url, { refundAmount });
   }
-
   settleOutstandingRefund(orderId: string, settleAmount: number): Observable<CommonOperationResponseDto> {
     const url = `${ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.settleOutstandingRefund)}/${orderId}`;
     return this.baseHttp.post<CommonOperationResponseDto>(url, { settleAmount });
   }
-
-
+  getAllActiveCourierServices() : Observable<DropDownResponseDto[]> {
+      const url = ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.getAllCourierServices);
+      return this.baseHttp.get(url);
+  }
 }

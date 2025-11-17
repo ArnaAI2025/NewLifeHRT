@@ -160,9 +160,9 @@
 
             <!-- Order Id -->
             <div class="space-y-2 custom-text-box">
-              <label class="block text-sm font-medium text-gray-700">Order Id </label>
+              <label class="block text-sm font-medium text-gray-700">Order Number </label>
               <mat-form-field appearance="outline" class="w-full form-input form-input-text">
-                <input matInput formControlName="id" placeholder="Order id" class="text-sm read-mode-text"
+                <input matInput formControlName="number" placeholder="Order number" class="text-sm read-mode-text"
                   [readonly]="isReadOnlyMode()"/>
                 <mat-error *ngIf="isFieldInvalid('id') && !isReadOnlyMode()">{{ getFieldError('id')
                   }}</mat-error>
@@ -175,8 +175,8 @@
               <mat-form-field appearance="outline" class="w-full form-input form-input-text">
                 <mat-select formControlName="courierServiceId" placeholder="Select Courier Service"
                   [disabled]="isReadOnlyMode()" class="courier-service">
-                  <mat-option *ngFor="let service of courierServicesList" [value]="service.value">
-                    {{ getCourierServiceFullName(service.value) }}
+                  <mat-option *ngFor="let service of courierServicesList" [value]="service.id">
+                    {{ service.value }}
                   </mat-option>
                 </mat-select>
                 <mat-error *ngIf="isFieldInvalid('courierServiceId') && !isReadOnlyMode()">

@@ -30,5 +30,6 @@ namespace NewLifeHRT.Application.Services.Interfaces
         //Task<CommissionsPayable> GetFullOrderByIdAsync(Guid orderId);
         Task<CommonOperationResponseDto<Guid?>> ProcessRefundAsync(Guid orderId, decimal refundAmount, int userId);
         Task<CommonOperationResponseDto<Guid?>> SettleOutstandingRefundAsync(Guid orderId, decimal settleAmount, int userId);
+        Task<List<CommonDropDownResponseDto<int>>> GetAllCourierServicesAsync();
     }
 }

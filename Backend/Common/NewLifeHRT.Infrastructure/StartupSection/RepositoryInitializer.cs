@@ -59,7 +59,6 @@ namespace NewLifeHRT.Infrastructure.StartupSection
             services.AddScoped<IHolidayRecurrenceRepository, HolidayRecurrenceRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
-            services.AddScoped<IPharmacyOrderTrackingRepository, PharmacyOrderTrackingRepository>();
             services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<ITimezoneRepository, TimezoneRepository>();
             services.AddScoped<IBatchMessageRepository, BatchMessageRepository>();
@@ -88,6 +87,8 @@ namespace NewLifeHRT.Infrastructure.StartupSection
             services.AddScoped<IOrderProductScheduleSummaryRepository, OrderProductScheduleSummaryRepository>();
             services.AddScoped<IScheduleSummaryProcessingRepository, ScheduleSummaryProcessingRepository>();
             services.AddScoped<IPatientSelfReminderRepository, PatientSelfReminderRepository>();
+            services.AddScoped<ICourierServiceRepository, CourierServiceRepository>();
+            services.AddScoped<IOrderProcessingApiTransactionRepository, OrderProcessingApiTransactionRepository>();
             return services;
         }
     }

@@ -16,7 +16,7 @@ namespace NewLifeHRT.Tests.Common.Builders.Data
                 .Without(u => u.UserServices)
                 .Without(u => u.RefreshTokens)
                 .Without(u => u.Otps)
-                .Without(u => u.UserRoles)
+                .Without(u => u.Role)
                 .Create();
         }
 

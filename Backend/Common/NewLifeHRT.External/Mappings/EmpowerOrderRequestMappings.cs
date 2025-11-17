@@ -19,8 +19,8 @@ namespace NewLifeHRT.External.Mappings
             }
             return new EmpPostEasyRxModel.Request
             {
-                ClientOrderId = order.Id.ToString(),
-                PoNumber = order.Id.ToString(),
+                ClientOrderId = order.OrderNumber,
+                PoNumber = order.OrderNumber,
                 DeliveryService = "FEDEX 2-DAY",
                 AllowOverrideDeliveryService = true,
                 AllowOverrideEssentialCopyGuidance = true,
@@ -75,7 +75,7 @@ namespace NewLifeHRT.External.Mappings
                         Medication = new EmpPostEasyRxModel.Medication
                         {
                             ItemDesignatorId = od.ProductPharmacyPriceListItem?.LifeFilePharmacyProductId,
-                            ClientPrescriptionId = order.Id.ToString(),
+                            ClientPrescriptionId = order.OrderNumber,
                             DrugDescription = od.Protocol,
                             Quantity = od.Quantity,
                             Refills = 0,

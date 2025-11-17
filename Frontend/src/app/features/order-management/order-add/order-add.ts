@@ -33,7 +33,6 @@ import { ShippingAddressResponseDto } from '../../patient/model/shipping-address
 import { ProductLineItemDto } from '../../price-list-items/model/product-transaction.model';
 
 import { CardTypeEnum } from '../../../shared/enums/credit-card-type.enum';
-import { CourierServices } from '../../../shared/enums/courier-services.enum';
 
 import { FullPageLoaderComponent } from '../../../shared/components/full-page-loader/full-page-loader.component';
 import { ShippingAddressAddComponent } from '../../patient/shipping-address-add/shipping-address-add';
@@ -130,13 +129,7 @@ export class OrderAddComponent implements OnInit {
   coupons: CouponResponse[] = [];
   filteredCoupons: CouponResponse[] = [];
 
-  courierServices = CourierServices;
-  courierServicesList = Object.keys(CourierServices)
-    .filter(key => !isNaN(Number(CourierServices[key as keyof typeof CourierServices])))
-    .map(key => ({
-      name: key,
-      value: CourierServices[key as keyof typeof CourierServices]
-    }));
+  courierServicesList : DropDownResponseDto[] = []
 
   selectedCoupon: CouponResponse | null = null;
 
@@ -212,6 +205,7 @@ export class OrderAddComponent implements OnInit {
   initForm() {
     this.orderForm = this.fb.group({
       id: [''],
+      number:[''],
       name: ['', [Validators.required, Validators.minLength(3)]],
       patientId: [null, Validators.required],
       pharmacyId: [null, Validators.required],
@@ -239,7 +233,7 @@ export class OrderAddComponent implements OnInit {
       isActive: [null]
     });
     this.orderForm.get('status')?.disable();
-    this.orderForm.get('id')?.disable();
+    this.orderForm.get('number')?.disable();
   }
 
   private async loadMasterData() {
@@ -249,10 +243,11 @@ export class OrderAddComponent implements OnInit {
       counselors: this.userManagementService.getAllActiveSalesPerson(),
       coupons: this.proposalService.getCouponsForDropDown(),
       doctors: this.userManagementService.getAllActiveDoctors(),
+      courierServices:this.orderService.getAllActiveCourierServices()
     })
       .pipe(finalize(() => this.isLoadingPage.set(false)))
       .subscribe({
-        next: ({ pharmacies, patients, counselors, coupons, doctors }) => {
+        next: ({ pharmacies, patients, counselors, coupons, doctors,courierServices }) => {
           this.pharmacies = pharmacies;
           this.filteredPharmacies = [...pharmacies];
           this.patients = patients;
@@ -263,6 +258,7 @@ export class OrderAddComponent implements OnInit {
           this.filteredCoupons = [...coupons];
           this.doctorsList = doctors;
           this.filteredDoctorsList = [...doctors];
+          this.courierServicesList = courierServices;
 
           if (this.orderId) {
             this.loadOrderData();
@@ -334,6 +330,7 @@ export class OrderAddComponent implements OnInit {
     }
     this.orderForm.patchValue({
       id: order.id,
+      number: order.orderNumber,
       name: order.name || '',
       status: order.status || OrderStatus.New,
       therapyExpiration: order.therapyExpiration ? new Date(order.therapyExpiration) : null,
@@ -1325,11 +1322,7 @@ export class OrderAddComponent implements OnInit {
       orderPaidDate: formValue.orderPaidDate || undefined,
       orderFulFilled: formValue.orderFulFilled || undefined,
       pharmacyOrderNumber: formValue.pharmacyOrderNumber || undefined,
-      pharmacyOrderTracking:
-      {
-        trackingNumber: formValue.trackingNumber || undefined,
-        courierServiceId: formValue.courierServiceId || undefined,
-      },
+      courierServiceId: formValue.courierServiceId || undefined,
 
       orderDetails: this.selectedProducts.map(product => ({
         id: product.id,
@@ -2049,18 +2042,7 @@ export class OrderAddComponent implements OnInit {
       this.isSubmitting.set(false);
     }
   }
-  getCourierServiceFullName(service: CourierServices): string {
-    switch (service) {
-      case CourierServices.FedEx:
-        return "Federal Express (FedEx)";
-      case CourierServices.USPS:
-        return "United States Postal Service (USPS)";
-      case CourierServices.UPS:
-        return "United Parcel Service (UPS)";
-      default:
-        return "Unknown Courier Service";
-    }
-  }
+  
   async onCancelCommission(): Promise<void> {
     try {
       const confirmed = await firstValueFrom(

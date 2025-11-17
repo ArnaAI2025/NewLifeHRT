@@ -29,7 +29,7 @@ namespace NewLifeHRT.External.Mappings
                     General = new LifeFileGeneral
                     {
                         Memo = "New Life HRT memo",
-                        ReferenceId = "A7B9Z2XQ",
+                        ReferenceId = order.OrderNumber,
                         StatusId = configData["StatusID"]
                     },
                     Patient = new LifeFilePatient
@@ -100,7 +100,7 @@ namespace NewLifeHRT.External.Mappings
                         State = shippingAddress?.State?.Abbreviation,
                         ZipCode = shippingAddress?.PostalCode,
                         Country = shippingAddress?.Country?.Name,
-                        Service = 7727 
+                        Service = int.TryParse(order.PharmacyShippingMethod?.ServiceCode, out var parsedService)? parsedService: (int?)null
                     },
                     Billing = new LifeFileBilling
                     {

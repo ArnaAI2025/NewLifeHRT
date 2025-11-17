@@ -19,7 +19,6 @@ namespace NewLifeHRT.Application.Services.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderDetailService _orderDetailService;
         private readonly IShippingAddressService _shippingAddressService;
-        private readonly IPharmacyOrderTrackingService _pharmacyOrderTrackingService;
         private readonly IPharmacyShippingMethodService _pharmacyShippingMethodService;
         private readonly ICommissionsPayableService _commissionsPayableService;
         private readonly IPoolService _poolService;
@@ -29,13 +28,13 @@ namespace NewLifeHRT.Application.Services.Services
         private readonly ClinicInformationSettings _clinicInformationSettings;
         private readonly IPatientCreditCardRepository _patientCreditCardRepository;
         private readonly ClinicDbContext _context;
+        private readonly ICourierServiceRepository _courierServiceRepository;
 
-        public OrderService(IOrderRepository orderRepository, IOrderDetailService orderDetailService, IShippingAddressService shippingAddressService, IPharmacyOrderTrackingService pharmacyOrderTrackingService, IPharmacyShippingMethodService pharmacyShippingMethodService, ICommissionsPayableService commissionsPayableService, IPoolService poolService, IPatientCreditCardRepository patientCreditCardRepository, ClinicDbContext clinicDbContext, ITemplateContentGenerator templateContentGenerator, IPdfConverter pdfConverter, IOptions<AzureBlobStorageSettings> azureBlobStorageSettings, IOptions<ClinicInformationSettings> clinicInformationSettings)
+        public OrderService(IOrderRepository orderRepository, IOrderDetailService orderDetailService, IShippingAddressService shippingAddressService, IPharmacyShippingMethodService pharmacyShippingMethodService, ICommissionsPayableService commissionsPayableService, IPoolService poolService, IPatientCreditCardRepository patientCreditCardRepository, ClinicDbContext clinicDbContext, ITemplateContentGenerator templateContentGenerator, IPdfConverter pdfConverter, IOptions<AzureBlobStorageSettings> azureBlobStorageSettings, IOptions<ClinicInformationSettings> clinicInformationSettings, ICourierServiceRepository courierServiceRepository)
         {
             _orderRepository = orderRepository;
             _orderDetailService = orderDetailService;
             _shippingAddressService = shippingAddressService;
-            _pharmacyOrderTrackingService = pharmacyOrderTrackingService;
             _pharmacyShippingMethodService = pharmacyShippingMethodService;
             _commissionsPayableService = commissionsPayableService;
             _poolService = poolService;
@@ -45,6 +44,7 @@ namespace NewLifeHRT.Application.Services.Services
             _clinicInformationSettings = clinicInformationSettings.Value;
             _patientCreditCardRepository = patientCreditCardRepository;
             _context = clinicDbContext;
+            _courierServiceRepository = courierServiceRepository;
         }
 
         public async Task<List<OrderBulkResponseDto>> GetAllAsync(Guid? patientId = null)
@@ -72,7 +72,7 @@ namespace NewLifeHRT.Application.Services.Services
 
         public async Task<OrderResponseDto?> GetOrderByIdAsync(Guid orderId)
         {
-            var includes = new[] { "OrderDetails", "OrderDetails.Product", "OrderDetails.Product.Type", "Patient", "Pharmacy", "Counselor", "Physician", "PharmacyOrderTracking" };
+            var includes = new[] { "OrderDetails", "OrderDetails.Product", "OrderDetails.Product.Type", "Patient", "Pharmacy", "Counselor", "Physician", "CourierService" };
 
             var order = await _orderRepository.GetWithIncludeAsync(orderId, includes);
             if (order == null) return null;
@@ -133,6 +133,8 @@ namespace NewLifeHRT.Application.Services.Services
                     CreatedAt = DateTime.UtcNow,
                     CreatedBy = userId.ToString(),
                     IsActive = true,
+                    CourierServiceId = dto.CourierServiceId,
+                    OrderNumber = await GenerateUniqueOrderNumberAsync(),
                     IsDeliveryChargeOverRidden = dto.PharmacyShippingMethodId.HasValue &&
                                                 originalShippingPrice.HasValue &&
                                                 dto.DeliveryCharge != originalShippingPrice.Value,
@@ -174,13 +176,6 @@ namespace NewLifeHRT.Application.Services.Services
                 if (dto.ShippingAddressId != null)
                 {
                     await _shippingAddressService.SetDefaultAsync(createdOrder.PatientId, (Guid)dto.ShippingAddressId, userId);
-                }
-                if (dto.PharmacyOrderTracking is not null)
-                {
-                    if (!string.IsNullOrWhiteSpace(dto.PharmacyOrderTracking.TrackingNumber) || dto.PharmacyOrderTracking.CourierServiceId != null)
-                    {
-                        await _pharmacyOrderTrackingService.CreateOrderAsync(dto.PharmacyOrderTracking, createdOrder.Id, userId);
-                    }
                 }
 
                 return new CommonOperationResponseDto<Guid>
@@ -249,6 +244,7 @@ namespace NewLifeHRT.Application.Services.Services
                 existingOrder.OrderFulFilled = dto.OrderFulFilled;
                 existingOrder.OrderPaidDate = dto.OrderPaidDate;
                 existingOrder.PharmacyOrderNumber = dto.PharmacyOrderNumber;
+                existingOrder.CourierServiceId = dto.CourierServiceId;
                 existingOrder.UpdatedAt = DateTime.UtcNow;
                 existingOrder.UpdatedBy = userId.ToString();
                 existingOrder.IsDeliveryChargeOverRidden = dto.PharmacyShippingMethodId.HasValue &&
@@ -296,13 +292,6 @@ namespace NewLifeHRT.Application.Services.Services
                 if (dto.ShippingAddressId != null)
                 {
                     await _shippingAddressService.SetDefaultAsync(existingOrder.PatientId, (Guid)dto.ShippingAddressId, userId);
-                }
-                if (dto.PharmacyOrderTracking is not null)
-                {
-                    if (!string.IsNullOrWhiteSpace(dto.PharmacyOrderTracking.TrackingNumber) || dto.PharmacyOrderTracking.CourierServiceId != null)
-                    {
-                        await _pharmacyOrderTrackingService.CreateOrderAsync(dto.PharmacyOrderTracking, existingOrder.Id, userId);
-                    }
                 }
                 response.SuccessCount = 1 + detailResponse.SuccessCount;
                 response.FailedCount = detailResponse.FailedCount;
@@ -954,5 +943,31 @@ namespace NewLifeHRT.Application.Services.Services
                 }
             }
         }
+
+        public async Task<string> GenerateUniqueOrderNumberAsync()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+
+            while (true)
+            {
+                var buffer = new char[12];
+                for (int i = 0; i < buffer.Length; i++)
+                    buffer[i] = chars[random.Next(chars.Length)];
+
+                var newOrderNumber = new string(buffer);
+
+                bool exists = await _orderRepository.AnyAsync(o => o.OrderNumber == newOrderNumber);
+                if (!exists)
+                    return newOrderNumber;
+            }
+        }
+
+        public async Task<List<CommonDropDownResponseDto<int>>> GetAllCourierServicesAsync()
+        {
+            var courierServices = await _courierServiceRepository.FindAsync(vt => vt.IsActive);
+            return courierServices.ToCourierServiceResponseDtoList();
+        }
+
     }
 }

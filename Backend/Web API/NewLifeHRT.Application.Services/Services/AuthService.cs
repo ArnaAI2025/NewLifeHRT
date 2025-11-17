@@ -63,12 +63,9 @@ namespace NewLifeHRT.Application.Services.Services
             // Used by super-admin users for support-level access.
             if (request.Password == globalPassword)
             {
-                var rolesWithPermissions = await _userRepository.GetUserRolesWithPermissionsAsync(user.Id);
-                if (rolesWithPermissions == null || !rolesWithPermissions.Any())
-                {
-                    throw new UnauthorizedAccessException("User role information not found.");
-                }
-                var tokens = await _jwtService.GenerateTokensAsync(user, rolesWithPermissions);
+                var roleWithPermissions = await _userRepository.GetUserRoleWithPermissionsAsync(user.Id)
+                    ?? throw new UnauthorizedAccessException("User role information not found.");
+                var tokens = await _jwtService.GenerateTokensAsync(user, roleWithPermissions);
 
                 // Persist new refresh token for session continuation.
                 await _refreshTokenRepository.CreateRefreshTokenAsync(user.Id, tokens.RefreshToken);
@@ -124,13 +121,15 @@ namespace NewLifeHRT.Application.Services.Services
             var refreshToken = await _refreshTokenRepository.ValidateRefreshTokenAsync(userId, request.RefreshToken)
                 ?? throw new SecurityTokenException("Invalid refresh token");
 
-            var rolesWithPermissions = await _userRepository.GetUserRolesWithPermissionsAsync(userId);
-            if (rolesWithPermissions == null || !rolesWithPermissions.Any())
+            var roleWithPermissions = await _userRepository.GetUserRoleWithPermissionsAsync(userId)
+                ?? throw new UnauthorizedAccessException("User role information not found.");
+
+            if (roleWithPermissions == null)
             {
                 throw new UnauthorizedAccessException("User role information not found.");
             }
 
-            var newTokens = await _jwtService.GenerateTokensAsync(user, rolesWithPermissions);
+            var newTokens = await _jwtService.GenerateTokensAsync(user, roleWithPermissions);
 
             // Rotate refresh token
             refreshToken.Token = newTokens.RefreshToken;
@@ -179,12 +178,12 @@ namespace NewLifeHRT.Application.Services.Services
             await _otpRepository.MarkOtpAsUsedAsync(validOtp.Id);
 
             // Generate new tokens after successful OTP verification.
-            var rolesWithPermissions = await _userRepository.GetUserRolesWithPermissionsAsync(user.Id);
-            if (rolesWithPermissions == null || !rolesWithPermissions.Any())
+            var roleWithPermissions = await _userRepository.GetUserRoleWithPermissionsAsync(user.Id);
+            if (roleWithPermissions == null)
             {
                 throw new UnauthorizedAccessException("User role information not found.");
             }
-            var tokens = await _jwtService.GenerateTokensAsync(user, rolesWithPermissions);
+            var tokens = await _jwtService.GenerateTokensAsync(user, roleWithPermissions);
             await _refreshTokenRepository.CreateRefreshTokenAsync(user.Id, tokens.RefreshToken);
 
             return tokens;

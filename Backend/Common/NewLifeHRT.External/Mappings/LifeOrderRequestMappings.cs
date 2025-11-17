@@ -91,7 +91,7 @@ namespace NewLifeHRT.External.Mappings
                         State = shippingAddress?.State?.Abbreviation,
                         ZipCode = shippingAddress?.PostalCode,
                         Country = shippingAddress?.Country?.Name,
-                        Service = 6225
+                        Service = int.TryParse(order.PharmacyShippingMethod?.ServiceCode, out var parsedService) ? parsedService : (int?)null
                     }
                 }
             };

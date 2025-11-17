@@ -227,7 +227,8 @@ export class ApiHelper {
     updatePayment: 'update-payment',
     cancelGenerateCommission : 'cancel-commission',
     processRefund : 'refund',
-    settleOutstandingRefund : 'settle-outstanding-refund'
+    settleOutstandingRefund : 'settle-outstanding-refund',
+    getAllCourierServices : 'get-all-courier-services'
 
   }
 

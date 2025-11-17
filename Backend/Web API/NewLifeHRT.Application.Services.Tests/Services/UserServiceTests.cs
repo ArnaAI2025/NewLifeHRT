@@ -11,7 +11,6 @@ using NewLifeHRT.Tests.Common.Builders.Data;
 using NewLifeHRT.Tests.Common.Fixtures;
 using NewLifeHRT.Tests.Common.Mocks;
 using NewLifeHRT.Tests.Common.Tests;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -51,7 +50,7 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                 FirstName = "Test",
                 LastName = "User",
                 PhoneNumber = "1234567890",
-                RoleIds = new List<int> { 1 }
+                RoleId = 1
             };
 
             var userRepositoryMock = new Mock<IUserRepository>();
@@ -85,10 +84,7 @@ namespace NewLifeHRT.Application.Services.Tests.Services
         public async Task CreateAsync_Should_ThrowException_When_UserExists()
         {
             // Arrange
-            var createUserRequestDto = new CreateUserRequestDto
-            {
-                RoleIds = new List<int> { 1 }
-            };
+            var createUserRequestDto = new CreateUserRequestDto();
 
             var userRepositoryMock = new Mock<IUserRepository>();
             userRepositoryMock.Setup(repo => repo.ExistAsync(It.IsAny<string>(), It.IsAny<string>()))
@@ -146,7 +142,7 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                .Build();
 
             // Act
-            var result = await userService.GetAllAsync(new[] { 1 });
+            var result = await userService.GetAllAsync(1);
 
             // Assert
             result.Should().NotBeNull();
@@ -172,7 +168,7 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                 .Build();
 
             // Act
-            var result = await userService.GetAllActiveUsersAsync(new[] { 1 });
+            var result = await userService.GetAllActiveUsersAsync(1);
 
             // Assert
             result.Should().NotBeNull();
@@ -292,7 +288,7 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                 LastName = "User",
                 Email = "updated@example.com",
                 PhoneNumber = "0987654321",
-                RoleIds = new List<int> { 2 }
+                RoleId = 2
             };
 
             var user = _userBuilder.WithId(1).Build();

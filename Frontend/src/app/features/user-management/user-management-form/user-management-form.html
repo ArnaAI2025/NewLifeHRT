@@ -8,13 +8,13 @@
     <button mat-icon-button (click)="onClose()" class="header-back-button">
       <mat-icon>chevron_left</mat-icon>
     </button>
-    <span class="form-header-heading">{{ getSelectedRolesDisplay() }}</span>
+    <span class="form-header-heading">{{ pascalToSpace(userRole[FromPage]) }}</span>
   </div>
   <div class="flex items-center space-x-4 flex items-center space-x-2 ml-auto mt-2 sm:mt-0">
     @if(userId() > 1){
       <button type="submit" mat-flat-button ngClass="secondry-button-add" (click)="onClickAdd()"
         class="!py-1 !px-4 text-sm action-button secondry-button-add">
-        Add {{ getSelectedRolesDisplay() }}
+        Add {{ pascalToSpace(userRole[FromPage]) }}
         <mat-icon class="mr-1">add</mat-icon>
       </button>
     }
@@ -107,24 +107,7 @@
             {{ getFieldError('phoneNumber') }}
           </mat-error>
         </mat-form-field>
-      </div>
-
-      <div class="space-y-2 custom-text-box">
-        <label class="block text-sm font-medium text-gray-700">Roles <span class="text-red-500">*</span></label>
-        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
-          <mat-select formControlName="roleIds" multiple placeholder="Select Roles">
-            <mat-select-trigger>
-              {{ getSelectedRoleNames().join(', ') || 'Select roles' }}
-            </mat-select-trigger>
-            <mat-option *ngFor="let role of roleOptions" [value]="role.id">
-              {{ role.name }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="isFieldInvalid('roleIds')">
-            {{ getFieldError('roleIds') || 'At least one role is required' }}
-          </mat-error>
-        </mat-form-field>
-      </div>
+      </div>      
       <!-- Password -->
       <div class="space-y-2 custom-text-box">
         <label class="block text-sm font-medium text-gray-700">Password <span *ngIf="!userId()" class="text-red-500">*</span></label>
@@ -144,8 +127,7 @@
     <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Administrative Settings</h3>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
 
-      <div
-        *ngIf="hasAnySelectedRole([userRole.Doctor, userRole.Receptionist, userRole.Nurse, userRole.SalesPerson])"
+      <div *ngIf="FromPage == userRole.Doctor || FromPage == userRole.Receptionist || FromPage == userRole.Nurse || FromPage == userRole.SalesPerson"
         class="space-y-2 custom-text-box">
         <label class="block text-sm font-medium text-gray-700">
           Timezone <span class="text-red-500">*</span>
@@ -162,9 +144,7 @@
         </mat-form-field>
       </div>
 
-      <div
-        *ngIf="hasAnySelectedRole([userRole.Doctor, userRole.Receptionist, userRole.Nurse])"
-        class="space-y-2 custom-text-box">
+      <div *ngIf="FromPage == userRole.Doctor || FromPage == userRole.Receptionist || FromPage == userRole.Nurse" class="space-y-2 custom-text-box">
         <label class="block text-sm font-medium text-gray-700">Color</label>
         <div class="form-input">
           <app-color-picker formControlName="color"></app-color-picker>

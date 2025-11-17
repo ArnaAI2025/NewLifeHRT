@@ -19,7 +19,6 @@ namespace NewLifeHRT.Infrastructure.Data
         }
         public ClinicDbContext() { }
         public DbSet<UserOtp> UserOtps { get; set; }
-        public DbSet<ApplicationUserRole> UserRoles { get; set; }
         public DbSet<Address> Addresses {  get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Permission> Permissions { get; set; }
@@ -68,7 +67,6 @@ namespace NewLifeHRT.Infrastructure.Data
         public DbSet<HolidayRecurrence> HolidayRecurrences { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<PharmacyOrderTracking> PharmacyOrderTrackings { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<BatchMessage> BatchMessages { get; set; }
         public DbSet<BatchMessageRecipient> BatchMessageRecipients { get; set; }
@@ -101,11 +99,11 @@ namespace NewLifeHRT.Infrastructure.Data
         public DbSet<OrderProductScheduleSummary> OrderProductScheduleSummaries { get; set; }
         public DbSet<ScheduleSummaryProcessing> ScheduleSummaryProcessings { get; set; }
         public DbSet<PatientSelfReminder> PatientSelfReminders { get; set; }
+        public DbSet<CourierService> CourierServices { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new ApplicationRole.RoleConfiguration());
-            modelBuilder.ApplyConfiguration(new ApplicationUserRole.ApplicationUserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new ApplicationUser.ApplicationUserConfiguration());
             modelBuilder.ApplyConfiguration(new Permission.PermissionConfiguration());
             modelBuilder.ApplyConfiguration(new RolePermission.RolePermissionConfiguration());
@@ -155,7 +153,6 @@ namespace NewLifeHRT.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new HolidayRecurrence.HolidayRecurrenceConfiguration());
             modelBuilder.ApplyConfiguration(new Order.OrderConfiguration());
             modelBuilder.ApplyConfiguration(new OrderDetail.OrderDetailConfiguration());
-            modelBuilder.ApplyConfiguration(new PharmacyOrderTracking.PharmacyOrderTrackingConfiguration());
             modelBuilder.ApplyConfiguration(new Timezone.TimezoneConfiguration());
             modelBuilder.ApplyConfiguration(new Country.CountryConfiguration());
             modelBuilder.ApplyConfiguration(new CommissionsPayable.CommissionsPayableConfiguration());
@@ -182,6 +179,7 @@ namespace NewLifeHRT.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new LeadReminder.LeadReminderConfiguration());
             modelBuilder.ApplyConfiguration(new OrderProductSchedule.OrderProductScheduleConfiguration());
             modelBuilder.ApplyConfiguration(new ScheduleSummaryProcessing.ScheduleSummaryProcessingConfiguration());
+            modelBuilder.ApplyConfiguration(new CourierService.CourierServiceConfiguration());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

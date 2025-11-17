@@ -13,6 +13,7 @@ namespace NewLifeHRT.Application.Services.Models.Response
         public string Value { get; set; }
         public decimal? Amount { get; set; }
         public decimal? CostOfShipping { get; set; }
+        public string? ServiceCode { get; set; }
 
     }
 }

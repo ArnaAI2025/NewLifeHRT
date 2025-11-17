@@ -14,7 +14,7 @@ namespace NewLifeHRT.External.Mappings
             {
                 TemplatePath = "ControlledDrugOrderTemplate.cshtml",
                 PharmacyName = order.Pharmacy?.Name,
-                OrderId = order.Id.ToString(),
+                OrderId = order?.OrderNumber,
                 Patient = new ControlledDrugOrderPatient
                 {
                     FirstName = order.Patient.FirstName,

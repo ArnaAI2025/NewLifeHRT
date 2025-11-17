@@ -12,9 +12,10 @@ using NewLifeHRT.Infrastructure.Data;
 namespace NewLifeHRT.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    [Migration("20251106120000_MultiRoleUsers")]
-    partial class MultiRoleUsers : Migration
+    [Migration("20251106110201_AddedNewPropertiesandSeedDatainOrderTableAndNewTableCourierService")]
+    partial class AddedNewPropertiesandSeedDatainOrderTableAndNewTableCourierService
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
@@ -93,7 +94,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("NewLifeHRT.Domain.Entities.ApplicationUserRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -352,6 +353,9 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -398,6 +402,8 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.HasIndex("PatientId")
                         .IsUnique()
                         .HasFilter("[PatientId] IS NOT NULL");
+
+                    b.HasIndex("RoleId");
 
                     b.HasIndex("TimezoneId");
 
@@ -1016,6 +1022,44 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Coupons");
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.CourierService", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Abbreviation")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CourierServices", (string)null);
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Currency", b =>
@@ -1888,6 +1932,9 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Property<Guid?>("CouponId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("CourierServiceId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -1932,6 +1979,9 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
 
                     b.Property<DateTime?>("OrderFulFilled")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("OrderPaidDate")
                         .HasColumnType("datetime2");
@@ -1992,6 +2042,9 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Property<decimal?>("TotalOnCommissionApplied")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("TrackingNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -2003,6 +2056,8 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.HasIndex("CounselorId");
 
                     b.HasIndex("CouponId");
+
+                    b.HasIndex("CourierServiceId");
 
                     b.HasIndex("PatientCreditCardId");
 
@@ -4198,23 +4253,19 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("NewLifeHRT.Domain.Entities.ApplicationUserRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationRole", "Role")
-                        .WithMany("UserRoles")
+                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationRole", null)
+                        .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "User")
-                        .WithMany("UserRoles")
+                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", null)
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
@@ -4254,6 +4305,12 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasForeignKey("NewLifeHRT.Domain.Entities.ApplicationUser", "PatientId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationRole", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("NewLifeHRT.Domain.Entities.Timezone", "Timezone")
                         .WithMany("Users")
                         .HasForeignKey("TimezoneId")
@@ -4263,8 +4320,9 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
 
                     b.Navigation("Patient");
 
+                    b.Navigation("Role");
+
                     b.Navigation("Timezone");
-                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Appointment", b =>
@@ -4636,6 +4694,11 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasForeignKey("CouponId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("NewLifeHRT.Domain.Entities.CourierService", "CourierService")
+                        .WithMany("Orders")
+                        .HasForeignKey("CourierServiceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("PatientCreditCard", "PatientCreditCard")
                         .WithMany("Orders")
                         .HasForeignKey("PatientCreditCardId")
@@ -4676,6 +4739,8 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Navigation("Counselor");
 
                     b.Navigation("Coupon");
+
+                    b.Navigation("CourierService");
 
                     b.Navigation("Patient");
 
@@ -5368,7 +5433,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                 {
                     b.Navigation("RolePermissions");
 
-                    b.Navigation("UserRoles");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.ApplicationUser", b =>
@@ -5460,6 +5525,11 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Proposals");
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.CourierService", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Currency", b =>
@@ -5698,7 +5768,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Timezone", b =>
                 {
-                    b.Navigation("UserRoles");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.UserServiceLink", b =>
