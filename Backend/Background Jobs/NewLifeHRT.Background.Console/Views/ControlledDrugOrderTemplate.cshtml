@@ -3,6 +3,9 @@
     var positions = new[] { "left", "center", "right" };
     var random = new Random();
     var randomPosition = positions[random.Next(positions.Length)];
+
+    var sizes = new[] { "signature-small", "signature-medium", "signature-large" };
+    var randomSize = sizes[new Random().Next(sizes.Length)];
 }
 
 <!DOCTYPE html>
@@ -112,7 +115,6 @@
         }
 
         .signature-image-container img {
-            max-height: 50px;
             display: block;
             margin-bottom: 2px;
         }
@@ -133,6 +135,18 @@
            margin-top: 4px;
            font-size: 10pt;
            text-align: right;
+        }
+
+        .signature-small img {
+            height: 35px;
+        }
+
+        .signature-medium img {
+            height: 50px;
+        }
+
+        .signature-large img {
+            height: 75px;
         }
     </style>
 </head>
@@ -284,7 +298,7 @@
     {
         <div class="footer-section">
             <div class="signature-section @randomPosition">
-                <div class="signature-image-container">
+                <div class="signature-image-container @randomSize">
                     <img src="@Model.Prescriber.SignatureUrl" alt="Physician Signature"/>
                 </div>
             </div>

@@ -200,7 +200,7 @@ export class PatientAddComponent implements OnInit, AfterViewInit {
 
     forkJoin({
       doctors: this.userManagementService.getAllActiveDoctors(),
-      patients: this.patientService.getAllActivePatients(),
+      patients: this.patientService.getAllActivePatients(this.patientId || ''),
       salesPersons: this.userManagementService.getAllActiveSalesPerson(),
       agendas: this.patientService.getAllActiveAgenda(),
       visitTypes: this.patientService.getAllActiveVisitType(),
@@ -1568,29 +1568,29 @@ export class PatientAddComponent implements OnInit, AfterViewInit {
       });
   }
 
-  loadRefferal(): void {
-    this.isLoadingAgenda = true;
+  // loadRefferal(): void {
+  //   this.isLoadingAgenda = true;
 
-    this.patientService
-      .getAllActivePatients()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response: DropDownResponseDto[]) => {
-          this.patientList = response;
-          this.filteredPatientList = response;
+  //   this.patientService
+  //     .getAllActivePatients()
+  //     .pipe(takeUntilDestroyed(this.destroyRef))
+  //     .subscribe({
+  //       next: (response: DropDownResponseDto[]) => {
+  //         this.patientList = response;
+  //         this.filteredPatientList = response;
 
-          if (this.patientDataToLoad) {
-            this.patchAutocompleteFields();
-          }
-        },
-        error: () => {
-          console.error('Failed to load agenda.');
-        },
-        complete: () => {
-          this.isLoadingAgenda = false;
-        },
-      });
-  }
+  //         if (this.patientDataToLoad) {
+  //           this.patchAutocompleteFields();
+  //         }
+  //       },
+  //       error: () => {
+  //         console.error('Failed to load agenda.');
+  //       },
+  //       complete: () => {
+  //         this.isLoadingAgenda = false;
+  //       },
+  //     });
+  // }
 
   async onSaveAndClose(): Promise<void> {
     this.isSaveAndClose = true;

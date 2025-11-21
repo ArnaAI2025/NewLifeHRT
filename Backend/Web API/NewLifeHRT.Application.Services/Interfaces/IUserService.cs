@@ -11,17 +11,18 @@ namespace NewLifeHRT.Application.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<List<UserResponseDto>> GetAllAsync(int? roleId);
+        Task<List<UserResponseDto>> GetAllAsync(IEnumerable<int>? roleIds = null);
         Task<UserResponseDto?> GetByIdAsync(int id);
         Task<CommonOperationResponseDto<int>> CreateAsync(CreateUserRequestDto createUserRequestDto, int userId);
         Task<CommonOperationResponseDto<int>> UpdateAsync(int  id, UpdateUserRequestDto updateUserRequestDto, int userId);
         Task<CommonOperationResponseDto<int>> PermanentDeleteAsync(int id, int userId);
-        Task<List<DropDownIntResponseDto>> GetAllActiveUsersAsync(int roleId);
+        Task<List<DropDownIntResponseDto>> GetAllActiveUsersAsync(IEnumerable<int>? roleIds = null);
         Task<BulkOperationResponseDto> BulkToggleUserStatusAsync(List<int> userIds, int userId, bool isActivating);
-        Task<List<DropDownIntResponseDto>> GetActiveUsersDropDownAsync(int roleId, string searchTerm = "");
+        Task<List<DropDownIntResponseDto>> GetActiveUsersDropDownAsync(IEnumerable<int> roleIds, string searchTerm = "");
 
         Task<List<DropDownIntResponseDto>> GetUsersOnVacationAsync();
         Task DeleteUsersAsync(List<int> userIds, int userId);
         Task<List<int>> GetUserIdsByPatientIdsAsync(List<Guid> patientIds);
+        Task<List<GetRolesForCreateUserResponseDto>> GetRolesForCreateUserAsync();
     }
 }

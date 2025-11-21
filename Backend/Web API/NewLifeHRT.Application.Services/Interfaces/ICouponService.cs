@@ -14,6 +14,7 @@ namespace NewLifeHRT.Application.Services.Interfaces
         Task<List<CouponResponseDto>> GetAllAsync();
         Task<CouponResponseDto> GetCouponById(Guid id);
         Task<List<CouponResponseDto>> GetCoupons();
+        Task<List<CouponResponseDto>> GetActiveCoupons();
         Task<CommonOperationResponseDto<Guid>> Create(CouponRequestDto couponRequestDto, int userId);
         Task<CommonOperationResponseDto<Guid>> Update( Guid id ,CouponRequestDto couponRequestDto, int userId);
 

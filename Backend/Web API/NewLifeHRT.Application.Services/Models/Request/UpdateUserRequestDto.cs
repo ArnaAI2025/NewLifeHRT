@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,9 @@ namespace NewLifeHRT.Application.Services.Models.Request
         public string LastName { get; set; }
         public string Email { get; set; }
         public string? PhoneNumber { get; set; }
-        public int RoleId { get; set; }
+        [Required]
+        [MinLength(1, ErrorMessage = "At least one role must be provided.")]
+        public List<int> RoleIds { get; set; } = new();
         public AddressDto? Address { get; set; }
         public string? DEA { get; set; }
         public string? NPI { get; set; }
@@ -23,10 +26,11 @@ namespace NewLifeHRT.Application.Services.Models.Request
         public string? ReplaceCommisionRate { get; set; }
         public bool IsVacationApplicable { get; set; }
         public int? TimezoneId { get; set; }
-        public IFormFile? SignatureFile { get; set; }
         public string? Color { get; set; }
         public List<Guid>? ServiceIds { get; set; }
-        public List<LicenseInformationRequestDto>? LicenseInformation { get; set; }
+        public List<LicenseInformationRequestDto>? LicenseInformations { get; set; }
+        public List<Guid>? SignatureIdsToKeep { get; set; } 
+        public List<IFormFile>? SignatureFiles { get; set; }
 
     }
 }

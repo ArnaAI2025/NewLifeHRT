@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace NewLifeHRT.Domain.Enums
 {
-    public enum PermissionTypeEnum
+    // Will be deleted on migration squash as this type of column will be deleted
+    public enum PermissionTypeEnum 
     {
         Create = 1,
         Read = 2,

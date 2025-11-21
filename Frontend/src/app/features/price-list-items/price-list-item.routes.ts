@@ -4,7 +4,7 @@ import { PermissionAction, PermissionResource } from '../../shared/constants/per
 import { RoutePermission } from '../../shared/models/route-permission';
 import { PermissionGuard } from '../../core/guards/permission.guard';
 
-const resource = PermissionResource.ProductPharmacyPrice;
+const resource = PermissionResource.PriceListItem;
 export const priceListItemRoutes: Routes = [
   {
     path: 'pricelistitem/view',

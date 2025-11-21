@@ -12,7 +12,7 @@ namespace NewLifeHRT.Application.Services.Interfaces
 {
     public interface IJwtService
     {
-        Task<TokenResponseDto> GenerateTokensAsync(ApplicationUser user, ApplicationRole roleWithPermissions);
+        Task<TokenResponseDto> GenerateTokensAsync(ApplicationUser user, IEnumerable<ApplicationRole> rolesWithPermissions);
         ClaimsPrincipal? ValidateToken(string token);
         string GenerateRefreshToken();
     }

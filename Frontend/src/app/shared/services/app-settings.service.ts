@@ -119,8 +119,18 @@ export class AppSettingsService {
     return !!this.userAccountService.getUserAccount();
   }
 
+  getUserRoles(): string[] {
+    return this.userAccountService.getUserAccount()?.roles ?? [];
+  }
+
+  hasRole(role: string): boolean {
+    return this.getUserRoles().some(
+      (assignedRole) => assignedRole?.toLowerCase() === role.toLowerCase()
+    );
+  }
+
   isAdmin(): boolean {
-    return this.userAccountService.getUserAccount()?.role === 'Admin';
+    return this.hasRole('Admin');
   }
 
   getLocalStorage(key: string): string | null {
@@ -199,7 +209,11 @@ isTokenExpired(): boolean {
 
   isUserPatient():boolean{
     const patientId =  this.getPatientUserId();
-    return !!patientId && patientId.trim() !== '';
+    if (!!patientId && patientId.trim() !== '') {
+      return true;
+    }
+
+    return this.hasRole('Patient');
   }
 
 }

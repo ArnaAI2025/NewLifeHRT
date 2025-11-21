@@ -137,7 +137,7 @@
 <!-- Paginator -->
 <div class="main-paginator">
     <div class="paginator-section p-0">
-        <mat-paginator #paginator [pageSizeOptions]="[5, 10, 20]" [pageSize]="5" [showFirstLastButtons]="true"
+        <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" [showFirstLastButtons]="true"
             [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()">
         </mat-paginator>
     </div>

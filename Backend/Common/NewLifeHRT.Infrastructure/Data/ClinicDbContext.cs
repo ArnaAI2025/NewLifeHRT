@@ -1,4 +1,5 @@
 ﻿using Finbuckle.MultiTenant.Abstractions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,7 @@ using System.Diagnostics;
 
 namespace NewLifeHRT.Infrastructure.Data
 {
-    public class ClinicDbContext : IdentityDbContext<ApplicationUser,ApplicationRole,int>
+    public class ClinicDbContext : IdentityDbContext<ApplicationUser,ApplicationRole, int, IdentityUserClaim<int>,ApplicationUserRole,IdentityUserLogin<int>,IdentityRoleClaim<int>,IdentityUserToken<int>>
     {
         private readonly IMultiTenantContextAccessor<MultiTenantInfo> _accessor;
         private readonly ILogger<ClinicDbContext> _logger;
@@ -100,10 +101,14 @@ namespace NewLifeHRT.Infrastructure.Data
         public DbSet<ScheduleSummaryProcessing> ScheduleSummaryProcessings { get; set; }
         public DbSet<PatientSelfReminder> PatientSelfReminders { get; set; }
         public DbSet<CourierService> CourierServices { get; set; }
+        public DbSet<UserSignature> UserSignatures { get; set; }
+        public DbSet<Section> Sections{ get; set; }
+        public DbSet<ActionType> ActionTypes{ get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new ApplicationRole.RoleConfiguration());
+            modelBuilder.ApplyConfiguration(new ApplicationUserRole.ApplicationUserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new ApplicationUser.ApplicationUserConfiguration());
             modelBuilder.ApplyConfiguration(new Permission.PermissionConfiguration());
             modelBuilder.ApplyConfiguration(new RolePermission.RolePermissionConfiguration());
@@ -180,6 +185,9 @@ namespace NewLifeHRT.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new OrderProductSchedule.OrderProductScheduleConfiguration());
             modelBuilder.ApplyConfiguration(new ScheduleSummaryProcessing.ScheduleSummaryProcessingConfiguration());
             modelBuilder.ApplyConfiguration(new CourierService.CourierServiceConfiguration());
+            modelBuilder.ApplyConfiguration(new UserSignature.UserSignatureConfiguration());
+            modelBuilder.ApplyConfiguration(new Section.SectionConfiguration());
+            modelBuilder.ApplyConfiguration(new ActionType.ActionTypeConfiguration());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

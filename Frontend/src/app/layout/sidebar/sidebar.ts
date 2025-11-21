@@ -1,12 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule, Router } from '@angular/router';
 import { PermissionAction, PermissionResource } from '../../shared/constants/permissions.enums';
 import { HasPermissionDirective } from "../../shared/directives/has-permission.directive";
-import { UserAccount } from '../../shared/models/user-account.model';
-import { UserAccountService } from '../../shared/services/user-account.service';
 
 interface NavItem {
   label: string;
@@ -28,16 +26,15 @@ interface NavItem {
     MatTooltipModule,
     RouterModule,
     HasPermissionDirective
-],
+  ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss'
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent {
   @Input() isCollapsed = false;
+  @Input() isMobile = false;
   @Output() toggleSidebar = new EventEmitter<void>();
-  userAccount: UserAccount | null = null;
-
-  constructor(private router: Router, private userAccountService: UserAccountService) {}
+  constructor(private router: Router) { }
 
   navItems: NavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
@@ -45,7 +42,7 @@ export class SidebarComponent implements OnInit {
       label: 'Users',
       icon: 'people',
       children: [
-        { label: 'Doctors', icon: 'local_hospital', route: '/doctor/view'},
+        { label: 'Doctors', icon: 'local_hospital', route: '/doctor/view' },
         { label: 'Sales Persons', icon: 'person', route: '/sales-person/view' },
         { label: 'Receptionists', icon: 'person_outline', route: '/receptionist/view' },
         { label: 'Nurses', icon: 'healing', route: '/nurse/view' },
@@ -61,14 +58,14 @@ export class SidebarComponent implements OnInit {
 
     { label: 'Pharmacies', icon: 'vaccines', route: '/pharmacy/view', permissionResource: PermissionResource.Pharmacy, permissionAction: PermissionAction.Read },
 
-    { label: 'Price List Items', icon: 'price_check', route: '/pricelistitem/view', permissionResource: PermissionResource.ProductPharmacyPrice, permissionAction: PermissionAction.Read },
-    { label: 'Commission Rates', icon: 'percent_discount', route: '/commissionrate/view', permissionResource: PermissionResource.CommissionRatePerProduct, permissionAction: PermissionAction.Read },
+    { label: 'Price List Items', icon: 'price_check', route: '/pricelistitem/view', permissionResource: PermissionResource.PriceListItem, permissionAction: PermissionAction.Read },
+    { label: 'Commission Rates', icon: 'percent_discount', route: '/commissionrate/view', permissionResource: PermissionResource.CommissionRate, permissionAction: PermissionAction.Read },
     { label: 'Proposals', icon: 'request_quote', route: '/proposals/view' },
     { label: 'Orders', icon: 'shopping_cart', route: '/orders/view' },
-    { label: 'Order Refill', icon: 'shopping_cart', route: '/order-product-refill/view'},
+    { label: 'Order Refill', icon: 'shopping_cart', route: '/order-product-refill/view' },
     { label: 'Bulk Sms', icon: 'sms', route: '/bulk-sms' },
     { label: 'Commission Pool', icon: 'payments', route: '/commission-pool/view' },
-    {label: 'Order Product Schedule Calendar', icon: 'event', route: '/order-product-schedule/view' },
+    { label: 'Medicine Details', icon: 'event', route: '/order-product-schedule/view' },
     { label: 'Patient Proposal', icon: 'request_quote', route: '/patient-proposal' },
     {
       label: 'Administrative Settings',
@@ -86,15 +83,27 @@ export class SidebarComponent implements OnInit {
 
   ];
 
-  ngOnInit(): void {
-    this.userAccount = this.userAccountService.getUserAccount();
+  toggleSubmenu(item: NavItem) {
+    if (!item.children) return;
+
+    // If sidebar is collapsed, expand it first
+    if (this.isCollapsed) {
+      this.toggleSidebar.emit();
+    }
+
+    const isCurrentlyOpen = !!item.isExpanded;
+
+    // Close all submenus
+    this.navItems.forEach(navItem => {
+      if (navItem.children) {
+        navItem.isExpanded = false;
+      }
+    });
+
+    // Toggle the clicked one (open it only if it was previously closed)
+    item.isExpanded = !isCurrentlyOpen;
   }
 
-  toggleSubmenu(item: NavItem) {
-    if (item.children) {
-      item.isExpanded = !item.isExpanded;
-    }
-  }
 
   onToggleSidebar(): void {
     this.toggleSidebar.emit();
@@ -103,6 +112,9 @@ export class SidebarComponent implements OnInit {
   navigateTo(route: string) {
     if (route) {
       this.router.navigate([route]);
+      if (this.isMobile) {
+        this.toggleSidebar.emit();
+      }
     }
   }
 
@@ -110,18 +122,4 @@ export class SidebarComponent implements OnInit {
     return this.router.url === route;
   }
 
-  get userInitials(): string {
-    if (!this.userAccount?.fullname) {
-      return '';
-    }
-
-    const names = this.userAccount.fullname.trim().split(' ');
-    if (names.length === 1) {
-      return names[0].slice(0, 2).toUpperCase();
-    }
-
-    const first = names[0].charAt(0).toUpperCase();
-    const last = names[names.length - 1].charAt(0).toUpperCase();
-    return `${first}${last}`;
-  }
 }

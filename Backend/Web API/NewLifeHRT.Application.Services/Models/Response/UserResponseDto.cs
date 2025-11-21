@@ -15,7 +15,7 @@ namespace NewLifeHRT.Application.Services.Models.Response
         public string LastName { get; set; }
         public string Email { get; set; }
         public string? PhoneNumber { get; set; }
-        public int RoleId { get; set; }
+        public int[] RoleIds { get; set; } = Array.Empty<int>();
         public string? DEA { get; set; }
         public string? NPI { get; set; }
         public decimal? CommisionInPercentage { get; set; }
@@ -28,8 +28,8 @@ namespace NewLifeHRT.Application.Services.Models.Response
         public DateTime CreatedAt { get; set; }
         public Guid[] ServiceIds { get; set; }
         public bool? IsDeleted { get; set; }
-        public string SignatureUrl { get; set; }
+        public List<UserSignatureResponseDto>? SignatureUrls { get; set; }
 
-        public LicenseInformationResponseDto[]? LicenseInformation { get; set; }
+        public LicenseInformationResponseDto[]? LicenseInformations { get; set; }
     }
 }

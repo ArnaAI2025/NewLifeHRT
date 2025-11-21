@@ -67,6 +67,7 @@ namespace NewLifeHRT.External.Factory.Provider
                 .Include(o => o.ShippingAddress).ThenInclude(sa => sa.Address).ThenInclude(a => a.Country)
                 .Include(o => o.ShippingAddress).ThenInclude(sa => sa.Address).ThenInclude(a => a.State)
                 .Include(o => o.PharmacyShippingMethod).ThenInclude(sa => sa.ShippingMethod)
+                .Include(o => o.Physician).ThenInclude(p => p.UserSignatures)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order is null)

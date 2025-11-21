@@ -262,18 +262,19 @@ export class OrderAddComponent implements OnInit {
 
           if (this.orderId) {
             this.loadOrderData();
-          }
-          else if (this.currentPatientId) {
+          } else if (this.currentPatientId) {
             this.handlePatientSelection(this.currentPatientId);
-          }
-          else {
+          } else {
             this.markFormPristineAndUntouched();
           }
         },
         error: (err) => {
           console.error('Failed to load reference data:', err);
-          this.notificationService.showSnackBar('Failed to load reference data', 'failure');
-        }
+          this.notificationService.showSnackBar(
+            'Failed to load reference data',
+            'failure'
+          );
+        },
       });
   }
 

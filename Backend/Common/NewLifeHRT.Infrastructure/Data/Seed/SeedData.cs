@@ -1,12 +1,16 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Migrations;
 using NewLifeHRT.Domain.Entities;
 using NewLifeHRT.Domain.Entities.Hospital;
 using NewLifeHRT.Domain.Enums;
+using NewLifeHRT.Infrastructure.Data.Seed.Models;
 using NewLifeHRT.Infrastructure.Extensions;
 using NewLifeHRT.Infrastructure.Models.MultiTenancy;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 
 namespace NewLifeHRT.Infrastructure.Data.Seed
@@ -1661,7 +1665,7 @@ namespace NewLifeHRT.Infrastructure.Data.Seed
 
                 migrationBuilder.InsertData(
                     table: "IntegrationKeys",
-                    columns: new[] {"Id","IntegrationTypeId", "KeyName", "Label", "CreatedAt", "CreatedBy", "IsActive" },
+                    columns: new[] { "Id", "IntegrationTypeId", "KeyName", "Label", "CreatedAt", "CreatedBy", "IsActive" },
                     values: new object[,]
                     {
                         {16,4, "Username", "Username",createdAt, "System", true },
@@ -1691,6 +1695,19 @@ namespace NewLifeHRT.Infrastructure.Data.Seed
                         {25,2, "PatientMobileNumber", "Patient Mobile Number",createdAt, "System", true },
                         {26,3, "PatientMobileNumber", "Patient Mobile Number",createdAt, "System", true },
                     });
+
+                return migrationBuilder;
+            }
+
+            public static MigrationBuilder SeedDataToUserSignatureTable(MigrationBuilder migrationBuilder)
+            {
+                migrationBuilder.Sql($@"INSERT INTO UserSignatures (Id, UserId, SignaturePath, CreatedAt, CreatedBy, IsActive)
+                    SELECT NEWID(), Id, SignaturePath, GETUTCDATE(), CreatedBy, 1
+                    FROM AspNetUsers
+                    WHERE SignaturePath IS NOT NULL
+                      AND LEN(SignaturePath) > 0
+                      AND Id NOT IN (SELECT UserId FROM UserSignatures)
+                ");
 
                 return migrationBuilder;
             }
@@ -1754,7 +1771,1248 @@ namespace NewLifeHRT.Infrastructure.Data.Seed
                 return migrationBuilder;
             }
 
+            public static MigrationBuilder DeleteAllFromPermissions(MigrationBuilder migrationBuilder)
+            {
+                // Deleting Permissions & Role Permissions table data because role-based implementation will change, and this method will be removed in the migration squash.
+                migrationBuilder.Sql("DELETE FROM Permissions");
+                migrationBuilder.Sql("DELETE FROM RolePermissions");
 
+                return migrationBuilder;
+            }
+
+            public static MigrationBuilder InsertSectionPermissionsData(MigrationBuilder migrationBuilder)
+            {
+                var json = @"
+                [
+                  {
+                    ""Section"": ""Dashboard"",
+                    ""Module"": ""Dashboard"",
+                    ""EnumValue"": ""Dashboard"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2, 3, 5, 6, 7]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Users"",
+                    ""Module"": ""Users"",
+                    ""EnumValue"": ""User"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Patients"",
+                    ""Module"": ""Patients"",
+                    ""EnumValue"": ""Patient"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1, 2, 3, 4] 
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 3, 4, 5, 6]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1, 3, 4]
+                      }
+                    ],
+                    ""Pages"": [
+                      {
+                        ""Page"": ""Counselor -- Add Note"",
+                        ""EnumValue"": ""CounselorNote"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1, 2, 6]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 3, 4, 5, 6]
+                          },
+                          {
+                            ""Name"": ""Activate/Deactivate"",
+                            ""EnumValue"": ""ActivateDeactivate"",
+                            ""RoleIds"": [1, 2, 6]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1, 6]
+                          }
+                        ]
+                      },
+                      {
+                        ""Page"": ""Medical Recommendation -- Add MR"",
+                        ""EnumValue"": ""MedicalRecommendation"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1, 2, 5]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1, 2, 5]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 3, 4, 5, 6]
+                          },
+                          {
+                            ""Name"": ""Activate/Deactivate"",
+                            ""EnumValue"": ""ActivateDeactivate"",
+                            ""RoleIds"": [1, 2]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      },
+                      {
+                        ""Page"": ""Appointments - Add Appointments"",
+                        ""EnumValue"": ""Appointment"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1, 2, 3, 4, 6]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1, 2, 3, 4, 5, 6]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 3, 4, 5, 6]
+                          },
+                          {
+                            ""Name"": ""Activate/Deactivate"",
+                            ""EnumValue"": ""ActivateDeactivate"",
+                            ""RoleIds"": [1, 2, 3, 4, 5, 6]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1, 3, 4, 5, 6]
+                          }
+                        ]
+                      },
+                      {
+                        ""Page"": ""Reminders"",
+                        ""EnumValue"": ""Reminder"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1, 2, 6]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 3, 4, 6]
+                          },
+                          {
+                            ""Name"": ""Activate/Deactivate"",
+                            ""EnumValue"": ""ActivateDeactivate"",
+                            ""RoleIds"": [1, 2]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      },
+                      {
+                        ""Page"": ""Proposals"",
+                        ""EnumValue"": ""Proposal"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1, 2, 3, 4, 6]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1, 2, 3, 4, 6]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 3, 4, 6]
+                          },
+                          {
+                            ""Name"": ""Activate/Deactivate"",
+                            ""EnumValue"": ""ActivateDeactivate"",
+                            ""RoleIds"": [1, 2]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      },
+                      {
+                        ""Page"": ""Orders"",
+                        ""EnumValue"": ""Order"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1, 2, 3, 4]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1, 2, 3, 4]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 3, 4, 6, 7]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      },
+                      {
+                        ""Page"": ""SMS"",
+                        ""EnumValue"": ""SMS"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1, 2, 3, 4, 6]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 3, 4, 6]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Leads"",
+                    ""Module"": ""Leads"",
+                    ""EnumValue"": ""Lead"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1, 2, 3, 4, 6]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 3, 4, 6]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ],
+                    ""Pages"": [
+                      {
+                        ""Page"": ""SMS"",
+                        ""EnumValue"": ""SMS"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1, 2, 3, 4, 6]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 3, 4, 6]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      },
+                      {
+                        ""Page"": ""Reminders"",
+                        ""EnumValue"": ""Reminder"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1, 2, 6]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 3, 4, 6]
+                          },
+                          {
+                            ""Name"": ""Activate/Deactivate"",
+                            ""EnumValue"": ""ActivateDeactivate"",
+                            ""RoleIds"": [1, 2]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Appointments"",
+                    ""Module"": ""Appointments"",
+                    ""EnumValue"": ""Appointment"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2, 3, 4, 6]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 3, 4, 5, 6, 7]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Products"",
+                    ""Module"": ""Products"",
+                    ""EnumValue"": ""Product"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 3, 4, 5, 6]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ],
+                    ""Pages"": [
+                      {
+                        ""Page"": ""Strengths"",
+                        ""EnumValue"": ""Strength"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 3, 4]
+                          },
+                          {
+                            ""Name"": ""Activate/Deactivate"",
+                            ""EnumValue"": ""ActivateDeactivate"",
+                            ""RoleIds"": [1, 2]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      },
+                      {
+                        ""Page"": ""Price List Items"",
+                        ""EnumValue"": ""PriceListItem"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 6]
+                          },
+                          {
+                            ""Name"": ""Activate/Deactivate"",
+                            ""EnumValue"": ""ActivateDeactivate"",
+                            ""RoleIds"": [1, 2]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      },
+                      {
+                        ""Page"": ""Commission Rates"",
+                        ""EnumValue"": ""CommissionRate"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2]
+                          },
+                          {
+                            ""Name"": ""Activate/Deactivate"",
+                            ""EnumValue"": ""ActivateDeactivate"",
+                            ""RoleIds"": [1, 2]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Pharmacies"",
+                    ""Module"": ""Pharmacies"",
+                    ""EnumValue"": ""Pharmacy"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 3, 4, 5, 6]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ],
+                    ""Pages"": [
+                      {
+                        ""Page"": ""Price List Items"",
+                        ""EnumValue"": ""PriceListItem"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Create"",
+                            ""EnumValue"": ""Create"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Update"",
+                            ""EnumValue"": ""Update"",
+                            ""RoleIds"": [1]
+                          },
+                          {
+                            ""Name"": ""Read"",
+                            ""EnumValue"": ""Read"",
+                            ""RoleIds"": [1, 2, 6]
+                          },
+                          {
+                            ""Name"": ""Activate/Deactivate"",
+                            ""EnumValue"": ""ActivateDeactivate"",
+                            ""RoleIds"": [1, 2]
+                          },
+                          {
+                            ""Name"": ""Delete"",
+                            ""EnumValue"": ""Delete"",
+                            ""RoleIds"": [1]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Price List Items"",
+                    ""Module"": ""Price List Items"",
+                    ""EnumValue"": ""PriceListItem"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 6]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Commission Rates"",
+                    ""Module"": ""Commission Rates"",
+                    ""EnumValue"": ""CommissionRate"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Proposals"",
+                    ""Module"": ""Proposals"",
+                    ""EnumValue"": ""Proposal"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2, 3, 4, 6]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1, 2, 3, 4, 6]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 3, 4, 6]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Accept/Reject"",
+                        ""EnumValue"": ""AcceptReject"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Cancel"",
+                        ""EnumValue"": ""Cancel"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Orders"",
+                    ""Module"": ""Orders"",
+                    ""EnumValue"": ""Order"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 3, 5, 6, 7]
+                      },
+                      {
+                        ""Name"": ""Accept/Reject"",
+                        ""EnumValue"": ""AcceptReject"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Cancel"",
+                        ""EnumValue"": ""Cancel"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Clone"",
+                        ""EnumValue"": ""Clone"",
+                        ""RoleIds"": [1, 2, 3, 4, 6]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Order Product - Refill"",
+                    ""Module"": ""Order Refill"",
+                    ""EnumValue"": ""OrderProductRefill"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Bulk SMS"",
+                    ""Module"": ""Bulk SMS"",
+                    ""EnumValue"": ""BulkSMS"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2, 3, 4, 6]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Pool Details -- Counselor Comission"",
+                    ""Module"": ""Comission Pool"",
+                    ""EnumValue"": ""PoolDetailsCounselorComission"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Order Product Schedule Calendar"",
+                    ""Module"": ""OrderProductScheduleCalendar"",
+                    ""EnumValue"": ""OrderProductScheduleCalendar"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [7]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [7]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [7]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1, 7]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Patient Proposals"",
+                    ""Module"": ""Patient Proposals"",
+                    ""EnumValue"": ""PatientProposal"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1, 2, 3, 4, 6]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 3, 4, 6]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Coupons"",
+                    ""Module"": ""Administrative Settings"",
+                    ""EnumValue"": ""Coupon"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Holidays"",
+                    ""Module"": ""Administrative Settings"",
+                    ""EnumValue"": ""Holiday"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2, 3, 4, 5]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 3, 4, 5, 6, 7]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Pharmacy Configurations"",
+                    ""Module"": ""Administrative Settings"",
+                    ""EnumValue"": ""PharmacyConfiguration"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Activate/Deactivate"",
+                        ""EnumValue"": ""ActivateDeactivate"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""LifeFile Dashboard"",
+                    ""Module"": ""Administrative Settings"",
+                    ""EnumValue"": ""LifeFileDashboard"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1, 2, 3, 4]
+                      },
+                      {
+                        ""Name"": ""Retry"",
+                        ""EnumValue"": ""Retry"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Bulk Sms Approval"",
+                    ""Module"": ""Administrative Settings"",
+                    ""EnumValue"": ""BulkSmsApproval"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Create"",
+                        ""EnumValue"": ""Create"",
+                        ""RoleIds"": [1, 2]
+                      },
+                      {
+                        ""Name"": ""Update"",
+                        ""EnumValue"": ""Update"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Approve/Reject"",
+                        ""EnumValue"": ""ApproveReject"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Delete"",
+                        ""EnumValue"": ""Delete"",
+                        ""RoleIds"": [1]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Unseen Sms"",
+                    ""Module"": ""Administrative Settings"",
+                    ""EnumValue"": ""UnseenSms"",
+                    ""Operations"": [
+                      {
+                        ""Name"": ""Read"",
+                        ""EnumValue"": ""Read"",
+                        ""RoleIds"": [1]
+                      },
+                      {
+                        ""Name"": ""Mark Selected as Seen"",
+                        ""EnumValue"": ""MarkSelectedAsSeen"",
+                        ""RoleIds"": [1, 2]
+                      }
+                    ]
+                  },
+                  {
+                    ""Section"": ""Reminder Dashboard"",
+                    ""Module"": ""Reminder Dashboard"",
+                    ""EnumValue"": ""ReminderDashboard"",
+                    ""Pages"": [
+                      {
+                        ""Page"": ""Patient Reminders"",
+                        ""EnumValue"": ""PatientReminder"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Mark as Complete"",
+                            ""EnumValue"": ""MarkAsComplete"",
+                            ""RoleIds"": [1, 2, 3, 4]
+                          }
+                        ]
+                      },
+                      {
+                        ""Page"": ""Lead Reminders"",
+                        ""EnumValue"": ""LeadReminder"",
+                        ""Operations"": [
+                          {
+                            ""Name"": ""Mark as Complete"",
+                            ""EnumValue"": ""MarkAsComplete"",
+                            ""RoleIds"": [1, 2, 3, 4]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+                ";
+                
+
+                var permissions = JsonSerializer.Deserialize<List<PermissionModel>>(json);
+                var sections = new List<object>();
+                var actionTypes = new List<object>();
+                var permissionsToInsert = new List<object>();
+                var rolePermissions = new List<object>();
+
+                int actionTypeId = 1;
+                int sectionId = 1;
+                int permissionId = 1;
+
+                var existingActionTypes = new Dictionary<string, int>();
+
+                foreach (var permission in permissions)
+                {
+                    sections.Add(new
+                    {
+                        Id = sectionId,
+                        Name = permission.Section,
+                        Module = permission.Module,
+                        EnumValue = permission.EnumValue,
+                        Level = "Section",
+                        ParentId = (int?)null
+                    });
+                    var parentId = sectionId;
+                    sectionId++;
+                    foreach (var operation in permission.Operations)
+                    {
+                        if (!existingActionTypes.ContainsKey(operation.EnumValue))
+                        {
+                            actionTypes.Add(new
+                            {
+                                Id = actionTypeId,
+                                Name = operation.Name,
+                                EnumValue = operation.EnumValue
+                            });
+                            existingActionTypes.Add(operation.EnumValue, actionTypeId);
+                            actionTypeId++;
+                        }
+                        var opId = existingActionTypes[operation.EnumValue];
+
+                        var currentPermissionId = permissionId;
+                        permissionsToInsert.Add(new
+                        {
+                            Id = currentPermissionId,
+                            PermissionName = $"{permission.EnumValue}.{operation.EnumValue}",
+                            ActionTypeId = opId,
+                            SectionId = parentId
+                        });
+                        permissionId++;
+
+                        foreach (var roleId in operation.RoleIds)
+                        {
+                            rolePermissions.Add(new
+                            {
+                                Id = Guid.NewGuid(),
+                                RoleId = roleId,
+                                PermissionId = currentPermissionId
+                            });
+                        }
+                    }
+
+                    foreach (var page in permission.Pages)
+                    {
+                        var sectionName = page.Page;
+                        sections.Add(new
+                        {
+                            Id = sectionId,
+                            Name = page.Page,
+                            Module = "",
+                            EnumValue = page.EnumValue,
+                            Level = "SubSection",
+                            ParentId = (int?)parentId
+                        });
+                        var pageId = sectionId;
+                        sectionId++;
+
+                        foreach (var subOperation in page.Operations)
+                        {
+                            if (!existingActionTypes.ContainsKey(subOperation.EnumValue))
+                            {
+                                actionTypes.Add(new
+                                {
+                                    Id = actionTypeId,
+                                    Name = subOperation.Name,
+                                    EnumValue = subOperation.EnumValue
+                                });
+                                existingActionTypes.Add(subOperation.EnumValue, actionTypeId);
+                                actionTypeId++;
+                            }
+                            var subOperationId = existingActionTypes[subOperation.EnumValue];
+
+                            var currentPermissionId = permissionId;
+                            permissionsToInsert.Add(new
+                            {
+                                Id = permissionId,
+                                PermissionName = $"{permission.EnumValue}.{page.EnumValue}.{subOperation.EnumValue}",
+                                ActionTypeId = subOperationId,
+                                SectionId = pageId
+                            });
+                            permissionId++;
+
+                            foreach (var roleId in subOperation.RoleIds)
+                            {
+                                rolePermissions.Add(new
+                                {
+                                    Id = Guid.NewGuid(),
+                                    RoleId = roleId,
+                                    PermissionId = currentPermissionId
+                                });
+                            }
+                        }
+                    }
+                }
+                var createdAt = DateTime.UtcNow;
+
+                actionTypes.ForEach(a =>
+                {
+                    migrationBuilder.InsertData(
+                       table: "ActionTypes",
+                       columns: new[] { "Id", "Name", "EnumValue", "CreatedAt", "CreatedBy", "IsActive" },
+                       values: new object[,]
+                       {
+                                { a.GetType().GetProperty("Id").GetValue(a), a.GetType().GetProperty("Name").GetValue(a), a.GetType().GetProperty("EnumValue").GetValue(a), createdAt, "System", true }
+                       }
+                   );
+
+                });
+                sections.ForEach(s =>
+                {
+                    migrationBuilder.InsertData(
+                        table: "Sections",
+                        columns: new[] { "Id", "Name", "ModuleName", "EnumValue", "Level", "ParentId", "CreatedAt", "CreatedBy", "IsActive" },
+                        values: new object[,]
+                        {
+                            { s.GetType().GetProperty("Id").GetValue(s), s.GetType().GetProperty("Name").GetValue(s), s.GetType().GetProperty("Module").GetValue(s), s.GetType().GetProperty("EnumValue").GetValue(s), s.GetType().GetProperty("Level").GetValue(s), s.GetType().GetProperty("ParentId").GetValue(s), createdAt, "System", true }
+                        }
+                    );
+
+                });
+                permissionsToInsert.ForEach(p =>
+                {
+                    migrationBuilder.InsertData(
+                        table: "Permissions",
+                        columns: new[] { "Id", "PermissionName", "ActionTypeId", "SectionId", "CreatedAt", "CreatedBy", "IsActive" },
+                        values: new object[,]
+                        {
+                            { p.GetType().GetProperty("Id").GetValue(p), p.GetType().GetProperty("PermissionName").GetValue(p), p.GetType().GetProperty("ActionTypeId").GetValue(p), p.GetType().GetProperty("SectionId").GetValue(p), createdAt, "System", true }
+                        }
+                    );
+
+                });
+                rolePermissions.ForEach(a =>
+                {
+                    migrationBuilder.InsertData(
+                       table: "RolePermissions",
+                       columns: new[] { "Id", "RoleId", "PermissionId", "CreatedAt", "CreatedBy", "IsActive" },
+                       values: new object[,]
+                       {
+                                { a.GetType().GetProperty("Id").GetValue(a), a.GetType().GetProperty("RoleId").GetValue(a), a.GetType().GetProperty("PermissionId").GetValue(a), createdAt, "System", true }
+                       }
+                   );
+
+                });
+
+                return migrationBuilder;
+            }
         }
 
     }

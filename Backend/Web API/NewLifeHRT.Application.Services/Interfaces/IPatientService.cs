@@ -7,7 +7,7 @@ namespace NewLifeHRT.Application.Services.Interfaces
     public interface IPatientService
     {
         Task<List<PatientResponseDto>> GetAllAsync();
-        Task<List<CommonDropDownResponseDto<Guid>>> GetAllActiveAsync();
+        Task<List<CommonDropDownResponseDto<Guid>>> GetAllActiveAsync(Guid? patientId = null);
         Task<PatientResponseDto?> GetPatientByIdAsync(Guid id);
         Task<CommonOperationResponseDto<Guid?>> CreateAsync(CreatePatientRequestDto request, int? userId);
         Task<CommonOperationResponseDto<Guid>> ToggleActiveStatusAsync(Guid id, int userId, bool action);

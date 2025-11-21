@@ -76,7 +76,7 @@ export class UserAssigneeComponent implements OnInit {
     this.isLoadingUsers.set(true);
     try {
       this.userList = await firstValueFrom(
-        this.userManagementService.getAllActiveUsers(this.isFrom, searchTerm)
+        this.userManagementService.getAllActiveUsers([this.isFrom], searchTerm)
       );
       this.filteredUserList = this.userList; // backend already limits to top 7
     } catch (err) {

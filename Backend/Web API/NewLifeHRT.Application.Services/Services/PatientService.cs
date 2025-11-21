@@ -453,12 +453,18 @@ namespace NewLifeHRT.Application.Services.Services
                 };
             }
         }
-
-        public async Task<List<CommonDropDownResponseDto<Guid>>> GetAllActiveAsync()
+        public async Task<List<CommonDropDownResponseDto<Guid>>> GetAllActiveAsync(Guid? patientId = null)
         {
-            var activePatients = await _patientRepository.FindAsync(p => p.IsActive);
-            return activePatients.ToDropDownUserResponseDtoList();
+            var activePatientsQuery = _patientRepository.Query().Where(p => p.IsActive);
 
+            if (patientId.HasValue)
+            {
+                activePatientsQuery = activePatientsQuery.Where(p => p.Id != patientId.Value);
+            }
+
+            var activePatients = await activePatientsQuery.ToListAsync();
+
+            return PatientMappings.ToDropDownUserResponseDtoList(activePatients);
         }
         public async Task<List<PatientLeadCommunicationDropdownDto>> GetAllOnCounselorIdAsync(int counselorId)
         {

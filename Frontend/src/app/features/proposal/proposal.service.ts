@@ -65,6 +65,13 @@ export class ProposalService {
     return this.baseHttp.get(url);
   }
 
+  getActiveCouponsForDropDown(): Observable<CouponResponse[]> {
+    const url = `${ApiResource.getURI(
+      ApiHelper.coupon.base,
+      ApiHelper.coupon.getActiveCoupons
+    )}`;
+    return this.baseHttp.get<CouponResponse[]>(url);
+  }
   getCouponsForDropDown(): Observable<CouponResponse[]> {
     const url = `${ApiResource.getURI(
       ApiHelper.coupon.base,
@@ -102,7 +109,10 @@ export class ProposalService {
     return this.baseHttp.get<any>(`${url}/${proposalId}`);
   }
 
-  getAllProposals(ids?: number[], patientId?: string | null): Observable<ProposalBulkResponseDto[]> {
+  getAllProposals(
+    ids?: number[],
+    patientId?: string | null
+  ): Observable<ProposalBulkResponseDto[]> {
     const url = ApiResource.getURI(
       ApiHelper.proposal.base,
       ApiHelper.proposal.getAllPropsals
@@ -159,7 +169,10 @@ export class ProposalService {
     }
 
     const url = ApiResource.getURI(ApiHelper.proposal.base, endpoint);
-    const payload = status === Status.Rejected || Status.RejectedByPatient ? `"${description}"` : null;
+    const payload =
+      status === Status.Rejected || Status.RejectedByPatient
+        ? `"${description}"`
+        : null;
     return this.baseHttp.patch<CommonOperationResponseDto>(
       `${url}/${proposalId}`,
       payload
@@ -182,12 +195,16 @@ export class ProposalService {
     const url = id ? `${baseUrl}/${id}` : baseUrl;
     return this.baseHttp.get<ProposalBulkResponseDto[]>(url);
   }
-  updateProposalDetails(proposalId: string, proposalDetails: ProposalDetailRequestDto[]): Observable<BulkOperationResponseDto> {
+  updateProposalDetails(
+    proposalId: string,
+    proposalDetails: ProposalDetailRequestDto[]
+  ): Observable<BulkOperationResponseDto> {
     const url = ApiResource.getURI(
       ApiHelper.proposal.base,
       ApiHelper.proposal.updateProposalDetails
     );
-    return this.baseHttp.patch(`${url}/${proposalId}`, { ids: proposalDetails });
+    return this.baseHttp.patch(`${url}/${proposalId}`, {
+      ids: proposalDetails,
+    });
   }
-
 }

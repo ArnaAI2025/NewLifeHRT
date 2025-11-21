@@ -42,7 +42,7 @@ import { PatientNavigationBarComponent } from '../../../shared/components/patien
     MatMenuModule,
     MatProgressSpinnerModule,
     MatCheckboxModule,
-    PatientNavigationBarComponent
+    PatientNavigationBarComponent,
   ],
   templateUrl: './medical-recommandation-view.html',
   styleUrls: ['./medical-recommandation-view.scss'],
@@ -50,10 +50,16 @@ import { PatientNavigationBarComponent } from '../../../shared/components/patien
 export class MedicalRecommandationView implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-
+  activeRow: any = null;
   patientId: string | null = null;
 
-  displayedColumns = ['sNo', 'consultationDate', 'medicationTypeName', 'title', 'actions'];
+  displayedColumns = [
+    'sNo',
+    'consultationDate',
+    'medicationTypeName',
+    'title',
+    'actions',
+  ];
   dataSource = new MatTableDataSource<MedicalRecommendationResponseDto>();
 
   searchKeyword = '';
@@ -93,15 +99,22 @@ export class MedicalRecommandationView implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
 
     // Filter logic on title, medicationTypeName, consultationDate (as string)
-    this.dataSource.filterPredicate = (data: MedicalRecommendationResponseDto, filter: string) => {
+    this.dataSource.filterPredicate = (
+      data: MedicalRecommendationResponseDto,
+      filter: string
+    ) => {
       const lowerFilter = filter.toLowerCase();
 
       // Format consultationDate for filtering
-      const formattedDate = new Date(data.consultationDate).toLocaleDateString().toLowerCase();
+      const formattedDate = new Date(data.consultationDate)
+        .toLocaleDateString()
+        .toLowerCase();
 
-      return (data.title?.toLowerCase() ?? '').includes(lowerFilter)
-          || (data.medicationTypeName?.toLowerCase() ?? '').includes(lowerFilter)
-          || formattedDate.includes(lowerFilter);
+      return (
+        (data.title?.toLowerCase() ?? '').includes(lowerFilter) ||
+        (data.medicationTypeName?.toLowerCase() ?? '').includes(lowerFilter) ||
+        formattedDate.includes(lowerFilter)
+      );
     };
     this.paginator.page.subscribe((event: PageEvent) => {
       this.pageSize = event.pageSize;
@@ -120,7 +133,7 @@ export class MedicalRecommandationView implements OnInit, AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
     if (!this.dataSource.filter) {
-      this.dataSource.filter = ''; 
+      this.dataSource.filter = '';
     }
     this.resetPaginator();
   }
@@ -131,79 +144,102 @@ export class MedicalRecommandationView implements OnInit, AfterViewInit {
     this.isLoading.set(true);
     this.selection.clear();
 
-    this.doctorService.getAllMedicationTypeBasedOnPatientId(this.patientId).subscribe({
-      next: (res : MedicalRecommendationResponseDto[]) => {
-        this.dataSource.data = res ?? [];
-        this.dataSource.filter = '';  
-        this.updatePagedData();
-      },
-      error: (error) => {
-        console.error('Failed to load recommendations:', error);
-        this.notificationService.showSnackBar('Failed to load recommendations.', 'failure');
-      },
-      complete: () => {
-        this.isLoading.set(false);
-      }
-    });
+    this.doctorService
+      .getAllMedicationTypeBasedOnPatientId(this.patientId)
+      .subscribe({
+        next: (res: MedicalRecommendationResponseDto[]) => {
+          this.dataSource.data = res ?? [];
+          this.dataSource.filter = '';
+          this.updatePagedData();
+        },
+        error: (error) => {
+          console.error('Failed to load recommendations:', error);
+          this.notificationService.showSnackBar(
+            'Failed to load recommendations.',
+            'failure'
+          );
+        },
+        complete: () => {
+          this.isLoading.set(false);
+        },
+      });
   }
-async openConfirmation(action: string, message: string): Promise<boolean> {
-  const data: ConfirmationDialogData = {
-    title: `${action} Confirmation`,
-    message: `<p>${message}</p>`,
-  };
+  async openConfirmation(action: string, message: string): Promise<boolean> {
+    const data: ConfirmationDialogData = {
+      title: `${action} Confirmation`,
+      message: `<p>${message}</p>`,
+    };
 
-  const confirmed = await firstValueFrom(this.confirmationService.openConfirmation(data));
-  return confirmed ?? false;
-}
-async onDelete(recommendation: MedicalRecommendationResponseDto): Promise<void> {
-  const actionText = 'Delete';
-  const patientLabel = `recommendation`;
+    const confirmed = await firstValueFrom(
+      this.confirmationService.openConfirmation(data)
+    );
+    return confirmed ?? false;
+  }
+  async onDelete(
+    recommendation: MedicalRecommendationResponseDto
+  ): Promise<void> {
+    const actionText = 'Delete';
+    const patientLabel = `recommendation`;
 
-  const confirmed = await this.openConfirmation(
-    actionText,
-    `Are you sure you want to <strong>${actionText.toLowerCase()}</strong> ${patientLabel}?`
-  );
+    const confirmed = await this.openConfirmation(
+      actionText,
+      `Are you sure you want to <strong>${actionText.toLowerCase()}</strong> ${patientLabel}?`
+    );
 
-  if (!confirmed) return;
+    if (!confirmed) return;
 
-  this.isDeleting = true;
-  this.doctorService.deleteMedicationRecommendation(recommendation.id).subscribe({
-    next: () => {
-      this.notificationService.showSnackBar('Recommendation deleted successfully.', 'success');
-      this.loadRecommendations();
-    },
-    error: (err) => {
-      console.error('Delete failed:', err);
-      this.notificationService.showSnackBar('Failed to delete recommendation.', 'failure');
-    },
-    complete: () => {
-      this.isDeleting = false;
-    }
-  });
-}
+    this.isDeleting = true;
+    this.doctorService
+      .deleteMedicationRecommendation(recommendation.id)
+      .subscribe({
+        next: () => {
+          this.notificationService.showSnackBar(
+            'Recommendation deleted successfully.',
+            'success'
+          );
+          this.loadRecommendations();
+        },
+        error: (err) => {
+          console.error('Delete failed:', err);
+          this.notificationService.showSnackBar(
+            'Failed to delete recommendation.',
+            'failure'
+          );
+        },
+        complete: () => {
+          this.isDeleting = false;
+        },
+      });
+  }
 
   onAdd(): void {
     this.router.navigate(['/medication-recommendation-add', this.patientId]);
   }
 
-onEdit(recommendation: MedicalRecommendationResponseDto): void {
-  if (!this.patientId) {
-    return;
+  onEdit(recommendation: MedicalRecommendationResponseDto): void {
+    if (!this.patientId) {
+      return;
+    }
+    this.router.navigate([
+      '/medication-recommendation-edit',
+      this.patientId,
+      recommendation.id,
+    ]);
   }
-  this.router.navigate(['/medication-recommendation-edit', this.patientId, recommendation.id]);
-}
-togglePatientActiveStatus(status: boolean): void {}
-onSaveAndClose(): void {}
-onClickAddPatient(): void {
-  this.router.navigate(['/patient/add']);
-}
-onSubmit(): void {}
-onClose(): void {
-  this.router.navigate(['/patients/view']);
-}
+  togglePatientActiveStatus(status: boolean): void {}
+  onSaveAndClose(): void {}
+  onClickAddPatient(): void {
+    this.router.navigate(['/patient/add']);
+  }
+  onSubmit(): void {}
+  onClose(): void {
+    this.router.navigate(['/patients/view']);
+  }
 
   private updatePagedData(): void {
-    const filtered = this.dataSource.filteredData?.length? this.dataSource.filteredData: this.dataSource.data;
+    const filtered = this.dataSource.filteredData?.length
+      ? this.dataSource.filteredData
+      : this.dataSource.data;
     const startIndex = this.pageIndex * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.pagedData = filtered.slice(startIndex, endIndex);

@@ -13,6 +13,8 @@ namespace NewLifeHRT.Application.Services.Mappings
     {
         public static UserResponseDto ToUserResponseDto(this ApplicationUser user)
         {
+            var roleIds = user.UserRoles?.Select(ur => ur.RoleId).Distinct().ToArray() ?? Array.Empty<int>();
+
             return new UserResponseDto
             {
                 Id = user.Id,
@@ -21,7 +23,7 @@ namespace NewLifeHRT.Application.Services.Mappings
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                RoleId = user.RoleId,
+                RoleIds = roleIds,
                 DEA = user.DEA,
                 NPI = user.NPI,
                 CommisionInPercentage = user.CommisionInPercentage,
@@ -32,7 +34,13 @@ namespace NewLifeHRT.Application.Services.Mappings
                 Color = user.ColorCode,
                 CreatedAt = user.CreatedAt,                
                 IsDeleted = user.IsDeleted,
-                SignatureUrl = user.SignaturePath,
+                SignatureUrls = user.UserSignatures?.Where(s => s.IsActive)
+                        .Select(s => new UserSignatureResponseDto
+                        {
+                            Id = s.Id,
+                            Url = s.SignaturePath,
+                        })
+                        .ToList() ?? new List<UserSignatureResponseDto>(),
                 Address = user.Address != null ? new AddressDto
                 {
                     AddressLine1 = user.Address.AddressLine1,
@@ -42,7 +50,7 @@ namespace NewLifeHRT.Application.Services.Mappings
                     CountryId = user.Address.CountryId,
                     Country = user.Address?.Country?.Name
                 } : null,
-                LicenseInformation = user.LicenseInformations?
+                LicenseInformations = user.LicenseInformations?
                     .Select(sm => new LicenseInformationResponseDto
                     {
                         Id = sm.Id,

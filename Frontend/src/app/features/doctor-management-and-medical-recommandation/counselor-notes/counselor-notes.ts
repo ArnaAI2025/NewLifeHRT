@@ -41,8 +41,8 @@ import { ConfirmationDialogService } from '../../../shared/components/confirmati
     MatMenuModule,
     MatProgressSpinnerModule,
     MatCheckboxModule,
-    PatientNavigationBarComponent
-  ]
+    PatientNavigationBarComponent,
+  ],
 })
 export class CounselorNotesComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -50,14 +50,22 @@ export class CounselorNotesComponent implements OnInit, AfterViewInit {
 
   patientId!: string;
 
-  displayedColumns: string[] = ['sNo', 'subject', 'note', 'isAdminMailSent', 'isDoctorMailSent', 'status', 'actions'];
+  displayedColumns: string[] = [
+    'sNo',
+    'subject',
+    'note',
+    'isAdminMailSent',
+    'isDoctorMailSent',
+    'status',
+    'actions',
+  ];
   dataSource = new MatTableDataSource<CounselorNoteDisplay>();
   searchKeyword = '';
   isLoading = signal(false);
   isDeleting = false;
   isBulkProcessing = false;
   bulkAction: 'activate' | 'deactivate' | null = null;
-
+  activeRow: CounselorNoteDisplay | null = null;
   selection = new SelectionModel<CounselorNoteDisplay>(true, []);
   selectedNoteForView: CounselorNoteDisplay | null = null;
   isViewMode = false;
@@ -72,7 +80,7 @@ export class CounselorNotesComponent implements OnInit, AfterViewInit {
     private readonly notificationService: NotificationService,
     private readonly activatedRoute: ActivatedRoute,
     private dialog: MatDialog,
-    private confirmationService: ConfirmationDialogService,
+    private confirmationService: ConfirmationDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -93,7 +101,10 @@ export class CounselorNotesComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
 
-    this.dataSource.filterPredicate = (data: CounselorNoteDisplay, filter: string): boolean => {
+    this.dataSource.filterPredicate = (
+      data: CounselorNoteDisplay,
+      filter: string
+    ): boolean => {
       const value = filter.toLowerCase();
       return (
         data.subject.toLowerCase().includes(value) ||
@@ -113,21 +124,21 @@ export class CounselorNotesComponent implements OnInit, AfterViewInit {
   applyFilter(): void {
     this.dataSource.filter = this.searchKeyword.trim().toLowerCase();
     if (!this.dataSource.filter) {
-      this.dataSource.filter = ''; 
+      this.dataSource.filter = '';
     }
     this.resetPaginator();
     this.selection.clear();
   }
 
   formatNotesFromApi(data: any[]): CounselorNoteDisplay[] {
-    return data.map(note => ({
+    return data.map((note) => ({
       id: note.id,
       patientId: note.patientId,
       subject: note.subject,
       note: note.note,
       isAdminMailSent: note.isAdminMailSent,
       isDoctorMailSent: note.isDoctorMailSent,
-      isActive: note.isActive
+      isActive: note.isActive,
     }));
   }
 
@@ -138,96 +149,107 @@ export class CounselorNotesComponent implements OnInit, AfterViewInit {
     this.isLoading.set(true);
     this.selection.clear();
 
-    this.doctorManagementAndMedicalRecommandationService.getAllCounselorBasedOnPatientId(this.patientId).subscribe({
-      next: (apiResponse) => {
-        this.dataSource.data = this.formatNotesFromApi(apiResponse);
-        this.dataSource.filter = '';  
-        this.updatePagedData();
+    this.doctorManagementAndMedicalRecommandationService
+      .getAllCounselorBasedOnPatientId(this.patientId)
+      .subscribe({
+        next: (apiResponse) => {
+          this.dataSource.data = this.formatNotesFromApi(apiResponse);
+          this.dataSource.filter = '';
+          this.updatePagedData();
+        },
+        error: (err) => {
+          console.error('Error:', err);
+          this.notificationService.showSnackBar(
+            'Failed to load counselor notes.',
+            'failure'
+          );
+        },
+        complete: () => {
+          this.isLoading.set(false);
+          this.isBulkProcessing = false;
+          this.bulkAction = null;
+        },
+      });
+  }
+
+  onDelete(data: CounselorNoteDisplay): void {
+    const subject = data.subject ?? '';
+    this.confirmationService
+      .openConfirmation({
+        title: 'Delete Counselor Note',
+        message: `Are you sure you want to <strong>delete</strong> this counselor note?`,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+      })
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+
+        this.isDeleting = true;
+
+        this.doctorManagementAndMedicalRecommandationService
+          .deleteCounselorNote(data.id)
+          .subscribe({
+            next: (response) => {
+              if (response) {
+                this.notificationService.showSnackBar(
+                  'Counselor note deleted successfully',
+                  'success'
+                );
+                this.loadNotesData();
+                this.selection.clear?.(); // clear selection if present
+              }
+            },
+            error: (err) => {
+              console.error('Delete error:', err);
+              const errorMessage =
+                err?.error?.message || 'Failed to delete counselor note.';
+              this.notificationService.showSnackBar(errorMessage, 'failure');
+            },
+            complete: () => {
+              this.isDeleting = false;
+            },
+          });
+      });
+  }
+
+  viewNote(data: CounselorNoteDisplay): void {
+    this.openAddNoteDialog(this.patientId, data, true);
+  }
+  openAddNoteDialog(
+    patientId: string | null,
+    noteData: CounselorNoteDisplay | null,
+    isViewMode: boolean
+  ): void {
+    const dialogRef = this.dialog.open(CounselorNotesAddComponent, {
+      width: '500px',
+      data: {
+        patientId,
+        noteData: noteData,
+        isViewMode: isViewMode,
       },
-      error: (err) => {
-        console.error('Error:', err);
-        this.notificationService.showSnackBar('Failed to load counselor notes.', 'failure');
-      },
-      complete: () => {
-        this.isLoading.set(false);
-        this.isBulkProcessing = false;
-        this.bulkAction = null;
-      }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.loadNotesData();
     });
   }
 
-onDelete(data: CounselorNoteDisplay): void {
-  const subject = data.subject ?? '';
-  this.confirmationService.openConfirmation({
-    title: 'Delete Counselor Note',
-    message: `Are you sure you want to <strong>delete</strong> this counselor note?`,
-    confirmButtonText: 'Delete',
-    cancelButtonText: 'Cancel'
-  }).subscribe(confirmed => {
-    if (!confirmed) return;
-
-    this.isDeleting = true;
-
-    this.doctorManagementAndMedicalRecommandationService.deleteCounselorNote(data.id).subscribe({
-      next: (response) => {
-        if (response) {
-          this.notificationService.showSnackBar('Counselor note deleted successfully', 'success');
-          this.loadNotesData();
-          this.selection.clear?.(); // clear selection if present
-        }
-      },
-      error: (err) => {
-        console.error('Delete error:', err);
-        const errorMessage = err?.error?.message || 'Failed to delete counselor note.';
-        this.notificationService.showSnackBar(errorMessage, 'failure');
-      },
-      complete: () => {
-        this.isDeleting = false;
-      }
-    });
-  });
-}
-
-
-
-viewNote(data: CounselorNoteDisplay): void {
-  this.openAddNoteDialog(this.patientId, data, true);
-}
-openAddNoteDialog(
-  patientId: string | null,
-  noteData: CounselorNoteDisplay | null,
-  isViewMode: boolean
-): void {
-  const dialogRef = this.dialog.open(CounselorNotesAddComponent, {
-    width: '500px',
-    data: {
-      patientId,
-      noteData: noteData,
-      isViewMode: isViewMode
-    }
-  });
-
-  dialogRef.afterClosed().subscribe(result => {
-    this.loadNotesData();
-  });
-}
-
-
   openAddNotePopup(): void {
     this.openAddNoteDialog(this.patientId, null, false);
- 
-}
-togglePatientActiveStatus(status: boolean | any): void {}
-onSaveAndClose(): void {}
-onClickAddPatient(): void {
-  this.router.navigate(['/patient/add']);
-}
-onSubmit(): void {}
-onClose(): void {
-  this.router.navigate(['/patients/view']);
-}
+  }
+  togglePatientActiveStatus(status: boolean | any): void {}
+  onSaveAndClose(): void {}
+  onClickAddPatient(): void {
+    this.router.navigate(['/patient/add']);
+  }
+  onSubmit(): void {}
+  onClose(): void {
+    this.router.navigate(['/patients/view']);
+  }
   private updatePagedData(): void {
-    const filtered = this.dataSource.filteredData?.length? this.dataSource.filteredData: this.dataSource.data;
+    const filtered = this.dataSource.filteredData?.length
+      ? this.dataSource.filteredData
+      : this.dataSource.data;
     const startIndex = this.pageIndex * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.pagedData = filtered.slice(startIndex, endIndex);

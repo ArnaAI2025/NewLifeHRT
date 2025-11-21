@@ -4,13 +4,13 @@ import { PermissionGuard } from '../../core/guards/permission.guard';
 import { PermissionAction, PermissionResource } from '../../shared/constants/permissions.enums';
 import { RoutePermission } from '../../shared/models/route-permission';
 
-const resource = PermissionResource.CommissionRatePerProduct;
+const resource = PermissionResource.LifeFileDashboard;
 export const lifefileDashboardRoutes: Routes = [
   {
     path: 'lifefiledashboard/view',
     loadComponent: () =>
       import('./lifefile-dashboard-view/lifefile-dashboard-view').then(m => m.LifefileDashboardViewComponent),
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, PermissionGuard],
     data: new RoutePermission(resource, PermissionAction.Read)
   }
 ];

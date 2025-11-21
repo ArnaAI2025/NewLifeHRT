@@ -163,54 +163,70 @@
   </div>
 
   <!-- mobile view table card -->
-  <div class="mobile-table-wapper pb-4">
+    <div class="mobile-table-wapper pb-4">
     <ng-container *ngIf="dataSource.filteredData.length > 0">
-      <div class="flex items-center gap-2">
+      <!-- header row -->
+      <div class="mobile-table-header">
         <mat-checkbox class="custom-mat-checkbox" (change)="toggleSelectAll($event)" [checked]="isAllSelected()"
-              [indeterminate]="isPartialSelected()"></mat-checkbox>
-        <span class="font-bold">Details</span>
+          [indeterminate]="isPartialSelected()">
+        </mat-checkbox>
+        <span class="mobile-table-title">Details</span>
       </div>
-      <div class="mobile-view-table" *ngFor = "let element of pagedData">
-        <div class="toggle-table flex items-center gap-4">
-          <div>
-            <mat-checkbox class="custom-mat-checkbox" [(ngModel)]="element.selected"></mat-checkbox>
-          </div>
-          <div>
-            <p class="m-0"><span class="user-name" (click)="navigateToEdit(element.id)">{{element.name}}</span>({{ element.status}})</p>
-            <p class="m-0">{{element.productCode}}</p>
-          </div>
+
+      <!-- cards -->
+      <div class="mobile-view-table" *ngFor="let element of pagedData">
+        <div class="mobile-card-left">
+          <mat-checkbox class="custom-mat-checkbox" [(ngModel)]="element.selected">
+          </mat-checkbox>
         </div>
-        <div>
-            <button mat-icon-button [matMenuTriggerFor]="actionMenu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #actionMenu="matMenu">
-              <button mat-menu-item (click)="navigateToEdit(element.id)">Edit</button>
-              <button *ngIf="element.status === 'Draft'" mat-menu-item
-                (click)="performAction('publish', element)">Publish</button>
-                <button *ngIf="element.status === 'Retired'" mat-menu-item (click)="performAction('activate', element)">
-                  <span>Activate</span>
-                </button>
-              <button *ngIf="element.status === 'Active'" mat-menu-item (click)="performAction('deactivate', element)">
-                <span>Retire</span>
-              </button>
-              <button mat-menu-item (click)="performAction('delete', element)">Delete</button>
-            </mat-menu>
-          </div>
+
+        <div class="mobile-card-content">
+          <p class="mobile-card-title">
+            <span class="user-name" (click)="navigateToEdit(element.id)">
+              {{ element.name }}
+            </span>
+
+          </p>
+          <p>
+            <span class="status-badge" [ngClass]="element.status | lowercase">
+              {{ element.status }}
+            </span>
+          </p>
+          <!-- <p class="mobile-card-subtitle">
+          {{ element.productCode }}
+        </p> -->
+        </div>
+
+        <div class="mobile-card-actions">
+          <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #actionMenu="matMenu">
+            <button mat-menu-item (click)="navigateToEdit(element.id)">Edit</button>
+            <button *ngIf="element.status === 'Draft'" mat-menu-item
+              (click)="performAction('publish', element)">Publish</button>
+            <button *ngIf="element.status === 'Retired'" mat-menu-item
+              (click)="performAction('activate', element)">Activate</button>
+            <button *ngIf="element.status === 'Active'" mat-menu-item
+              (click)="performAction('deactivate', element)">Retire</button>
+            <button mat-menu-item (click)="performAction('delete', element)">Delete</button>
+          </mat-menu>
+        </div>
       </div>
     </ng-container>
+
     <div *ngIf="!isLoading() && dataSource.filteredData.length === 0" class="text-center py-12">
       <span *ngIf="searchKeyword">No results for "{{searchKeyword}}"</span>
     </div>
   </div>
 
+
   <!-- Paginator -->
   <div class="main-paginator">
     <div class="paginator-section p-0">
-    <mat-paginator #paginator
-      [pageSizeOptions]="[5, 10, 20, 30]" [pageSize]="5"
-      [showFirstLastButtons]="true" [length]="dataSource.filteredData.length || 0"  [disabled]="isLoading()"  class="disabled:opacity-50">
-    </mat-paginator>
-  </div>
+      <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" [showFirstLastButtons]="true"
+        [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()" class="disabled:opacity-50">
+      </mat-paginator>
+    </div>
   </div>
 </div>

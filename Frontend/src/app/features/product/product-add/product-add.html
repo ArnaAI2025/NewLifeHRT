@@ -17,7 +17,7 @@
       @if(isEditMode()){
         <!-- Add Product Button -->
         <button type="submit" mat-flat-button (click)="navigateToAddProduct()"
-          class="!py-1 !px-4 text-sm action-button secondry-button-add">
+          class="!py-1 !px-4 text-sm action-button primary-btn">
           Add Product
           <mat-icon class="mr-1">add</mat-icon>
         </button>
@@ -30,7 +30,7 @@
       </button>
 
       <!-- Save Button -->
-      <button mat-flat-button class="primary-btn-add !text-xs !py-1 !px-4 font-semibold" (click)="submitForm()">
+      <button mat-flat-button class="save-btn !text-xs !py-1 !px-4 font-semibold" (click)="submitForm()">
         Save
       </button>
 
@@ -93,8 +93,8 @@
       <form [formGroup]="productForm">
 
         <!-- Product IDentification -->
-        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">PRODUCT IDENTIFICATION</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <h3 class="text-lg font-bold text-gray-900  uppercase tracking-wide">PRODUCT IDENTIFICATION</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-0 ">
           <!-- Product ID -->
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">Product ID <span
@@ -149,10 +149,11 @@
           </div>
 
         </div>
+          <div class="border-b mt-1 my-6"></div>
 
         <!-- Classification -->
-        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">CLASSIFICATION</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <h3 class="text-lg font-bold text-gray-900  uppercase tracking-wide">CLASSIFICATION</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-0 ">
           <!--Parent-->
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">
@@ -235,13 +236,12 @@
               <mat-error></mat-error>
             </mat-form-field>
           </div>
-
-
         </div>
+        <div class="border-b mt-1 my-6"></div>
 
         <!--Product Description-->
-        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">PRODUCT DESCRIPTION</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <h3 class="text-lg font-bold text-gray-900  uppercase tracking-wide">PRODUCT DESCRIPTION</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-0 ">
           <!--Description-->
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">Description</label>
@@ -275,15 +275,12 @@
               <mat-error></mat-error>
             </mat-form-field>
           </div>
-
-
-
-
         </div>
+        <div class="border-b mt-1 my-6"></div>
 
         <!--Web Display Information-->
-        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">WEB DISPLAY INFORMATION</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <h3 class="text-lg font-bold text-gray-900  uppercase tracking-wide">WEB DISPLAY INFORMATION</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-0 ">
           <!--Web Product Name-->
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">Web Product Name</label>
@@ -351,12 +348,12 @@
               <mat-error></mat-error>
             </mat-form-field>
           </div>
-
         </div>
+        <div class="border-b mt-1 my-6"></div>
 
         <!--Calculator-->
-        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">CALCULATOR</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <h3 class="text-lg font-bold text-gray-900  uppercase tracking-wide">CALCULATOR</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-0 ">
 
           <!--Enable Calculator-->
           <div class="space-y-2 custom-text-box">

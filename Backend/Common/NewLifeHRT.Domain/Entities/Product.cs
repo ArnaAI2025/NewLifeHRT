@@ -113,7 +113,7 @@ namespace NewLifeHRT.Domain.Entities
                     .HasMaxLength(200);
 
                 entity.Property(p => p.Protocol)
-                    .HasMaxLength(100);
+                    .HasMaxLength(500);
 
                 entity.Property(p => p.WebStrengths)
                     .HasMaxLength(100);

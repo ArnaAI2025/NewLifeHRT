@@ -44,7 +44,7 @@ namespace NewLifeHRT.Application.Services.Services
                 throw;
             }
         }
-        public async Task<CommonOperationResponseDto<int>> UpdateLicenseInformationAsync( LicenseInformationRequestDto[] request, int applicationUserId,int userId)
+        public async Task<CommonOperationResponseDto<int>> UpdateLicenseInformationAsync(LicenseInformationRequestDto[] request,int applicationUserId,int userId)
         {
             request ??= Array.Empty<LicenseInformationRequestDto>();
 
@@ -52,10 +52,22 @@ namespace NewLifeHRT.Application.Services.Services
                 .FindAsync(li => li.UserId == applicationUserId))
                 .ToList();
 
+            if (request.Length == 0 && existing.Any())
+            {
+                await _licenseInformationRepository.RemoveRangeAsync(existing);
+                await _licenseInformationRepository.SaveChangesAsync();
+
+                return new CommonOperationResponseDto<int>
+                {
+                    Id = applicationUserId,
+                    Message = "All license information removed successfully"
+                };
+            }
+
             var existingByState = existing.ToDictionary(e => e.StateId, e => e);
             var requestedByState = request
                 .GroupBy(r => r.StateId)
-                .Select(g => g.First()) 
+                .Select(g => g.First())
                 .ToDictionary(r => r.StateId, r => r);
 
             foreach (var kvp in requestedByState)
@@ -63,10 +75,10 @@ namespace NewLifeHRT.Application.Services.Services
                 if (existingByState.TryGetValue(kvp.Key, out var entity))
                 {
                     var dto = kvp.Value;
-                    entity.Number = dto.Number?.Trim();                       
-                    entity.UpdatedAt = DateTime.UtcNow;                       
-                    entity.UpdatedBy = userId.ToString();                     
-                    entity.IsActive = true;                                   
+                    entity.Number = dto.Number?.Trim();
+                    entity.UpdatedAt = DateTime.UtcNow;
+                    entity.UpdatedBy = userId.ToString();
+                    entity.IsActive = true;
                 }
             }
 
@@ -88,20 +100,14 @@ namespace NewLifeHRT.Application.Services.Services
                     };
                 }).ToList();
 
-                if (toAdd.Count > 0)
-                {
-                    await _licenseInformationRepository.AddRangeAsync(toAdd);
-                }
+                await _licenseInformationRepository.AddRangeAsync(toAdd);
             }
 
             var removedStates = existingByState.Keys.Except(requestedByState.Keys).ToList();
             if (removedStates.Count > 0)
             {
                 var toRemove = removedStates.Select(s => existingByState[s]).ToList();
-                if (toRemove.Count > 0)
-                {
-                    await _licenseInformationRepository.RemoveRangeAsync(toRemove);
-                }
+                await _licenseInformationRepository.RemoveRangeAsync(toRemove);
             }
 
             await _licenseInformationRepository.SaveChangesAsync();
@@ -112,6 +118,7 @@ namespace NewLifeHRT.Application.Services.Services
                 Message = "Updated Successfully"
             };
         }
+
 
     }
 }

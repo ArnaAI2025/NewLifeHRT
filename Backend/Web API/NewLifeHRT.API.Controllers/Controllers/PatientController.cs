@@ -29,10 +29,10 @@ namespace NewLifeHRT.API.Controllers.Controllers
             var patients = await _patientService.GetAllAsync();
             return Ok(patients);
         }
-        [HttpGet("get-all-active-patients")]
-        public async Task<IActionResult> GetAllActivePatients()
+        [HttpGet("get-all-active-patients-except/{patientId?}")]
+        public async Task<IActionResult> GetAllActivePatientsExcept(Guid? patientId = null)
         {
-            var patients = await _patientService.GetAllActiveAsync();
+            var patients = await _patientService.GetAllActiveAsync(patientId);
             return Ok(patients);
         }
         [HttpGet("patients-by-counselor/{counselorId}")]

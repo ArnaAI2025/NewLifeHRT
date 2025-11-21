@@ -1,157 +1,285 @@
-<app-patient-navigation-bar [isEditMode]="true" [isSaving]="false" [isActive]="undefined" [patientId]="patientId"
-  (close)="onClose()" [activeView]="'medical-recommandation'" (save)="onSubmit()" (addPatient)="onClickAddPatient()"
-  (saveAndClose)="onSaveAndClose()" (toggleActiveStatus)="togglePatientActiveStatus($event)">
+<app-patient-navigation-bar
+  [isEditMode]="true"
+  [isSaving]="false"
+  [isActive]="undefined"
+  [patientId]="patientId"
+  (close)="onClose()"
+  [activeView]="'medical-recommandation'"
+  (save)="onSubmit()"
+  (addPatient)="onClickAddPatient()"
+  (saveAndClose)="onSaveAndClose()"
+  (toggleActiveStatus)="togglePatientActiveStatus($event)"
+>
 </app-patient-navigation-bar>
 
-<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 bg-card-color">
+<div
+  class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 bg-card-color"
+>
   <!-- Header -->
-  <div class="flex items-center justify-between mb-6 flex-wrap gap-4 table-view-header">
+  <div
+    class="flex items-center justify-between mb-6 flex-wrap gap-4 table-view-header"
+  >
     <div class="flex items-center">
       <h2 class="list-page-heading">Medical Recommendation</h2>
-        <div class="flex items-center space-x-3 filter-input search-box search-box-dsk">
-          <div class="relative ml-6">
-            <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
-            <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword" (input)="applyFilter()"
-              [disabled]="isLoading()"
-              class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 w-64" />
-          </div>
+      <div
+        class="flex items-center space-x-3 filter-input search-box search-box-dsk"
+      >
+        <div class="relative ml-6">
+          <mat-icon
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            >search</mat-icon
+          >
+          <input
+            matInput
+            type="text"
+            placeholder="Filter by keywords"
+            [(ngModel)]="searchKeyword"
+            (input)="applyFilter()"
+            [disabled]="isLoading()"
+            class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 w-64"
+          />
         </div>
+      </div>
     </div>
     <div class="flex items-center gap-4 justify-end ml-auto">
-      <button mat-flat-button (click)="onAdd()" [disabled]="isLoading()"
-        class="flex items-center text-blue-600 primary-btn-add">
+      <button
+        mat-flat-button
+        (click)="onAdd()"
+        [disabled]="isLoading()"
+        class="flex items-center text-blue-600 primary-btn-add"
+      >
         <mat-icon class="mr-1">add</mat-icon>
         Add Medical Recommendation
       </button>
     </div>
     <div class="flex items-center space-x-3 w-full filter-input search-box-mb">
-        <!-- Search Input -->
-        <div class="relative">
-          <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
-          <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword" (input)="applyFilter()"
-            [disabled]="isLoading()"
-            class="pl-10 text-left pr-4 py-2 border border-gray-300 rounded-md w-full bg-transparent disabled:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed !bg-transparent" />
-
-        </div>
-     </div>
+      <!-- Search Input -->
+      <div class="relative">
+        <mat-icon
+          class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+          >search</mat-icon
+        >
+        <input
+          matInput
+          type="text"
+          placeholder="Filter by keywords"
+          [(ngModel)]="searchKeyword"
+          (input)="applyFilter()"
+          [disabled]="isLoading()"
+          class="pl-10 text-left pr-4 py-2 border border-gray-300 rounded-md w-full bg-transparent disabled:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed !bg-transparent"
+        />
+      </div>
+    </div>
   </div>
 
-
   <!-- Loading Overlay -->
-  <div *ngIf="isLoading()"
-    class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
+  <div
+    *ngIf="isLoading()"
+    class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg"
+  >
     <mat-spinner diameter="40"></mat-spinner>
   </div>
 
   <!-- Table -->
-  <div class="relative overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
-    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
-
+  <div
+    class="relative overflow-x-auto custom-table-view"
+    [class.opacity-50]="isLoading()"
+  >
+    <table
+      mat-table
+      [dataSource]="dataSource"
+      matSort
+      class="w-full custom-table"
+    >
       <!-- S.No Column -->
       <ng-container matColumnDef="sNo">
-        <th mat-header-cell *matHeaderCellDef
-          class="!text-xs !font-medium !text-gray-500 !pl-6 !w-16 rounded-tl-xl rounded-bl-xl">#</th>
-        <td mat-cell *matCellDef="let row; let i = index" class="!text-sm !text-gray-600 !pl-6">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          class="!text-xs !font-medium !text-gray-500 !pl-6 !w-16 rounded-tl-xl rounded-bl-xl"
+        >
+          #
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let row; let i = index"
+          class="!text-sm !text-gray-600 !pl-6"
+        >
           {{ paginator.pageIndex * paginator.pageSize + i + 1 }}
         </td>
       </ng-container>
 
       <!-- Consultation Date Column -->
       <ng-container matColumnDef="consultationDate">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="!text-xs !font-medium !text-gray-500">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="!text-xs !font-medium !text-gray-500"
+        >
           Consultation Date
         </th>
         <td mat-cell *matCellDef="let row" class="!text-sm !text-gray-900">
-          {{ row.consultationDate | date:'mediumDate' }}
+          {{ row.consultationDate | date : "mediumDate" }}
         </td>
       </ng-container>
 
       <!-- Medication Type Name Column -->
       <ng-container matColumnDef="medicationTypeName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="!text-xs !font-medium !text-gray-500">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="!text-xs !font-medium !text-gray-500"
+        >
           Medication Type
         </th>
-        <td mat-cell *matCellDef="let row" class="!text-sm !text-gray-900">{{ row.medicationTypeName }}</td>
+        <td mat-cell *matCellDef="let row" class="!text-sm !text-gray-900">
+          {{ row.medicationTypeName }}
+        </td>
       </ng-container>
 
       <!-- Title Column -->
       <ng-container matColumnDef="title">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="!text-xs !font-medium !text-gray-500">Title</th>
-        <td mat-cell *matCellDef="let row" class="!text-sm !text-gray-900">{{ row.title }}</td>
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="!text-xs !font-medium !text-gray-500"
+        >
+          Title
+        </th>
+        <td mat-cell *matCellDef="let row" class="!text-sm !text-gray-900">
+          {{ row.title }}
+        </td>
       </ng-container>
 
       <!-- Actions Column -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="text-center rounded-tr-xl rounded-br-xl">Actions</th>
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          class="text-center rounded-tr-xl rounded-br-xl"
+        >
+          Actions
+        </th>
         <td mat-cell *matCellDef="let row" class="text-center">
-          <div class="flex items-center">
-            <button mat-icon-button color="primary" (click)="onEdit(row)" [disabled]="isLoading()"
-              matTooltip="Edit Recommendation">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="onDelete(row)" [disabled]="isLoading()"
-              matTooltip="Delete Recommendation">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="actionMenu"
+            (click)="activeRow = row"
+            [disabled]="isLoading()"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
         </td>
       </ng-container>
 
+      <mat-menu #actionMenu="matMenu">
+        <button mat-menu-item (click)="onEdit(activeRow!)">
+          <span>Edit</span>
+        </button>
+        <button
+          mat-menu-item
+          color="warn"
+          (click)="onDelete(activeRow!)"
+          class="text-red-600"
+        >
+          <span>Delete</span>
+        </button>
+      </mat-menu>
+
       <!-- Header and Row -->
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-50/50"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-        class="hover:bg-gray-50/50 transition-colors !border-b !border-gray-100"></tr>
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedColumns"
+        class="!bg-gray-50/50"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="hover:bg-gray-50/50 transition-colors !border-b !border-gray-100"
+      ></tr>
     </table>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!isLoading() && dataSource.filteredData.length === 0 " class="text-center py-12">
+  <div
+    *ngIf="!isLoading() && dataSource.filteredData.length === 0"
+    class="text-center py-12"
+  >
     <div class="flex flex-col items-center">
-      <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+      <div
+        class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4"
+      >
         <mat-icon class="text-gray-400 text-xl">note_add</mat-icon>
       </div>
-      <h3 class="text-sm font-medium text-gray-900 mb-1">No recommendations found</h3>
-      <p class="text-sm text-gray-500">Get started by creating your first medical recommendation.</p>
+      <h3 class="text-sm font-medium text-gray-900 mb-1">
+        No recommendations found
+      </h3>
+      <p class="text-sm text-gray-500">
+        Get started by creating your first medical recommendation.
+      </p>
     </div>
   </div>
 
-  <div class="mobile-table-wapper pb-4" >
+  <div class="mobile-table-wapper pb-4">
     <ng-container *ngIf="dataSource.filteredData.length > 0">
       <div class="flex items-center gap-3 mb-4">
         <span>#</span>
         <span class="font-bold">Details</span>
       </div>
-    <div class="mobile-view-table" *ngFor = "let element of pagedData;let i = index;">
-      <div class="toggle-table flex items-center gap-4">
-        <div>
-          <span>{{ paginator.pageIndex * paginator.pageSize + i + 1 }}</span>
+      <div
+        class="mobile-view-table"
+        *ngFor="let element of pagedData; let i = index"
+      >
+        <div class="toggle-table flex items-center gap-4">
+          <div>
+            <span>{{ paginator.pageIndex * paginator.pageSize + i + 1 }}</span>
+          </div>
+          <div>
+            <p class="m-0">
+              {{ element.consultationDate | date : "mediumDate" }}
+            </p>
+            <p class="m-0">{{ element.medicationTypeName }}</p>
+            <p class="m-0">{{ element.title }}</p>
+          </div>
         </div>
         <div>
-          <p class="m-0">{{element.consultationDate | date:'mediumDate' }}</p>
-          <p class="m-0">{{ element.medicationTypeName}}</p>
-          <p class="m-0">{{element.title}}</p>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="onEdit(element)"
+            [disabled]="isLoading()"
+            matTooltip="Edit Recommendation"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="onDelete(element)"
+            [disabled]="isLoading()"
+            matTooltip="Delete Recommendation"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
         </div>
       </div>
-      <div>
-        <button mat-icon-button color="primary" (click)="onEdit(element)" [disabled]="isLoading()"
-              matTooltip="Edit Recommendation">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="onDelete(element)" [disabled]="isLoading()"
-              matTooltip="Delete Recommendation">
-              <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-    </div>
     </ng-container>
-</div>
+  </div>
 
   <!-- Paginator -->
-    <div class="main-paginator">
-      <div class="p-0 paginator-section">
-      <mat-paginator #paginator 
-        [pageSizeOptions]="[5, 10, 20, 30]" [pageSize]="5" 
-        [showFirstLastButtons]="true" [length]="dataSource.filteredData.length || 0"  [disabled]="isLoading()"  class="disabled:opacity-50">
+  <div class="main-paginator">
+    <div class="p-0 paginator-section">
+      <mat-paginator
+        #paginator
+        [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" 
+        [showFirstLastButtons]="true"
+        [length]="dataSource.filteredData.length || 0"
+        [disabled]="isLoading()"
+        class="disabled:opacity-50"
+      >
       </mat-paginator>
     </div>
   </div>

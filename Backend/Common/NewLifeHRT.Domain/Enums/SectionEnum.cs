@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace NewLifeHRT.Domain.Enums
 {
+    // Will be deleted on migration squash as this type of column will be deleted
     public enum SectionEnum
     {
         Patient = 1,

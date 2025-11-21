@@ -3,7 +3,9 @@ using NewLifeHRT.Domain.Entities;
 using NewLifeHRT.External.Models;
 using NewLifeHRT.Infrastructure.Data;
 using NewLifeHRT.Jobs.Scheduler.Interfaces;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using CommissionReportDto = NewLifeHRT.Jobs.Scheduler.Models.CommissionReportDto;
 using CommissionDetailDto = NewLifeHRT.Jobs.Scheduler.Models.CommissionDetailDto;
@@ -205,10 +207,8 @@ namespace NewLifeHRT.Jobs.Scheduler.Services
 
         public async Task<List<ApplicationUser>> GetAllActiveCounselorsAsync()
         {
-            const int counselorRoleId = 6;
-
             return await _clinicDbContext.Users
-                .Where(u => !u.IsDeleted && u.RoleId == counselorRoleId)
+                .Where(u => !u.IsDeleted && u.UserRoles.Any(ur => ur.RoleId == (int)AppRoleEnum.SalesPerson))
                 .ToListAsync();
         }
 

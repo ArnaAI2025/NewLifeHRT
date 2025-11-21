@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-using NewLifeHRT.Domain.Entities;
 
 namespace NewLifeHRT.Domain.Entities
 {
@@ -10,8 +8,6 @@ namespace NewLifeHRT.Domain.Entities
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int RoleId { get; set; }
-        public virtual ApplicationRole Role { get; set; }
         public Guid? AddressId { get; set; }
         public virtual Address? Address { get; set; }
         public bool IsDeleted { get; set; } = false;
@@ -28,7 +24,6 @@ namespace NewLifeHRT.Domain.Entities
         public int? TimezoneId { get; set; }
         public string? ColorCode { get; set; }
         public Guid? PatientId { get; set; }
-        public string? SignaturePath { get; set; }
         public bool MustChangePassword { get; set; } = false;
         public virtual Timezone? Timezone { get; set; }
         public virtual Patient Patient { get; set; }
@@ -36,6 +31,7 @@ namespace NewLifeHRT.Domain.Entities
         public virtual ICollection<UserOtp> Otps { get; set; }
         public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
         public virtual ICollection<UserServiceLink> UserServices { get; set; } = new List<UserServiceLink>();
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; } = new List<ApplicationUserRole>();
 
         public virtual ICollection<Patient> AssignPhysicianPatients { get; set; } = new List<Patient>();
         public virtual ICollection<Patient> CounselorPatients { get; set; } = new List<Patient>();
@@ -59,12 +55,13 @@ namespace NewLifeHRT.Domain.Entities
         public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
         public virtual ICollection<Holiday> Holidays { get; set; } = new List<Holiday>();
         public virtual ICollection<LicenseInformation> LicenseInformations { get; set; } = new List<LicenseInformation>();
+        public virtual ICollection<UserSignature> UserSignatures { get; set; } = new List<UserSignature>();
 
 
         public ApplicationUser() { }
 
         public ApplicationUser(string userName, string firstName, string lastName, string email, string? phoneNumber, string normalizedEmail,
-            string normalizedUserName, int roleId, string? dea, string? npi, decimal? commisionInPercentage, bool? matchAsCommisionRate, string? replaceCommisionrate,
+            string normalizedUserName, string? dea, string? npi, decimal? commisionInPercentage, bool? matchAsCommisionRate, string? replaceCommisionrate,
         bool vacation, int? timezoneId,string? colorCode, Guid? patientId, bool mustChangePassword, string createdBy, DateTime createdAt)
         {
             UserName = userName;
@@ -74,7 +71,6 @@ namespace NewLifeHRT.Domain.Entities
             PhoneNumber = phoneNumber;
             NormalizedEmail = normalizedEmail;
             NormalizedUserName = normalizedUserName;
-            RoleId = roleId;
             DEA = dea;
             NPI = npi;
             CommisionInPercentage = commisionInPercentage;
@@ -115,12 +111,6 @@ namespace NewLifeHRT.Domain.Entities
                 entity.Property(u => u.ColorCode)
                     .HasMaxLength(10)
                     .IsRequired(false);
-
-                entity.HasOne(u => u.Role)
-                      .WithMany(r => r.Users)
-                      .HasForeignKey(u => u.RoleId)
-                      .IsRequired()
-                      .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(u => u.Address)
                       .WithMany()

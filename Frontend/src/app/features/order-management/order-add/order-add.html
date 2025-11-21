@@ -2,7 +2,7 @@
 <app-full-page-loader [visible]="isLoadingPage()"></app-full-page-loader>
 
 <div
-  class="sticky top-0 z-10 flex flex-wrap gap-2 items-center justify-between rounded-lg px-4 py-2 shadow-sm mb-4 bg-white">
+  class="sticky top-0 z-10 flex flex-wrap gap-2 items-center justify-between rounded-lg px-4 pb-2 shadow-sm mb-4 bg-white">
   <div class="flex items-center space-x-2">
     <button mat-icon-button (click)="onClose()" class="header-back-button">
       <mat-icon>chevron_left</mat-icon>
@@ -64,7 +64,7 @@
           Refund Amount
         </button> -->
 
-        <button type="submit" mat-flat-button (click)="onSaveInformation()" class="!py-1 !px-4 text-sm primary-btn"
+        <button type="submit" mat-flat-button (click)="onSaveInformation()" class="!py-1 !px-4 text-sm save-btn"
           [disabled]="isSubmitting()">
           {{ isSubmitting() ? 'Saving...' : 'Save' }}
         </button>
@@ -144,8 +144,7 @@
 
         <!-- ORDER INFORMATION -->
         <section>
-          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Order Information</h3>
-
+          <h3 class="text-lg font-bold text-gray-900 mb-4 uppercase tracking-wide">Order Information</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Name -->
             <div class="space-y-2 custom-text-box">
@@ -394,10 +393,10 @@
 
           </div>
         </section>
-
+         <div class="border-b mt-1 my-6"></div>
         <!-- PRODUCT SELECTION -->
         <section>
-          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Product Selection</h3>
+          <h3 class="text-lg font-bold text-gray-900 mb-4 uppercase tracking-wide">Product Selection</h3>
 
           <!-- Add Product -->
           <div class="space-y-2 custom-text-box" *ngIf="!isReadOnlyMode() && !isEditMode()">
@@ -599,10 +598,10 @@
             <p class="text-gray-500">Add products from the search field above to build your order</p>
           </div>
         </section>
-
+        <div class="border-b mt-1 my-6"></div>
         <!-- SHIPPING INFORMATION -->
         <section *ngIf="filteredShippingMethods.length > 0">
-          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Shipping Information</h3>
+          <h3 class="text-lg font-bold text-gray-900 mb-4 uppercase tracking-wide">Shipping Information</h3>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Shipping Method tiles -->
@@ -716,7 +715,7 @@
       <aside class="lg:col-span-4 space-y-8 lg:sticky lg:top-20 self-start">
         <!-- PAYMENT OPTIONS -->
         <section *ngIf="hasCreditCards()">
-          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Payment Options</h3>
+          <h3 class="text-lg font-bold text-gray-900 mb-4 uppercase tracking-wide">Payment Options</h3>
 
           <div class="space-y-4">
             <!-- Toggle -->
@@ -768,8 +767,9 @@
 
           </div>
         </section>
+         <div class="border-b mt-1 my-6"></div>
         <section>
-          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Commissions</h3>
+          <h3 class="text-lg font-bold text-gray-900 mb-4 uppercase tracking-wide">Commissions</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Commission (number) -->
             <div class="space-y-2 custom-text-box">
@@ -808,10 +808,10 @@
           </div>
 
         </section>
-
+         <div class="border-b mt-1 my-6"></div>
         <!-- ORDER SUMMARY -->
         <section *ngIf="hasSelectedProducts()">
-          <h3 class="text-lg font-medium text-gray-900 mb-4 uppercase tracking-wide">Order Summary</h3>
+          <h3 class="text-lg font-bold text-gray-900 mb-4 uppercase tracking-wide">Order Summary</h3>
           <div class="bg-gray-50 p-6 pt-4 pb-4 rounded-lg space-y-2">
             <div class="flex justify-between text-sm">
               <span class="text-gray-600">Products Subtotal ({{ selectedProducts.length }} items):</span>
@@ -842,7 +842,7 @@
 
             <div class="flex justify-between text-lg font-bold text-gray-900">
               <span>Grand Total:</span>
-              <span class="primary-text-color">${{ getGrandTotal() | number:'1.2-2' }}</span>
+              <span class="text-white price-label font-bold px-2">${{ getGrandTotal() | number:'1.2-2' }}</span>
             </div>
           </div>
         </section>

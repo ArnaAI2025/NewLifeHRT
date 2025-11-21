@@ -24,6 +24,8 @@ namespace NewLifeHRT.Tests.Common.Builders
         protected Mock<ILicenseInformationService> LicenseInformationServiceMock {  get; set; } = new();
         protected Mock<IBlobService> BlobServiceMock{  get; set; } = new();
         protected Mock<AzureBlobStorageSettings> AzureBlobStorageSettingsMock{  get; set; } = new();
+        protected Mock<IUserSignatureRepository> UserSignatureRepositoryMock { get; set; } = new();
+        protected Mock<RoleManager<ApplicationRole>> RoleManagerMock{  get; set; } = new();
 
         public ServiceBuilder<T> SetParameter(Mock<IUserRepository> userRepositoryMock)
         {
@@ -76,6 +78,11 @@ namespace NewLifeHRT.Tests.Common.Builders
         public ServiceBuilder<T> SetParameter(Mock<AzureBlobStorageSettings> azureBlobStorageSettingsMock)
         {
             AzureBlobStorageSettingsMock = azureBlobStorageSettingsMock;
+            return this;
+        }
+        public ServiceBuilder<T> SetParameter(Mock<IUserSignatureRepository> userSignatureRepositoryMock)
+        {
+            UserSignatureRepositoryMock = userSignatureRepositoryMock;
             return this;
         }
 

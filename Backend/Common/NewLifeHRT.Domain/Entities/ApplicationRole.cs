@@ -2,13 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NewLifeHRT.Domain.Enums;
+using System.Collections.Generic;
 
 namespace NewLifeHRT.Domain.Entities
 {
     public class ApplicationRole : IdentityRole<int>
     {
-        public AppRoleEnum RoleEnum {  get; set; } 
-        public virtual ICollection<ApplicationUser> Users { get; set; }
+        public AppRoleEnum RoleEnum {  get; set; }
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; } = new List<ApplicationUserRole>();
         public virtual ICollection<RolePermission> RolePermissions { get; set; }
         public class RoleConfiguration : IEntityTypeConfiguration<ApplicationRole>
         {

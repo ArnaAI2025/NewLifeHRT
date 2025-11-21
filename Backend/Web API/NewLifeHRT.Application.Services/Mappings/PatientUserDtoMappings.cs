@@ -14,8 +14,6 @@ namespace NewLifeHRT.Application.Services.Mappings
         {
             var tempPassword = $"Pt!{Guid.NewGuid().ToString("N").Substring(0, 8)}";
 
-            const int patientRoleId = (int)AppRoleEnum.Patient;
-
             return new CreateUserRequestDto
             {
                 FirstName = patientRequest.FirstName,
@@ -24,7 +22,7 @@ namespace NewLifeHRT.Application.Services.Mappings
                 PhoneNumber = patientRequest.PhoneNumber,
                 Address = patientRequest.Address,
                 Password = tempPassword,
-                RoleId = patientRoleId,
+                RoleIds = new List<int> { (int)AppRoleEnum.Patient },
                 UserName = patientRequest.Email,
                 MustChangePassword = true
             };
@@ -32,7 +30,6 @@ namespace NewLifeHRT.Application.Services.Mappings
 
         public static UpdateUserRequestDto ToUpdateUserRequestDtoFromPatient(this CreatePatientRequestDto patientRequest)
         {
-
             return new UpdateUserRequestDto
             {
                 UserName = patientRequest.Email,
@@ -40,7 +37,7 @@ namespace NewLifeHRT.Application.Services.Mappings
                 LastName = patientRequest.LastName,
                 Email = patientRequest.Email,
                 PhoneNumber = patientRequest.PhoneNumber,
-                RoleId = (int)AppRoleEnum.Patient,
+                RoleIds = new List<int> { (int)AppRoleEnum.Patient },
                 Address = patientRequest.Address,
             };
         }

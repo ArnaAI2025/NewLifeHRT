@@ -7,13 +7,13 @@ export interface UserResponseDto {
   lastName: string;
   email: string;
   phoneNumber?: string;
-  roleId: number;
+  roleIds: number[];
   dea?: string;
   npi?: string;
   commisionInPercentage?: number;
   matchAsCommisionRate?: boolean;
   replaceCommisionRate?: string;
-  signatureUrl?: string;
+  signatureUrls?: UserSignatureResponseDto[];
   address?: Address;
   createdAt: string;
   serviceIds: string[];
@@ -22,7 +22,12 @@ export interface UserResponseDto {
   isDeleted?: boolean;
   timezoneId?: number;
   color?: string;
-  licenseInformation : any[];
+  licenseInformations : any[];
+}
+
+export interface UserSignatureResponseDto 
+{ id:number;
+  url:string; 
 }
 
 

@@ -22,11 +22,20 @@ namespace NewLifeHRT.Application.Services
             var coupons = await _couponRepository.AllWithIncludeAsync(includes);
             return CouponMappings.ToCouponResponseDtoList(coupons);
         }
-        public async Task<List<CouponResponseDto>> GetCoupons()
+        public async Task<List<CouponResponseDto>> GetActiveCoupons()
         {
             var now = DateTime.UtcNow;
 
             var coupons = await _couponRepository.FindAsync(coupon => coupon.IsActive && coupon.ExpiryDate > now );
+
+            if (coupons == null || !coupons.Any())
+                return new List<CouponResponseDto>();
+
+            return CouponMappings.ToCouponResponseDtoList(coupons);
+        }
+        public async Task<List<CouponResponseDto>> GetCoupons()
+        {
+            var coupons = await _couponRepository.GetAllAsync();
 
             if (coupons == null || !coupons.Any())
                 return new List<CouponResponseDto>();

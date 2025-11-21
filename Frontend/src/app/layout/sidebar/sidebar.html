@@ -1,17 +1,10 @@
 <div class="sidebar-container" [ngClass]="{'collapsed': isCollapsed}">
   <div class="sidebar-header">
-    <div class="brand" *ngIf="!isCollapsed">
+    <div class="brand" [ngClass]="{'compact': isCollapsed}">
       <img src="assets/images/logo.png" alt="NewLife HRT" class="brand-logo" />
-      <div>
-        <p class="brand-title">NewLife HRT</p>
-        <p class="brand-subtitle">Management Portal</p>
-      </div>
-    </div>
-    <div class="brand brand-collapsed" *ngIf="isCollapsed">
-      <img src="assets/images/logo.png" alt="NewLife HRT" />
     </div>
     <button type="button" class="collapse-toggle" (click)="onToggleSidebar()" aria-label="Toggle sidebar">
-      <mat-icon>{{ isCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      <mat-icon>{{ isCollapsed ? 'keyboard_double_arrow_right' : 'keyboard_double_arrow_left' }}</mat-icon>
     </button>
   </div>
 
@@ -43,19 +36,4 @@
       </div>
     </ng-container>
   </nav>
-
-  <div class="sidebar-footer" *ngIf="userAccount as account">
-    <div class="user-pill">
-      <div class="avatar">{{ userInitials }}</div>
-      <div class="user-copy" *ngIf="!isCollapsed">
-        <p class="name">{{ account.fullname }}</p>
-        <span class="role">{{ account.role }}</span>
-      </div>
-    </div>
-
-    <button type="button" class="logout-btn" (click)="navigateTo('/logout')">
-      <mat-icon>logout</mat-icon>
-      <span *ngIf="!isCollapsed">Logout</span>
-    </button>
-  </div>
 </div>

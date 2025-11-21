@@ -49,7 +49,7 @@
         </div>
 
         <!-- Form Fields -->
-        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-4">
           <!-- First Name -->
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">First Name <span
@@ -122,8 +122,8 @@
 
       <!-- Contact Information Section -->
       <div class="mt-4 rounded-md">
-        <h3 class="text-lg font-medium text-gray-900 mt-10 mb-6 uppercase tracking-wide">Contact Information</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
+        <h3 class="text-lg font-bold text-gray-900 mt-10 mb-6 uppercase tracking-wide">Contact Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 mb-4">
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">Phone</label>
                         <mat-form-field appearance="outline" class="w-full form-input form-input-text">
@@ -202,63 +202,58 @@
             </mat-form-field>
           </div>
         </div>
-
+        <div class="border-b mt-1 my-6"></div>
       </div>
       <!-- Attachments Section -->
-      <div class="mt-4 bg-gray-50 rounded">
+      <div class="mt-1 rounded">
         <div class="attachments-heading-line mb-4">
-          <h3 class="attachments-heading text-lg font-medium text-gray-900 mt-10 mb-6 uppercase tracking-wide">
+          <h3 class="attachments-heading text-lg font-bold text-gray-900 mt-10 mb-6 uppercase tracking-wide">
             Attachments</h3>
           <!-- Action Icons -->
           <div class="flex gap-3" *ngIf = "!isPatientLoggedIn">
             <button type="button" (click)="onClickDownloadDocument()" mat-icon-button><mat-icon>file_download</mat-icon></button>
             <button type="button" (click)="onClickDeleteDocument()" mat-icon-button><mat-icon>delete</mat-icon></button>
-
           </div>
         </div>
+       <!-- Table Header -->
+      <div class="grid grid-cols-5 gap-2 px-3 py-2 bg-gray-100 rounded-t patient-attachments-table">
+        <div class="form-checkbox custom-mat-checkbox">
+          <input
+            type="checkbox"
+            [checked]="isAllSelected"
+            [indeterminate]="isIndeterminate"
+            (change)="toggleSelectAll()"
+            [disabled]="uploadedFiles().length == 0"
+          />
+        </div>
+        <div class="col-span-1 font-medium">File Name</div>
+        <div class="col-span-1 font-medium">Category Name</div>
+        <div class="col-span-1 font-medium">Date Added</div>
+        <!-- <div class="col-span-1 font-medium">Action</div> -->
+      </div>
+        <!-- Table Rows -->
+        <div *ngFor="let file of uploadedFiles();"
+            class="grid grid-cols-5 gap-2 px-3 py-2 border-t border-l border-r border-gray-200">
 
-        <!-- Table Header -->
-<!-- Table Header -->
-<div class="grid grid-cols-5 gap-2 px-3 py-2 bg-gray-100 rounded-t patient-attachments-table">
-  <div class="form-checkbox custom-mat-checkbox">
-    <input
-      type="checkbox"
-      [checked]="isAllSelected"
-      [indeterminate]="isIndeterminate"
-      (change)="toggleSelectAll()"
-      [disabled]="uploadedFiles().length == 0"
-    />
-  </div>
-  <div class="col-span-1 font-medium">File Name</div>
-  <div class="col-span-1 font-medium">Category Name</div>
-  <div class="col-span-1 font-medium">Date Added</div>
-  <!-- <div class="col-span-1 font-medium">Action</div> -->
-</div>
-
-<!-- Table Rows -->
-<div *ngFor="let file of uploadedFiles();"
-     class="grid grid-cols-5 gap-2 px-3 py-2 border-t border-l border-r border-gray-200">
-
-  <div>
-    <input
-      type="checkbox"
-      class="form-checkbox"
-      [checked]="isFileSelected(file)"
-      (change)="toggleFileSelection(file, $event)"
-    >
-  </div>
-  <div class="truncate">{{ file.attachmentName }}</div>
-  <div>{{ file.categoryName }}</div>
-  <div>{{ file.createdAt | date }}</div>
-  <!-- <div>
-    <button type="button"
-            (click)="openFileModal(file)"
-            class="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600">
-      View
-    </button>
-  </div> -->
-</div>
-
+          <div>
+            <input
+              type="checkbox"
+              class="form-checkbox"
+              [checked]="isFileSelected(file)"
+              (change)="toggleFileSelection(file, $event)"
+            >
+          </div>
+          <div class="truncate">{{ file.attachmentName }}</div>
+          <div>{{ file.categoryName }}</div>
+          <div>{{ file.createdAt | date }}</div>
+          <!-- <div>
+            <button type="button"
+                    (click)="openFileModal(file)"
+                    class="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600">
+              View
+            </button>
+          </div> -->
+        </div>
         <!-- No Files Row -->
         <div *ngIf="uploadedFiles().length === 0" class="px-3 py-6 text-gray-500 flex items-center justify-center uploaded-card">
           <mat-icon class="mr-2">folder_open</mat-icon>
@@ -285,9 +280,10 @@
          <button type="button" mat-raised-button color="primary" class="mt-4 "
           (click)="openSelectCategoryDialog()">Upload Files</button>
        </div>
+ <div class="border-b mt-1 my-6"></div>
 
-       <div class="mt-4 bg-gray-50 rounded">
-  <h3 class="text-lg font-medium text-gray-900 mt-10 mb-6 uppercase tracking-wide">Financial</h3>
+       <div class="mt-1 rounded">
+   <h3 class="text-lg font-bold text-gray-900 mt-10 mb-6 uppercase tracking-wide">Financial</h3>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
     <!-- Outstanding Refund Balance -->
@@ -303,11 +299,12 @@
       </mat-form-field>
     </div>
   </div>
+   <div class="border-b mt-1 my-6"></div>
 </div>
 
       <!-- Visit & Medical Details Section -->
       <div class="mt-8 rounded-md">
-        <h3 class="text-lg font-medium text-gray-900 mt-10 mb-6 uppercase tracking-wide">Visit & Medical Details</h3>
+        <h3 class="text-lg font-bold text-gray-900 mt-10 mb-6 uppercase tracking-wide">Visit & Medical Details</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           <!-- Visit Type -->
           <div class="space-y-2 custom-text-box">
@@ -416,16 +413,17 @@
             </mat-form-field>
           </div>
         </div>
+         <div class="border-b mt-1 my-6"></div>
       </div>
 
 
 
       <!-- Administrative Settings -->
       <div class="card-color rounded-lg mt-2">
-        <h3 class="text-lg font-medium text-gray-900 mt-10 mb-6 uppercase tracking-wide">Administrative / Settings</h3>
+        <h3 class="text-lg font-bold text-gray-900 mt-10 mb-6 uppercase tracking-wide">Administrative / Settings</h3>
 
         <!-- First Row: Split Commission & Status -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- Split Commission -->
           <div class="flex items-center h-full">
             <mat-checkbox formControlName="splitCommission" class="custom-mat-checkbox">Split Commission</mat-checkbox>
@@ -449,7 +447,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 mb-4">
     <!-- Communication Preferences -->
     <div class="card-color rounded-lg shadow p-6 space-y-4 border border-gray-200" [formGroup]="patientForm">
-      <h3 class="flex items-center text-base font-semibold text-gray-700 mb-3">
+      <h3 class="flex items-center text-base font-bold text-gray-700 mb-3">
         <mat-icon color="primary" class="mr-2 credit-card-checkbox">mail</mat-icon> Communication Preferences
       </h3>
       <div class="space-y-2 custom-text-box">
@@ -491,7 +489,7 @@
     <!-- Add Credit Card -->
     <div class="card-color rounded-lg shadow p-6 space-y-4 border border-gray-200">
       <div class="flex flex-wrap gap-2 justify-between items-center mb-4" *ngIf = "!isPatientLoggedIn">
-        <h3 class="add-credit-card text-base font-semibold text-gray-800 flex items-center">
+        <h3 class="add-credit-card text-base font-bold text-gray-800 flex items-center">
           <mat-icon class="mr-2 text-blue-600 credit-card-checkbox">credit_card</mat-icon>
           {{ isEditingCreditCard ? 'Edit Credit Card' : 'Add Credit Card' }}
         </h3>
@@ -572,9 +570,9 @@
           </p>
         </div>
 
-        <form [formGroup]="creditCardForm" class="space-y-4">
+        <form [formGroup]="creditCardForm">
           <!-- Credit Card Number -->
-          <div class="space-y-2 custom-text-box">
+          <div class="custom-text-box">
             <label class="block text-sm font-medium text-gray-700 mb-1">
               Credit Card Number <span class="text-red-500" *ngIf="hasCreditCardData()">*</span>
             </label>
@@ -589,7 +587,7 @@
           </div>
 
           <!-- Card Type -->
-          <div class="space-y-2 custom-text-box">
+          <div class="custom-text-box">
             <label class="block text-sm font-medium text-gray-700 mb-1">
               Card Type <span class="text-red-500" *ngIf="hasCreditCardData()">*</span>
             </label>

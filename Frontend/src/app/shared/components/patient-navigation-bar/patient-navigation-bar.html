@@ -11,13 +11,13 @@
     <!-- Action Buttons - Only for Form View -->
     <div class="flex items-center space-x-4 flex items-center space-x-2 ml-auto mt-2 sm:mt-0" *ngIf = "!isPatientLoggedIn()">
       @if(isEditMode){
-        <button type="submit" mat-flat-button ngClass="secondry-button-add" (click)="onClickAddPatient()"
-          class="!py-1 !px-4 text-sm action-button secondry-button-add">
+        <button type="submit" mat-flat-button ngClass="primary-btn" (click)="onClickAddPatient()"
+          class="!py-1 !px-4 text-sm action-button primary-btn">
           Add Patient
           <mat-icon class="mr-1">add</mat-icon>
         </button>
       }
-      <button *ngIf="activeView === 'form'" type="submit" mat-flat-button class="primary-btn" (click)="onSubmit()"
+      <button *ngIf="activeView === 'form'" type="submit" mat-flat-button class="save-btn" (click)="onSubmit()"
         [disabled]="isSavingValue" [ngClass]="{'disabled': isSavingValue}">
         {{ isSaving ? 'Saving...' : 'Save'}}
       </button>

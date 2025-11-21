@@ -1,8 +1,9 @@
 ﻿using Azure.Core;
+using Humanizer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using NewLifeHRT.Application.Services.Interfaces;
 using NewLifeHRT.Application.Services.Mappings;
 using NewLifeHRT.Application.Services.Models.Request;
@@ -11,7 +12,6 @@ using NewLifeHRT.Domain.Entities;
 using NewLifeHRT.Domain.Enums;
 using NewLifeHRT.Domain.Interfaces.Repositories;
 using NewLifeHRT.Infrastructure.Data;
-using NewLifeHRT.Infrastructure.Repositories;
 using NewLifeHRT.Infrastructure.Settings;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,6 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using static NewLifeHRT.External.Models.EmpPostEasyRxModel;
 
 namespace NewLifeHRT.Application.Services.Services
 {
@@ -31,23 +30,25 @@ namespace NewLifeHRT.Application.Services.Services
         private readonly IPasswordHasher<ApplicationUser> _passwordhasher;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserServiceLinkRepository _userServiceLinkRepository;
-        private readonly ClinicDbContext _context;
         private readonly ILicenseInformationService _licenseInformationService;
         private readonly IBlobService _blobService;
         private readonly AzureBlobStorageSettings _azureBlobStorageSettings;
+        private readonly IUserSignatureRepository _userSignatureRepository;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
 
-        public UserService(IUserRepository userRepository, IAddressRepository addressRepository, IPasswordHasher<ApplicationUser> passwordhasher, UserManager<ApplicationUser> userManager, IUserServiceLinkRepository userServiceLinkRepository, ClinicDbContext clinicDbContext, ILicenseInformationService licenseInformationService, IBlobService blobService, IOptions<AzureBlobStorageSettings> azureBlobStorageSettings)
+        public UserService(IUserRepository userRepository, IAddressRepository addressRepository, IPasswordHasher<ApplicationUser> passwordhasher, UserManager<ApplicationUser> userManager, IUserServiceLinkRepository userServiceLinkRepository, ILicenseInformationService licenseInformationService, IBlobService blobService, IOptions<AzureBlobStorageSettings> azureBlobStorageSettings, IUserSignatureRepository userSignatureRepository, RoleManager<ApplicationRole> roleManager)
         {
             _userRepository = userRepository;
             _addressRepository = addressRepository;
             _passwordhasher = passwordhasher;
             _userManager = userManager;
             _userServiceLinkRepository = userServiceLinkRepository;
-            _context = clinicDbContext;
             _licenseInformationService = licenseInformationService;
             _blobService = blobService;
             _azureBlobStorageSettings = azureBlobStorageSettings.Value;
+            _userSignatureRepository = userSignatureRepository;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -70,8 +71,18 @@ namespace NewLifeHRT.Application.Services.Services
             if (await _userRepository.ExistAsync(createUserRequestDto.UserName, createUserRequestDto.Email))
                 throw new Exception("Username or Email already exists.");
 
+            var resolvedRoleIds = createUserRequestDto.RoleIds?
+                .Where(roleId => roleId > 0)
+                .Distinct()
+                .ToList() ?? new List<int>();
+
+            if (!resolvedRoleIds.Any())
+            {
+                throw new ArgumentException("At least one role must be provided.", nameof(createUserRequestDto.RoleIds));
+            }
+
             var user = new ApplicationUser(createUserRequestDto.UserName, createUserRequestDto.FirstName, createUserRequestDto.LastName, createUserRequestDto.Email, createUserRequestDto.PhoneNumber,
-                createUserRequestDto.Email.ToUpper(), createUserRequestDto.UserName.ToUpper(), createUserRequestDto.RoleId, createUserRequestDto.DEA, createUserRequestDto.NPI,
+                createUserRequestDto.Email.ToUpper(), createUserRequestDto.UserName.ToUpper(), createUserRequestDto.DEA, createUserRequestDto.NPI,
                 createUserRequestDto.CommisionInPercentage, createUserRequestDto.MatchAsCommisionRate, createUserRequestDto.ReplaceCommisionRate, createUserRequestDto.IsVacationApplicable, createUserRequestDto.TimezoneId, createUserRequestDto.Color, createUserRequestDto.PatientId, createUserRequestDto.MustChangePassword, userId.ToString(), DateTime.UtcNow);
             Console.WriteLine($"user=> {createUserRequestDto.Email},\n password ==> {createUserRequestDto.Password}");
 
@@ -85,18 +96,38 @@ namespace NewLifeHRT.Application.Services.Services
                 throw new Exception($"Failed to create user account. {errorMessage}");
             }
 
-            // Handle signature upload with timestamp-based file name
-            if (createUserRequestDto.SignatureFile != null)
+            if (resolvedRoleIds.Any() && _roleManager.Roles != null)
             {
-                string timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
-                string fileName = Path.GetFileName(createUserRequestDto.SignatureFile.FileName);
-                user.SignaturePath = $"{user.Id}/{timestamp}_{fileName}";
-                var res = await _blobService.UploadFileAsync(createUserRequestDto.SignatureFile, user.SignaturePath);
-                await _userManager.UpdateAsync(user);
+                var roleNames = await _roleManager.Roles
+                    .Where(r => resolvedRoleIds.Contains(r.Id))
+                    .Select(r => r.Name)
+                    .ToListAsync();
+
+                if (roleNames.Any())
+                {
+                    var roleResult = await _userManager.AddToRolesAsync(user, roleNames);
+                    if (!roleResult.Succeeded)
+                    {
+                        var errorMessage = string.Join("; ", roleResult.Errors.Select(e => e.Description));
+                        throw new Exception($"Failed to assign roles to user. {errorMessage}");
+                    }
+                }
             }
 
+            // Handle signature upload with timestamp-based file name
+            if (createUserRequestDto.SignatureFiles != null && createUserRequestDto.SignatureFiles.Any())
+            {
+                await SaveUserSignaturesAsync(user.Id,signatureIdsToKeep: new List<Guid>(),newFiles: createUserRequestDto.SignatureFiles,actionUserId: userId);
+            }
+
+            var isPatient = resolvedRoleIds.Contains((int)AppRoleEnum.Patient);
+
+            user.UserRoles = resolvedRoleIds.Distinct()
+                .Select(roleId => new ApplicationUserRole { UserId = user.Id, RoleId = roleId })
+                .ToList();
+
             // Address creation for non-patient users
-            if (createUserRequestDto.Address != null && createUserRequestDto.RoleId != (int)AppRoleEnum.Patient)
+            if (createUserRequestDto.Address != null && !isPatient)
             {
                 var address = new Domain.Entities.Address(createUserRequestDto.Address.AddressLine1, createUserRequestDto.Address.AddressType, createUserRequestDto.Address.City,
                     createUserRequestDto.Address.PostalCode, createUserRequestDto.Address.CountryId, createUserRequestDto.Address.StateId, userId.ToString(), DateTime.UtcNow, true);
@@ -116,19 +147,24 @@ namespace NewLifeHRT.Application.Services.Services
             }
 
             // Create license records for user
-            if (createUserRequestDto.LicenseInformation != null && createUserRequestDto.LicenseInformation.Any())
+            if (createUserRequestDto.LicenseInformations != null && createUserRequestDto.LicenseInformations.Any())
             {
-                await _licenseInformationService.CreateLicenseInformationAsync(createUserRequestDto.LicenseInformation.ToArray(), user.Id, userId);
+                await _licenseInformationService.CreateLicenseInformationAsync(createUserRequestDto.LicenseInformations.ToArray(), user.Id, userId);
             }
             return new CommonOperationResponseDto<int> { Id = user.Id, Message = "User created successfully" };
         }
 
-        public async Task<List<UserResponseDto>> GetAllAsync(int? roleId)
+        public async Task<List<UserResponseDto>> GetAllAsync(IEnumerable<int>? roleIds = null)
         {
-            var includes = new[] { "Address", "UserServices", "Address.Country" };
+            var includes = new[] { "Address", "UserServices", "Address.Country", "UserRoles", "UserSignatures" };
+
+            var roleIdList = roleIds?
+                .Where(roleId => roleId > 0)
+                .Distinct()
+                .ToList();
 
             Expression<Func<ApplicationUser, bool>> predicate = u =>
-                (!roleId.HasValue || u.RoleId == roleId.Value);
+                roleIdList == null || roleIdList.Count == 0 || u.UserRoles.Any(ur => roleIdList.Contains(ur.RoleId));
 
             var predicates = new List<Expression<Func<ApplicationUser, bool>>> { predicate };
 
@@ -136,9 +172,22 @@ namespace NewLifeHRT.Application.Services.Services
 
             return users.ToUserResponseDtoList();
         }
-        public async Task<List<DropDownIntResponseDto>> GetAllActiveUsersAsync(int roleId)
+        public async Task<List<DropDownIntResponseDto>> GetAllActiveUsersAsync(IEnumerable<int>? roleIds = null)
         {
-            var users = await _userRepository.FindAsync(a => !a.IsDeleted && a.RoleId == roleId);
+            var roleIdList = roleIds?
+                .Where(roleId => roleId > 0)
+                .Distinct()
+                .ToList();
+
+            var usersQuery = _userRepository.Query()
+                .Where(u => !u.IsDeleted);
+
+            if (roleIdList != null && roleIdList.Any())
+            {
+                usersQuery = usersQuery.Where(u => u.UserRoles.Any(ur => roleIdList.Contains(ur.RoleId)));
+            }
+
+            var users = await usersQuery.ToListAsync();
             return users.ToDropDownUserResponseDtoList();
         }
 
@@ -155,12 +204,17 @@ namespace NewLifeHRT.Application.Services.Services
         {
             var user = await _userRepository.GetWithIncludeAsync(
                 id,
-                new[] { "Address", "UserServices", "LicenseInformations", "LicenseInformations.State" });
+                new[] { "Address", "UserServices", "LicenseInformations", "LicenseInformations.State", "UserRoles", "UserSignatures" });
 
             if (user == null) return null;
-            if (!string.IsNullOrWhiteSpace(user.SignaturePath))
+
+            if (user.UserSignatures != null && user.UserSignatures.Any())
             {
-                user.SignaturePath = $"{_azureBlobStorageSettings.ContainerSasUrl}/{user.SignaturePath}?{_azureBlobStorageSettings.SasToken}";
+                foreach (var sig in user.UserSignatures.Where(s => !string.IsNullOrWhiteSpace(s.SignaturePath)))
+                {
+                    sig.SignaturePath =
+                        $"{_azureBlobStorageSettings.ContainerSasUrl}/{sig.SignaturePath}?{_azureBlobStorageSettings.SasToken}";
+                }
             }
             return user.ToUserResponseDto();
         }
@@ -206,7 +260,7 @@ namespace NewLifeHRT.Application.Services.Services
         /// </remarks>
         public async Task<CommonOperationResponseDto<int>> UpdateAsync(int id, UpdateUserRequestDto updateUserRequestDto, int userId)
         {
-            var user = await _userRepository.GetWithIncludeAsync(id, new string[] { "Address" });
+            var user = await _userRepository.GetWithIncludeAsync(id, new string[] { "Address", "UserRoles", "LicenseInformations" });
             if (user == null) throw new Exception("User not found");
 
             var (emailExists, phoneExists) = await _userRepository.ExistAsync(updateUserRequestDto.PhoneNumber, updateUserRequestDto.Email, id);
@@ -220,14 +274,68 @@ namespace NewLifeHRT.Application.Services.Services
                 throw new Exception(message);
             }
 
-            // Update core user fields
+            var desiredRoleIds = updateUserRequestDto.RoleIds?
+                .Where(roleId => roleId > 0)
+                .Distinct()
+                .ToList() ?? new List<int>();
+
+            if (!desiredRoleIds.Any())
+            {
+                throw new ArgumentException("At least one role must be provided.", nameof(updateUserRequestDto.RoleIds));
+            }
+
+            var existingRoleIds = new List<int>();
+            if (user.UserRoles != null)
+            {
+                existingRoleIds = user.UserRoles.Select(ur => ur.RoleId).ToList();
+            }
+
+            var rolesToRemove = existingRoleIds.Except(desiredRoleIds).ToList();
+            var rolesToAdd = desiredRoleIds.Except(existingRoleIds).ToList();
+
+            if (rolesToRemove.Any() && _roleManager.Roles != null)
+            {
+                var roleNamesToRemove = await _roleManager.Roles
+                    .Where(r => rolesToRemove.Contains(r.Id))
+                    .Select(r => r.Name)
+                    .ToListAsync();
+
+                if (roleNamesToRemove.Any())
+                {
+                    var removeResult = await _userManager.RemoveFromRolesAsync(user, roleNamesToRemove);
+                    if (!removeResult.Succeeded)
+                    {
+                        var errorMessage = string.Join("; ", removeResult.Errors.Select(e => e.Description));
+                        throw new Exception($"Failed to remove roles from user. {errorMessage}");
+                    }
+                }
+            }
+
+            if (rolesToAdd.Any() && _roleManager.Roles != null)
+            {
+                var roleNamesToAdd = await _roleManager.Roles
+                    .Where(r => rolesToAdd.Contains(r.Id))
+                    .Select(r => r.Name)
+                    .ToListAsync();
+
+                if (roleNamesToAdd.Any())
+                {
+                    var addResult = await _userManager.AddToRolesAsync(user, roleNamesToAdd);
+                    if (!addResult.Succeeded)
+                    {
+                        var errorMessage = string.Join("; ", addResult.Errors.Select(e => e.Description));
+                        throw new Exception($"Failed to assign roles to user. {errorMessage}");
+                    }
+                }
+            }
+
+            // Handle core user fields update
             user.UserName = updateUserRequestDto.UserName;
             user.FirstName = updateUserRequestDto.FirstName;
             user.LastName = updateUserRequestDto.LastName;
             user.Email = updateUserRequestDto.Email;
             user.NormalizedEmail = updateUserRequestDto.Email.ToUpper().ToString();
             user.PhoneNumber = updateUserRequestDto.PhoneNumber;
-            user.RoleId = updateUserRequestDto.RoleId;
             user.DEA = updateUserRequestDto.DEA;
             user.NPI = updateUserRequestDto.NPI;
             user.CommisionInPercentage = updateUserRequestDto.CommisionInPercentage;
@@ -239,7 +347,7 @@ namespace NewLifeHRT.Application.Services.Services
             user.UpdatedBy = userId.ToString();
             user.UpdatedAt = DateTime.UtcNow;
 
-            // Address handling
+            // Handle address update
             if (updateUserRequestDto.Address != null)
             {
                 // Separate branch for Patient-linked users
@@ -291,51 +399,37 @@ namespace NewLifeHRT.Application.Services.Services
 
             }
 
-            // Handle updated signature
-            if (updateUserRequestDto.SignatureFile != null)
+            await SaveUserSignaturesAsync(user.Id, updateUserRequestDto.SignatureIdsToKeep ?? new List<Guid>(), updateUserRequestDto.SignatureFiles,userId);
+
+            // Handle clinic services update
+            var newServiceIds = updateUserRequestDto.ServiceIds ?? new List<Guid>();
+            var existingUserServices = await _userServiceLinkRepository.GetByUserIdAsync(user.Id);
+            var existingServiceIds = existingUserServices.Select(us => us.ServiceId).ToList();
+
+            var toRemove = existingUserServices.Where(us => !newServiceIds.Contains(us.ServiceId)).ToList();
+
+            foreach (var userService in toRemove)
             {
-                string timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
-                string fileName = Path.GetFileName(updateUserRequestDto.SignatureFile.FileName);
-                user.SignaturePath = $"{user.Id}/{timestamp}_{fileName}";
-                var res = await _blobService.UploadFileAsync(updateUserRequestDto.SignatureFile, user.SignaturePath);
-                await _userManager.UpdateAsync(user);
+                await _userServiceLinkRepository.DeleteAsync(userService);
             }
 
-            // Manage user-service relationships
-            if (updateUserRequestDto.ServiceIds != null)
+            var toAdd = newServiceIds.Where(serviceId => !existingServiceIds.Contains(serviceId)).ToList();
+
+            foreach (var serviceId in toAdd)
             {
-                var existingUserServices = await _userServiceLinkRepository.GetByUserIdAsync(user.Id);
-                var existingServiceIds = existingUserServices.Select(us => us.ServiceId).ToList();
-                var newServiceIds = updateUserRequestDto.ServiceIds;
-
-                var toRemove = existingUserServices.Where(us => !newServiceIds.Contains(us.ServiceId)).ToList();
-
-                foreach (var userService in toRemove)
+                var userServiceLink = new UserServiceLink
                 {
-                    await _userServiceLinkRepository.DeleteAsync(userService);
-                }
-
-                var toAdd = newServiceIds.Where(serviceId => !existingServiceIds.Contains(serviceId)).ToList();
-
-                foreach (var serviceId in toAdd)
-                {
-                    var userServiceLink = new UserServiceLink
-                    {
-                        Id = Guid.NewGuid(),
-                        UserId = user.Id,
-                        ServiceId = serviceId,
-                        CreatedBy = userId.ToString(),
-                        CreatedAt = DateTime.UtcNow
-                    };
-                    await _userServiceLinkRepository.AddAsync(userServiceLink);
-                }
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    ServiceId = serviceId,
+                    CreatedBy = userId.ToString(),
+                    CreatedAt = DateTime.UtcNow
+                };
+                await _userServiceLinkRepository.AddAsync(userServiceLink);
             }
 
-            // License info update
-            if (updateUserRequestDto.LicenseInformation != null && updateUserRequestDto.LicenseInformation.Any())
-            {
-                await _licenseInformationService.UpdateLicenseInformationAsync(updateUserRequestDto.LicenseInformation.ToArray(), user.Id, userId);
-            }
+            await _licenseInformationService.UpdateLicenseInformationAsync(updateUserRequestDto.LicenseInformations?.ToArray() ?? Array.Empty<LicenseInformationRequestDto>(),user.Id,userId);
+
 
             await _userManager.UpdateAsync(user);
 
@@ -388,7 +482,7 @@ namespace NewLifeHRT.Application.Services.Services
                     }
                 }
 
-                await _context.SaveChangesAsync();
+                await _userRepository.SaveChangesAsync();
 
                 var action = isActivating ? "activated" : "deactivated";
                 return new BulkOperationResponseDto
@@ -412,12 +506,27 @@ namespace NewLifeHRT.Application.Services.Services
                 };
             }
         }
-        public async Task<List<DropDownIntResponseDto>> GetActiveUsersDropDownAsync(int roleId, string searchTerm = "")
+        public async Task<List<DropDownIntResponseDto>> GetActiveUsersDropDownAsync(IEnumerable<int> roleIds, string searchTerm = "")
         {
             const int maxResults = 7;
 
+            if (roleIds == null)
+            {
+                throw new ArgumentNullException(nameof(roleIds));
+            }
+
+            var roleIdList = roleIds
+                .Where(roleId => roleId > 0)
+                .Distinct()
+                .ToList();
+
+            if (!roleIdList.Any())
+            {
+                throw new ArgumentException("At least one role must be provided.", nameof(roleIds));
+            }
+
             var query = _userRepository.Query()
-                .Where(u => !u.IsDeleted && u.RoleId == roleId);
+                .Where(u => !u.IsDeleted && u.UserRoles.Any(ur => roleIdList.Contains(ur.RoleId)));
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -454,6 +563,55 @@ namespace NewLifeHRT.Application.Services.Services
         public async Task<List<int>> GetUserIdsByPatientIdsAsync(List<Guid> patientIds)
         {
             return (await _userRepository.FindAsync(x => patientIds.Contains(x.PatientId.Value))).Select(m => m.Id).ToList();
+        }
+
+        private async Task SaveUserSignaturesAsync(int userId,List<Guid> signatureIdsToKeep,List<IFormFile>? newFiles,int actionUserId)
+        {
+            var existing = await _userSignatureRepository.FindAsync(s => s.UserId == userId);
+
+            var toDeactivate = existing.Where(s => !signatureIdsToKeep.Contains(s.Id) && s.IsActive).ToList();
+
+            foreach (var sig in toDeactivate)
+            {
+                sig.IsActive = false;
+                sig.UpdatedBy = actionUserId.ToString();
+                sig.UpdatedAt = DateTime.UtcNow;
+            }
+
+            if (toDeactivate.Any())
+                await _userSignatureRepository.BulkUpdateAsync(toDeactivate);
+
+            if (newFiles != null && newFiles.Any())
+            {
+                var newUserSignatures = new List<UserSignature>();
+
+                foreach (var file in newFiles)
+                {
+                    var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
+                    var fileName = Path.GetFileName(file.FileName);
+                    var blobPath = $"{userId}/{timestamp}_{fileName}";
+
+                    await _blobService.UploadFileAsync(file, blobPath);
+
+                    newUserSignatures.Add(new UserSignature
+                    {
+                        UserId = userId,
+                        SignaturePath = blobPath,
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow,
+                        CreatedBy = actionUserId.ToString()
+                    });
+                }
+
+                await _userSignatureRepository.AddRangeAsync(newUserSignatures);
+            }
+        }
+
+        public async Task<List<GetRolesForCreateUserResponseDto>> GetRolesForCreateUserAsync()
+        {
+            var roles = await _roleManager.Roles.Where(x => x.RoleEnum != AppRoleEnum.Patient && x.RoleEnum != AppRoleEnum.SuperAdmin).ToListAsync();
+
+            return roles.ToGetRolesForCreateUserResponseDtoList();
         }
     }
 }

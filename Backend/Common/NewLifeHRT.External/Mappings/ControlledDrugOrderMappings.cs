@@ -37,9 +37,13 @@ namespace NewLifeHRT.External.Mappings
                     Clinic = "NEW LIFE REJUVENATION",
                     Npi = order.Physician?.NPI,
                     Email = order.Physician?.Email,
-                    SignatureUrl = !string.IsNullOrWhiteSpace(order.Physician?.SignaturePath)
-                        ? $"{azureBlobStorageSettings.ContainerSasUrl}/{order.Physician.SignaturePath}?{azureBlobStorageSettings.SasToken}"
-                        : null
+                    SignatureUrl = order.Physician?.UserSignatures != null && order.Physician.UserSignatures.Any(s => s.IsActive)
+                                    ? $"{azureBlobStorageSettings.ContainerSasUrl}/{order.Physician.UserSignatures
+                                        .Where(s => s.IsActive && !string.IsNullOrWhiteSpace(s.SignaturePath))
+                                        .OrderBy(_ => Guid.NewGuid()) 
+                                        .Select(s => s.SignaturePath)
+                                        .FirstOrDefault()}?{azureBlobStorageSettings.SasToken}"
+                                    : null
                 },
                 Details = new ControlledDrugOrderDetails
                 {

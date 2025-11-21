@@ -481,6 +481,7 @@ namespace NewLifeHRT.Application.Services.Services
         "PharmacyShippingMethod",
         "PharmacyShippingMethod.ShippingMethod",
         "Physician.Address",
+        "Physician.UserSignatures",
         "Physician.Address.State",
         "Physician.Address.Country",
         "Physician.LicenseInformations",
@@ -518,10 +519,19 @@ namespace NewLifeHRT.Application.Services.Services
             }
 
             var response = order.ToOrderTemplateReceiptResponseDto();
-            if (!string.IsNullOrWhiteSpace(order?.Physician?.SignaturePath))
+            if (order?.Physician?.UserSignatures != null && order.Physician.UserSignatures.Any(s => s.IsActive))
             {
-                response.Signature = $"{_azureBlobStorageSettings.ContainerSasUrl}/{order?.Physician?.SignaturePath}?{_azureBlobStorageSettings.SasToken}";
-                response.Signature = await ImageHelper.ConvertImageUrlToBase64Async(response.Signature);
+                // pick a random active signature
+                var activeSignatures = order.Physician.UserSignatures.Where(s => s.IsActive && !string.IsNullOrWhiteSpace(s.SignaturePath)).ToList();
+
+                if (activeSignatures.Count > 0)
+                {
+                    var random = new Random();
+                    var randomSignature = activeSignatures[random.Next(activeSignatures.Count)];
+
+                    var fullUrl = $"{_azureBlobStorageSettings.ContainerSasUrl}/{randomSignature.SignaturePath}?{_azureBlobStorageSettings.SasToken}";
+                    response.Signature = await ImageHelper.ConvertImageUrlToBase64Async(fullUrl);
+                }
             }
             response.Logo = $"{_azureBlobStorageSettings.ContainerSasUrl}/{_clinicInformationSettings.Name}/logo.png?{_azureBlobStorageSettings.SasToken}";
             if (!string.IsNullOrWhiteSpace(response.Logo))

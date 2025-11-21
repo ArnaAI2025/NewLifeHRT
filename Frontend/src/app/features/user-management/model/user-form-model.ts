@@ -7,7 +7,7 @@ export interface UserFormModel {
   password: string;
   email: string;
   phoneNumber: string;
-  roleId: number;
+  roleIds: number[];
   address: Address;
   dea: string;
   npi: string;
@@ -19,5 +19,5 @@ export interface UserFormModel {
   serviceIds: string[];
   timezoneId?: number | null;
   color?: string | null;
-  licenseInformation : any[];
+  licenseInformations : any[];
 }

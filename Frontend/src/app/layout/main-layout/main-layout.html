@@ -1,13 +1,133 @@
 <div class="main-layout-shell">
-  <mat-sidenav-container class="layout-container">
-    <mat-sidenav mode="side" [opened]="sidenavOpen" class="sidebar-nav" [ngClass]="{'collapsed': isCollapsed}">
-      <app-sidebar [isCollapsed]="isCollapsed" (toggleSidebar)="toggleCollapse()"></app-sidebar>
-    </mat-sidenav>
+  <div class="layout-grid" [ngClass]="{'collapsed': isCollapsed}">
+    <aside class="sidebar-column" [ngClass]="{'collapsed': isCollapsed}">
+      <app-sidebar
+        [isCollapsed]="isCollapsed"
+        [isMobile]="isMobile"
+        (toggleSidebar)="toggleCollapse()">
+      </app-sidebar>
+    </aside>
 
-    <mat-sidenav-content class="content-panel" [ngClass]="{'collapsed': isCollapsed}">
+    <section class="content-panel" (click)="onContentClick()">
+      <!-- <div class="mobile-top-bar">
+        <button
+          type="button"
+          class="mobile-menu-toggle"
+          (click)="toggleCollapse(); $event.stopPropagation()"
+          aria-label="Open sidebar">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="mobile-utility" *ngIf="userAccount as account">
+          <div class="avatar">{{ userInitials }}</div>
+
+          <button type="button" class="icon-chip" aria-label="Notifications">
+            <mat-icon>notifications</mat-icon>
+          </button>
+
+          <button type="button" class="icon-chip" aria-label="Messages">
+            <mat-icon>messages</mat-icon>
+          </button>
+
+          <button
+            type="button"
+            class="icon-chip logout"
+            (click)="logout()"
+            aria-label="Logout">
+            <mat-icon>logout</mat-icon>
+          </button>
+        </div>
+      </div> -->
+
+      <div class="mobile-top-bar">
+  <!-- LEFT: menu + logo -->
+  <div class="mobile-left">
+    <button
+      type="button"
+      class="mobile-menu-toggle"
+      (click)="toggleCollapse(); $event.stopPropagation()"
+      aria-label="Open sidebar">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="mobile-logo">
+      <img src="assets/images/logo.png" alt="NewLife Rejuvenation" />
+    </div>
+  </div>
+
+  <!-- RIGHT: avatar + settings -->
+  <div class="mobile-right" *ngIf="userAccount as account">
+    <div class="avatar">{{ userInitials }}</div>
+
+    <button
+      type="button"
+      class="icon-chip settings"
+      (click)="toggleSettingsMenu($event)"
+      aria-label="Open settings menu">
+      <mat-icon>settings</mat-icon>
+    </button>
+
+    <!-- Settings dropdown -->
+    <div
+    class="mobile-settings-menu"
+    *ngIf="showSettingsMenu"
+    (click)="$event.stopPropagation()">
+    <button type="button" class="settings-item">
+      <mat-icon>notifications</mat-icon>
+      <span>Notifications</span>
+    </button>
+
+    <button type="button" class="settings-item">
+      <mat-icon>messages</mat-icon>
+      <span>Messages</span>
+    </button>
+
+    <button
+      type="button"
+      class="settings-item"
+      (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </div>
+  </div>
+</div>
+
+
       <div class="content-wrapper" #contentWrapper>
         <router-outlet></router-outlet>
       </div>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+    </section>
+
+    <!-- DESKTOP utility rail -->
+    <section class="utility-rail desktop-utility" *ngIf="userAccount as account">
+      <div class="account-card">
+        <div class="avatar">{{ userInitials }}</div>
+        <div class="account-copy"></div>
+      </div>
+
+      <div class="utility-group">
+        <button type="button" class="icon-chip" aria-label="Notifications">
+          <mat-icon>notifications</mat-icon>
+        </button>
+        <button type="button" class="icon-chip" aria-label="Messages">
+          <mat-icon>messages</mat-icon>
+        </button>
+      </div>
+
+      <div class="utility-spacer"></div>
+
+      <button
+        type="button"
+        class="icon-chip"
+        (click)="logout()"
+        aria-label="Logout">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </section>
+  </div>
 </div>

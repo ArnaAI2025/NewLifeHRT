@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 bg-card-color">
+<div class="bg-white rounded-[16px] shadow-sm border border-gray-200 p-6 bg-card-color">
   <!-- Header + Filters -->
   <div class="flex items-center justify-between flex-wrap gap-4 mb-4 table-view-header">
     <!-- Title + Search -->
@@ -184,8 +184,7 @@
     <div class="paginator-section p-0">
       <mat-paginator
         #paginator
-        [pageSizeOptions]="[5, 10, 20, 30]"
-        [pageSize]="5"
+        [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" 
         [showFirstLastButtons]="true"
         [length]="dataSource.filteredData.length || 0"
         [disabled]="isLoading()"

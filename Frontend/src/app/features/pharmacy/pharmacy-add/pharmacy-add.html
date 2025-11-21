@@ -9,13 +9,13 @@
     </div>
     <div class="flex items-center space-x-4 flex items-center space-x-2 ml-auto mt-2 sm:mt-0">
       @if(isEditMode()){
-        <button type="submit" mat-flat-button ngClass="secondry-button-add" (click)="navigateToAddPharmacy()"
-          class="!py-1 !px-4 text-sm action-button secondry-button-add">
+        <button type="submit" mat-flat-button ngClass="primary-btn" (click)="navigateToAddPharmacy()"
+          class="!py-1 !px-4 text-sm action-button primary-btn">
           Add Pharmacy
           <mat-icon class="mr-1">add</mat-icon>
         </button>
       }
-      <button type="submit" mat-flat-button class="!py-1 !px-4 text-sm primary-btn-add"
+      <button type="submit" mat-flat-button class="!py-1 !px-4 text-sm save-btn"
         (click)="submitForm()">
         Save
       </button>
@@ -73,8 +73,8 @@
   <ng-container [ngSwitch]="activeTab">
     <ng-container *ngSwitchCase="'pharmacy'">
       <form [formGroup]="pharmacyForm">
-        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Pharmacy Information</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+         <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wide">Pharmacy Information</h3>
+         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <!-- Name -->
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
@@ -162,24 +162,19 @@
                       </mat-form-field>
                     </div>
 
-
-
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">Description</label>
             <mat-form-field appearance="outline" class="w-full form-des-input">
               <textarea matInput formControlName="description" placeholder="Enter description"></textarea>
             </mat-form-field>
           </div>
+         </div>
+         <div class="border-b mt-1 my-6"></div>
 
-
-
-
-          <div class="col-span-full">
-            <h4 class="text-sm font-semibold text-gray-800 mt-2 mb-3 flex items-center gap-2">
-              Shipping Types
-            </h4>
-
-            <div class="space-y-2 custom-text-box">
+          <!-- SHIPPING -->
+           <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wide">Shipping Information</h3>
+           <div class="w-full">
+           <div class="space-y-2 custom-text-box">
               <label class="block text-sm font-medium text-gray-700">Shipping Type</label>
               <mat-form-field appearance="outline" class="w-full form-input form-input-text">
                 <mat-select #shippingSelect placeholder="Select Shipping Type" [value]="null"
@@ -208,9 +203,9 @@
                     <div class="col-code">Service Code</div>
                     <div class="col-action"></div> <!-- For Remove button -->
                   </div>
-                  <ul class="divide-y divide-gray-200">
+                  <ul>
                     <li *ngFor="let group of getSelectedShippingMethodsControls; let i = index" [formGroup]="group"
-                      class="py-3 flex items-center gap-3">
+                      class="py-1 flex items-center gap-x-3">
                   
                       <!-- Type name -->
                       <div class="col-type">
@@ -271,16 +266,8 @@
                 </ng-template>
               </div>
             </div>
-          </div>
+         </div>
           <!-- =================== /Shipping Types ====================== -->
-
-
-
-
-
-
-        </div>
-
       </form>
     </ng-container>
     <ng-container *ngSwitchCase="'priceList'">

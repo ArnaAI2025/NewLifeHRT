@@ -8,7 +8,7 @@ export class PermissionService {
 
 
   hasPermission(resource: PermissionResource, action: PermissionAction): boolean {
-    const permissionKey = `${resource}${action}`;
+    const permissionKey = `${resource}.${action}`;
     const user = this.userAccountService.getUserAccount();
 
     if (!user) return false;

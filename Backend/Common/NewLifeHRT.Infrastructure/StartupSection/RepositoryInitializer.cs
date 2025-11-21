@@ -87,6 +87,7 @@ namespace NewLifeHRT.Infrastructure.StartupSection
             services.AddScoped<IOrderProductScheduleSummaryRepository, OrderProductScheduleSummaryRepository>();
             services.AddScoped<IScheduleSummaryProcessingRepository, ScheduleSummaryProcessingRepository>();
             services.AddScoped<IPatientSelfReminderRepository, PatientSelfReminderRepository>();
+            services.AddScoped<IUserSignatureRepository, UserSignatureRepository>();
             services.AddScoped<ICourierServiceRepository, CourierServiceRepository>();
             services.AddScoped<IOrderProcessingApiTransactionRepository, OrderProcessingApiTransactionRepository>();
             return services;

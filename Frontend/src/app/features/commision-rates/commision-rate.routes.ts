@@ -4,7 +4,7 @@ import { PermissionGuard } from '../../core/guards/permission.guard';
 import { PermissionAction, PermissionResource } from '../../shared/constants/permissions.enums';
 import { RoutePermission } from '../../shared/models/route-permission';
 
-const resource = PermissionResource.CommissionRatePerProduct;
+const resource = PermissionResource.CommissionRate;
 export const commisionRateRoutes: Routes = [
   {
     path: 'commissionrate/view',

@@ -137,9 +137,11 @@ namespace NewLifeHRT.Application.Services.Services
         public async Task<List<HolidayResponseDto>> GetAllHolidaysAsync(GetAllHolidaysRequestDto request)
         {
             // Filter: Only active doctors, nurses, or receptionist (roleId = 5, 4, 3)
+            var targetedRoleIds = new[] { 5, 3, 4 };
+
             var predicates = new List<Expression<Func<Holiday, bool>>>
             {
-                h => h.IsActive && (h.User.RoleId == 5 || h.User.RoleId == 3 ||  h.User.RoleId == 4)
+                h => h.IsActive && h.User.UserRoles.Any(ur => targetedRoleIds.Contains(ur.RoleId))
             };
 
             // Filter by specific doctor IDs, if provided

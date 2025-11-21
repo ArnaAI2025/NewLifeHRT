@@ -27,6 +27,12 @@ namespace NewLifeHRT.API.Controllers.Controllers
             var coupon = await _couponService.GetCouponById(id);
             return Ok(coupon);
         }
+        [HttpGet("get-active-coupons")]
+        public async Task<IActionResult> GetActiveCoupons()
+        {
+            var coupon = await _couponService.GetActiveCoupons();
+            return Ok(coupon);
+        }
         [HttpGet("get-coupons")]
         public async Task<IActionResult> GetCoupons()
         {

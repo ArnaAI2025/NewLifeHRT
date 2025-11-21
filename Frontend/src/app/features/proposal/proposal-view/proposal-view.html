@@ -195,7 +195,7 @@
   <!-- Paginator -->
   <div class="main-paginator">
     <div class="paginator-section p-0">
-      <mat-paginator #paginator [pageSizeOptions]="[5, 10, 20,30]" [pageSize]="5" [showFirstLastButtons]="true"
+      <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100"  [showFirstLastButtons]="true"
         [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()">
       </mat-paginator>
     </div>
@@ -205,7 +205,7 @@
 <!-- Action Menu -->
 <mat-menu #actionMenu="matMenu">
   <button mat-menu-item (click)="onEdit(activeRow)">
-  {{ activeRow?.status === 3 ? 'View' : 'Edit' }}
+  {{ activeRow?.status === 3 || activeRow?.status === 4 || activeRow?.status === 8  ? 'View' : 'Edit' }}
 </button>
 
   <button mat-menu-item (click)="onDelete(activeRow)" class="text-red-600">

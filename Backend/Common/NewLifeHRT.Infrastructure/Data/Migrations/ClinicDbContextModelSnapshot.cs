@@ -91,21 +91,6 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
                     b.Property<int>("UserId")
@@ -123,6 +108,43 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.ActionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnumValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ActionTypes");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Address", b =>
@@ -350,13 +372,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SignaturePath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TimezoneId")
@@ -400,14 +416,27 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .IsUnique()
                         .HasFilter("[PatientId] IS NOT NULL");
 
-                    b.HasIndex("RoleId");
-
                     b.HasIndex("TimezoneId");
 
                     b.HasIndex("UserName")
                         .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.ApplicationUserRole", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Appointment", b =>
@@ -2397,6 +2426,124 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.ToTable("OrderProductScheduleSummaries");
                 });
 
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.Patient", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AddressId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Allergies")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("AssignPhysicianId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CounselorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DrivingLicence")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Gender")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsAllowMail")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LabRenewableAlertDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("OutstandingRefundBalance")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("PatientGoal")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PatientNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("PreviousCounselorId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("ReferralId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool?>("SplitCommission")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("VisitTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WellsPatientId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.HasIndex("AssignPhysicianId");
+
+                    b.HasIndex("CounselorId");
+
+                    b.HasIndex("PreviousCounselorId");
+
+                    b.HasIndex("ReferralId");
+
+                    b.HasIndex("VisitTypeId");
+
+                    b.ToTable("Patients");
+                });
+
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.PatientAgenda", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2467,6 +2614,60 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("PatientAttachments");
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.PatientCreditCard", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CardNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("CardType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsDefaultCreditCard")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Month")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Year")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("PatientCreditCards");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.PatientReminder", b =>
@@ -2552,6 +2753,9 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ActionTypeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -2563,26 +2767,11 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
 
                     b.Property<string>("PermissionName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("PermissionTypeEnum")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Section")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("SectionEnum")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -2591,6 +2780,10 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ActionTypeId");
+
+                    b.HasIndex("SectionId");
 
                     b.ToTable("Permissions");
                 });
@@ -2782,6 +2975,77 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.ToTable("PharmacyShippingMethods");
                 });
 
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.Pool", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ToDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Week")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pools");
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.PoolDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CounselorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CounselorId");
+
+                    b.HasIndex("PoolId");
+
+                    b.ToTable("PoolDetails");
+                });
+
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2850,8 +3114,8 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Protocol")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool?>("Scheduled")
                         .HasColumnType("bit");
@@ -3515,11 +3779,9 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.RolePermission", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -3594,6 +3856,56 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.HasIndex("ScheduleSummaryId");
 
                     b.ToTable("ScheduleSummaryProcessings");
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.Section", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnumValue")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModuleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Sections");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Service", b =>
@@ -3912,6 +4224,40 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.ToTable("UserServiceLinks");
                 });
 
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.UserSignature", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SignaturePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSignatures");
+                });
+
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.VisitType", b =>
                 {
                     b.Property<int>("Id")
@@ -3950,249 +4296,6 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.ToTable("VisitTypes");
                 });
 
-            modelBuilder.Entity("Patient", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("AddressId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Allergies")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<int?>("AssignPhysicianId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CounselorId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DrivingLicence")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Gender")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsAllowMail")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LabRenewableAlertDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<decimal>("OutstandingRefundBalance")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<string>("PatientGoal")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("PatientNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int?>("PreviousCounselorId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("ReferralId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool?>("SplitCommission")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("VisitTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("WellsPatientId")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("AssignPhysicianId");
-
-                    b.HasIndex("CounselorId");
-
-                    b.HasIndex("PreviousCounselorId");
-
-                    b.HasIndex("ReferralId");
-
-                    b.HasIndex("VisitTypeId");
-
-                    b.ToTable("Patients");
-                });
-
-            modelBuilder.Entity("PatientCreditCard", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CardNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("CardType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsDefaultCreditCard")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Month")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<Guid>("PatientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Year")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PatientId");
-
-                    b.ToTable("PatientCreditCards");
-                });
-
-            modelBuilder.Entity("Pool", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("FromDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("ToDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Week")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Pools");
-                });
-
-            modelBuilder.Entity("PoolDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CounselorId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("PoolId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CounselorId");
-
-                    b.HasIndex("PoolId");
-
-                    b.ToTable("PoolDetails");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("NewLifeHRT.Domain.Entities.ApplicationRole", null)
@@ -4213,21 +4316,6 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
-                {
-                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -4267,16 +4355,10 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithOne("User")
                         .HasForeignKey("NewLifeHRT.Domain.Entities.ApplicationUser", "PatientId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationRole", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.HasOne("NewLifeHRT.Domain.Entities.Timezone", "Timezone")
                         .WithMany("Users")
@@ -4287,9 +4369,26 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
 
                     b.Navigation("Patient");
 
+                    b.Navigation("Timezone");
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.ApplicationUserRole", b =>
+                {
+                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationRole", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Role");
 
-                    b.Navigation("Timezone");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Appointment", b =>
@@ -4306,7 +4405,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("Appointments")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4377,7 +4476,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasForeignKey("LeadId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("BatchMessageRecipients")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -4408,7 +4507,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PoolDetail", "PoolDetail")
+                    b.HasOne("NewLifeHRT.Domain.Entities.PoolDetail", "PoolDetail")
                         .WithMany("CommissionsPayables")
                         .HasForeignKey("PoolDetailId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -4445,7 +4544,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasForeignKey("LeadId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("Conversations")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -4463,7 +4562,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("CounselorNotes")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4604,7 +4703,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("MedicalRecommendations")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -4666,12 +4765,12 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasForeignKey("CourierServiceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PatientCreditCard", "PatientCreditCard")
+                    b.HasOne("NewLifeHRT.Domain.Entities.PatientCreditCard", "PatientCreditCard")
                         .WithMany("Orders")
                         .HasForeignKey("PatientCreditCardId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("Orders")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -4822,6 +4921,52 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Navigation("OrderDetail");
                 });
 
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.Patient", b =>
+                {
+                    b.HasOne("NewLifeHRT.Domain.Entities.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "AssignPhysician")
+                        .WithMany("AssignPhysicianPatients")
+                        .HasForeignKey("AssignPhysicianId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "Counselor")
+                        .WithMany("CounselorPatients")
+                        .HasForeignKey("CounselorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "PreviousCounselor")
+                        .WithMany("PreviousCounselorPatients")
+                        .HasForeignKey("PreviousCounselorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Referral")
+                        .WithMany("ReferredPatients")
+                        .HasForeignKey("ReferralId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("NewLifeHRT.Domain.Entities.VisitType", "VisitType")
+                        .WithMany("Patients")
+                        .HasForeignKey("VisitTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Address");
+
+                    b.Navigation("AssignPhysician");
+
+                    b.Navigation("Counselor");
+
+                    b.Navigation("PreviousCounselor");
+
+                    b.Navigation("Referral");
+
+                    b.Navigation("VisitType");
+                });
+
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.PatientAgenda", b =>
                 {
                     b.HasOne("NewLifeHRT.Domain.Entities.Agenda", "Agenda")
@@ -4830,7 +4975,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("PatientAgendas")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4849,7 +4994,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("PatientAttachments")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4860,9 +5005,20 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.PatientCreditCard", b =>
+                {
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
+                        .WithMany("PatientCreditCards")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
+                });
+
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.PatientReminder", b =>
                 {
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("PatientReminders")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4881,13 +5037,32 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.PatientSelfReminder", b =>
                 {
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("PatientSelfReminders")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.Permission", b =>
+                {
+                    b.HasOne("NewLifeHRT.Domain.Entities.ActionType", "ActionType")
+                        .WithMany("Permissions")
+                        .HasForeignKey("ActionTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("NewLifeHRT.Domain.Entities.Section", "Section")
+                        .WithMany("Permissions")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ActionType");
+
+                    b.Navigation("Section");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Pharmacy", b =>
@@ -4960,6 +5135,25 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Navigation("Pharmacy");
 
                     b.Navigation("ShippingMethod");
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.PoolDetail", b =>
+                {
+                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "Counselor")
+                        .WithMany("PoolDetails")
+                        .HasForeignKey("CounselorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NewLifeHRT.Domain.Entities.Pool", "Pool")
+                        .WithMany("PoolDetails")
+                        .HasForeignKey("PoolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Counselor");
+
+                    b.Navigation("Pool");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Product", b =>
@@ -5086,12 +5280,12 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .HasForeignKey("CouponId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PatientCreditCard", "PatientCreditCard")
+                    b.HasOne("NewLifeHRT.Domain.Entities.PatientCreditCard", "PatientCreditCard")
                         .WithMany("Proposals")
                         .HasForeignKey("PatientCreditCardId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("Proposals")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -5228,6 +5422,16 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Navigation("ScheduleSummary");
                 });
 
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.Section", b =>
+                {
+                    b.HasOne("NewLifeHRT.Domain.Entities.Section", "Parent")
+                        .WithMany("Childrem")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.ShippingAddress", b =>
                 {
                     b.HasOne("NewLifeHRT.Domain.Entities.Address", "Address")
@@ -5236,7 +5440,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Patient", "Patient")
+                    b.HasOne("NewLifeHRT.Domain.Entities.Patient", "Patient")
                         .WithMany("ShippingAddresses")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -5299,80 +5503,20 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Patient", b =>
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.UserSignature", b =>
                 {
-                    b.HasOne("NewLifeHRT.Domain.Entities.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "AssignPhysician")
-                        .WithMany("AssignPhysicianPatients")
-                        .HasForeignKey("AssignPhysicianId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "Counselor")
-                        .WithMany("CounselorPatients")
-                        .HasForeignKey("CounselorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "PreviousCounselor")
-                        .WithMany("PreviousCounselorPatients")
-                        .HasForeignKey("PreviousCounselorId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Patient", "Referral")
-                        .WithMany("ReferredPatients")
-                        .HasForeignKey("ReferralId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("NewLifeHRT.Domain.Entities.VisitType", "VisitType")
-                        .WithMany("Patients")
-                        .HasForeignKey("VisitTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Address");
-
-                    b.Navigation("AssignPhysician");
-
-                    b.Navigation("Counselor");
-
-                    b.Navigation("PreviousCounselor");
-
-                    b.Navigation("Referral");
-
-                    b.Navigation("VisitType");
-                });
-
-            modelBuilder.Entity("PatientCreditCard", b =>
-                {
-                    b.HasOne("Patient", "Patient")
-                        .WithMany("PatientCreditCards")
-                        .HasForeignKey("PatientId")
+                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("UserSignatures")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Patient");
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PoolDetail", b =>
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.ActionType", b =>
                 {
-                    b.HasOne("NewLifeHRT.Domain.Entities.ApplicationUser", "Counselor")
-                        .WithMany("PoolDetails")
-                        .HasForeignKey("CounselorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Pool", "Pool")
-                        .WithMany("PoolDetails")
-                        .HasForeignKey("PoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Counselor");
-
-                    b.Navigation("Pool");
+                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Address", b =>
@@ -5389,7 +5533,7 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                 {
                     b.Navigation("RolePermissions");
 
-                    b.Navigation("Users");
+                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.ApplicationUser", b =>
@@ -5436,7 +5580,11 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
 
                     b.Navigation("StatusUpdatedBy");
 
+                    b.Navigation("UserRoles");
+
                     b.Navigation("UserServices");
+
+                    b.Navigation("UserSignatures");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.AppointmentMode", b =>
@@ -5587,6 +5735,47 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Navigation("OrderProductSchedules");
                 });
 
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.Patient", b =>
+                {
+                    b.Navigation("Appointments");
+
+                    b.Navigation("BatchMessageRecipients");
+
+                    b.Navigation("Conversations");
+
+                    b.Navigation("CounselorNotes");
+
+                    b.Navigation("MedicalRecommendations");
+
+                    b.Navigation("Orders");
+
+                    b.Navigation("PatientAgendas");
+
+                    b.Navigation("PatientAttachments");
+
+                    b.Navigation("PatientCreditCards");
+
+                    b.Navigation("PatientReminders");
+
+                    b.Navigation("PatientSelfReminders");
+
+                    b.Navigation("Proposals");
+
+                    b.Navigation("ReferredPatients");
+
+                    b.Navigation("ShippingAddresses");
+
+                    b.Navigation("User")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.PatientCreditCard", b =>
+                {
+                    b.Navigation("Orders");
+
+                    b.Navigation("Proposals");
+                });
+
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
@@ -5616,6 +5805,16 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Proposals");
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.Pool", b =>
+                {
+                    b.Navigation("PoolDetails");
+                });
+
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.PoolDetail", b =>
+                {
+                    b.Navigation("CommissionsPayables");
                 });
 
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Product", b =>
@@ -5690,6 +5889,13 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
                     b.Navigation("Reminders");
                 });
 
+            modelBuilder.Entity("NewLifeHRT.Domain.Entities.Section", b =>
+                {
+                    b.Navigation("Childrem");
+
+                    b.Navigation("Permissions");
+                });
+
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.Service", b =>
                 {
                     b.Navigation("UserServices");
@@ -5732,57 +5938,6 @@ namespace NewLifeHRT.Infrastructure.Data.Migrations
             modelBuilder.Entity("NewLifeHRT.Domain.Entities.VisitType", b =>
                 {
                     b.Navigation("Patients");
-                });
-
-            modelBuilder.Entity("Patient", b =>
-                {
-                    b.Navigation("Appointments");
-
-                    b.Navigation("BatchMessageRecipients");
-
-                    b.Navigation("Conversations");
-
-                    b.Navigation("CounselorNotes");
-
-                    b.Navigation("MedicalRecommendations");
-
-                    b.Navigation("Orders");
-
-                    b.Navigation("PatientAgendas");
-
-                    b.Navigation("PatientAttachments");
-
-                    b.Navigation("PatientCreditCards");
-
-                    b.Navigation("PatientReminders");
-
-                    b.Navigation("PatientSelfReminders");
-
-                    b.Navigation("Proposals");
-
-                    b.Navigation("ReferredPatients");
-
-                    b.Navigation("ShippingAddresses");
-
-                    b.Navigation("User")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PatientCreditCard", b =>
-                {
-                    b.Navigation("Orders");
-
-                    b.Navigation("Proposals");
-                });
-
-            modelBuilder.Entity("Pool", b =>
-                {
-                    b.Navigation("PoolDetails");
-                });
-
-            modelBuilder.Entity("PoolDetail", b =>
-                {
-                    b.Navigation("CommissionsPayables");
                 });
 #pragma warning restore 612, 618
         }

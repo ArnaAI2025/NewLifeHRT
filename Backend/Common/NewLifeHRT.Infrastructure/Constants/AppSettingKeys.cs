@@ -11,7 +11,7 @@ namespace NewLifeHRT.Infrastructure.Constants
         
         public const string MultiTenancySettings = "MultiTenancy";
         public const string TwilioSettings = "Twilio";
-        public const string AzureBlobStorageSettings = "AzureBlobStorage";
+        public const string AzureBlobStorageSettings = "BlobStorage";
         public const string ClinicInformationSettings = "ClinicInformationSettings";
 
         public const string JWTSettings = "JWTSettings";

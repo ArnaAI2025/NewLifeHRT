@@ -27,21 +27,31 @@ namespace NewLifeHRT.Infrastructure.Repositories
 
         public async Task<List<ApplicationUser>> GetAllAsync()
         {
-            return await _dbSet.Include(u => u.Address).ToListAsync();
+            return await _dbSet.Include(u => u.Address).Include(u => u.UserRoles).ToListAsync();
         }
 
 
         public async Task<ApplicationUser?> GetByIdAsync(int id)
         {
-            return await _dbSet.Include(u => u.Address).FirstOrDefaultAsync(u => u.Id == id);
+            return await _dbSet.Include(u => u.Address).Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<ApplicationRole> GetUserRoleWithPermissionsAsync(int userId)
+        public async Task<List<ApplicationRole>> GetUserRolesWithPermissionsAsync(int userId)
         {
             var user = await _dbSet
-                .Where(u => u.Id == userId).Include("Role.RolePermissions.Permission")
+                .Where(u => u.Id == userId)
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                        .ThenInclude(r => r.RolePermissions)
+                            .ThenInclude(rp => rp.Permission)
                 .FirstOrDefaultAsync();
-            return user?.Role;
+
+            return user?.UserRoles
+                .Select(ur => ur.Role)
+                .Where(role => role != null)
+                .Cast<ApplicationRole>()
+                .Distinct()
+                .ToList() ?? new List<ApplicationRole>();
         }
 
         public async Task<string?> GetUserTimezoneAsync(int userId)

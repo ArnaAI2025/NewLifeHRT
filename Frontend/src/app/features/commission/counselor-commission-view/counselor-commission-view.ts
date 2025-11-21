@@ -43,7 +43,7 @@ export class CounselorCommissionView implements OnInit, AfterViewInit {
 
   isLoading = signal(false);
   filterKeyword = '';
-  pageSize = 10;
+  pageSize = 100;
   pageIndex = 0;
 
   dataSource = new MatTableDataSource<CommissionsPayableResponse>([]);

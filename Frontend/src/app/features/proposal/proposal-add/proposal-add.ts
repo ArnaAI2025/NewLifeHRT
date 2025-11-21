@@ -70,8 +70,8 @@ import { NoWhitespaceValidator } from '../../../shared/validators/no-whitespace.
     MatCheckboxModule,
     ShippingAddressAddComponent,
     FullPageLoaderComponent,
-    WholeNumberDirective
-  ]
+    WholeNumberDirective,
+  ],
 })
 export class ProposalAdd implements OnInit {
   private patientService = inject(PatientService);
@@ -89,7 +89,8 @@ export class ProposalAdd implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly cdr = inject(ChangeDetectorRef);
   trackByAddressId = (_: number, a: ShippingAddressResponseDto) => a.id;
-  trackByShippingMethodId = (_: number, m: PharmacyShippingMethodResponseDto) => m.id;
+  trackByShippingMethodId = (_: number, m: PharmacyShippingMethodResponseDto) =>
+    m.id;
 
   proposalForm!: FormGroup;
   productControl = new FormControl();
@@ -100,7 +101,7 @@ export class ProposalAdd implements OnInit {
   isReadOnlyMode = signal(false);
   isLab = signal(false);
   pharmacies: PharmaciesDropdownResponseDto[] = [];
-  filteredPharmacies = signal<PharmaciesDropdownResponseDto[]>([])
+  filteredPharmacies = signal<PharmaciesDropdownResponseDto[]>([]);
   patients: PatientCounselorInfoDto[] = [];
   filteredPatients: PatientCounselorInfoDto[] = [];
   counselors: DropDownResponseDto[] = [];
@@ -110,10 +111,10 @@ export class ProposalAdd implements OnInit {
   phyisianInfo: DropDownResponseDto | null = null;
   Status = Status;
   statusList = Object.keys(Status)
-    .filter(key => !isNaN(Number(Status[key as keyof typeof Status])))
-    .map(key => ({
+    .filter((key) => !isNaN(Number(Status[key as keyof typeof Status])))
+    .map((key) => ({
       name: key,
-      value: Status[key as keyof typeof Status]
+      value: Status[key as keyof typeof Status],
     }));
 
   selectedCoupon: CouponResponse | null = null;
@@ -141,7 +142,14 @@ export class ProposalAdd implements OnInit {
   pharmacyProducts: PriceListItemsByPharmacyIdResponseDto[] = [];
   filteredProducts: PriceListItemsByPharmacyIdResponseDto[] = [];
   selectedProducts: ProductLineItemDto[] = [];
-  displayedColumns: string[] = ['productName', 'protocol', 'perUnitPrice', 'quantity', 'finalAmount', 'actions'];
+  displayedColumns: string[] = [
+    'productName',
+    'protocol',
+    'perUnitPrice',
+    'quantity',
+    'finalAmount',
+    'actions',
+  ];
   fromDashboard = false;
 
   isLoadingProducts = signal(false);
@@ -151,7 +159,7 @@ export class ProposalAdd implements OnInit {
   isSubmitting = signal(false);
   isSavingProposalDetails = signal(false);
   isComingFromPatient = signal(false);
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder) {}
 
   mathMax(a: number, b: number): number {
     return Math.max(a, b);
@@ -160,16 +168,17 @@ export class ProposalAdd implements OnInit {
   mathMin(a: number, b: number): number {
     return Math.min(a, b);
   }
-  @ViewChildren(FormControlName, { read: ElementRef }) formControls!: QueryList<ElementRef>;
+  @ViewChildren(FormControlName, { read: ElementRef })
+  formControls!: QueryList<ElementRef>;
 
   ngOnInit() {
     this.initForm();
     this.setupFormSubscriptions();
-    this.activatedRoute.queryParams.subscribe(params => {
+    this.activatedRoute.queryParams.subscribe((params) => {
       this.fromDashboard = params['fromDashboard'] || false;
     });
 
-    this.activatedRoute.paramMap.subscribe(params => {
+    this.activatedRoute.paramMap.subscribe((params) => {
       this.proposalId = params.get('proposalId');
       this.currentPatientId = params.get('patientId');
       this.isEditMode = this.proposalId !== null;
@@ -184,7 +193,10 @@ export class ProposalAdd implements OnInit {
 
   initForm() {
     this.proposalForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3), NoWhitespaceValidator]],
+      name: [
+        '',
+        [Validators.required, Validators.minLength(3), NoWhitespaceValidator],
+      ],
       patientId: [null, Validators.required],
       pharmacyId: [null, Validators.required],
       counselorId: [null, Validators.required],
@@ -194,21 +206,21 @@ export class ProposalAdd implements OnInit {
       shippingAddressId: [null],
       status: [Status.Draft, Validators.required],
       therapyExpiration: [null],
-      description: ['']
+      description: [''],
     });
     this.proposalForm.get('status')?.disable();
   }
 
   private setFormReadOnly(readonly: boolean): void {
     if (readonly) {
-      Object.keys(this.proposalForm.controls).forEach(controlName => {
+      Object.keys(this.proposalForm.controls).forEach((controlName) => {
         const control = this.proposalForm.get(controlName);
         if (control && control.enabled) {
           control.disable({ emitEvent: false });
         }
       });
     } else {
-      Object.keys(this.proposalForm.controls).forEach(controlName => {
+      Object.keys(this.proposalForm.controls).forEach((controlName) => {
         const control = this.proposalForm.get(controlName);
         if (control && control.disabled && controlName !== 'status') {
           control.enable({ emitEvent: false });
@@ -223,13 +235,13 @@ export class ProposalAdd implements OnInit {
       pharmacies: this.pharmacyService.getAllActivePharmacies(),
       patients: this.patientService.getAllPatientsCounselorInfo(),
       counselors: this.userManagementService.getAllActiveSalesPerson(),
-      coupons: this.proposalService.getCouponsForDropDown(),
+      coupons: this.proposalService.getActiveCouponsForDropDown(),
     })
       .pipe(finalize(() => this.isLoadingPage.set(false)))
       .subscribe({
         next: ({ pharmacies, patients, counselors, coupons }) => {
           this.pharmacies = pharmacies;
-          this.filteredPharmacies.set([...pharmacies])
+          this.filteredPharmacies.set([...pharmacies]);
           this.patients = patients;
           this.filteredPatients = [...patients];
           this.counselors = counselors;
@@ -240,30 +252,44 @@ export class ProposalAdd implements OnInit {
           if (this.proposalId) {
             this.loadProposalData();
           } else if (this.currentPatientId) {
-            let matchingPatient = this.patients.find(p => String(p.id) === this.currentPatientId);
+            let matchingPatient = this.patients.find(
+              (p) => String(p.id) === this.currentPatientId
+            );
             this.handlePatientSelection(matchingPatient);
-          }
-          else {
+          } else {
             this.markFormPristineAndUntouched();
           }
         },
         error: (err) => {
           console.error('Failed to load reference data:', err);
-          this.notificationService.showSnackBar('Failed to load reference data', 'failure');
-        }
+          this.notificationService.showSnackBar(
+            'Failed to load reference data',
+            'failure'
+          );
+        },
       });
   }
 
   private async loadProposalData() {
     try {
-      const proposal = await firstValueFrom(this.proposalService.getProposalById(this.proposalId!));
+      const proposal = await firstValueFrom(
+        this.proposalService.getProposalById(this.proposalId!)
+      );
       if (proposal) {
+        if ( proposal.status !== Status.Draft && proposal.status !== Status.Rejected ) {
+          {
+            this.loadAllCoupons();
+          }
+        }
         await this.populateFormFromProposal(proposal);
         this.isDeleted = proposal.isDeleted || false;
 
         const proposalStatus = proposal.status || Status.InReview;
 
-        if (proposalStatus != Status.Draft && proposalStatus != Status.Rejected) {
+        if (
+          proposalStatus != Status.Draft &&
+          proposalStatus != Status.Rejected
+        ) {
           this.isReadOnlyMode.set(true);
           this.setFormReadOnly(true);
         } else {
@@ -273,8 +299,17 @@ export class ProposalAdd implements OnInit {
       }
     } catch (error) {
       console.error('Failed to load proposal data:', error);
-      this.notificationService.showSnackBar('Failed to load proposal data', 'failure');
+      this.notificationService.showSnackBar(
+        'Failed to load proposal data',
+        'failure'
+      );
     }
+  }
+  async loadAllCoupons(): Promise<void> {
+    const data = await firstValueFrom(this.proposalService.getAllCoupon());
+    this.coupons = data;
+    this.filteredCoupons = [...data];
+    this.cdr.markForCheck();
   }
 
   private async populateFormFromProposal(proposal: any): Promise<void> {
@@ -282,12 +317,14 @@ export class ProposalAdd implements OnInit {
       name: proposal.name || '',
       status: proposal.status || Status.InReview,
       physicianId: proposal.physician || null,
-      therapyExpiration: proposal.therapyExpiration ? new Date(proposal.therapyExpiration) : null,
-      description: proposal.description || ''
+      therapyExpiration: proposal.therapyExpiration
+        ? new Date(proposal.therapyExpiration)
+        : null,
+      description: proposal.description || '',
     });
 
     if (proposal.patientId) {
-      const patient = this.patients.find(p => p.id === proposal.patientId);
+      const patient = this.patients.find((p) => p.id === proposal.patientId);
       if (patient) {
         this.proposalForm.patchValue({ patientId: patient });
         this.currentPatientId = String(patient.id);
@@ -296,7 +333,9 @@ export class ProposalAdd implements OnInit {
     }
 
     if (proposal.pharmacyId) {
-      const pharmacy = this.pharmacies.find(p => p.id === proposal.pharmacyId);
+      const pharmacy = this.pharmacies.find(
+        (p) => p.id === proposal.pharmacyId
+      );
       if (pharmacy) {
         this.proposalForm.patchValue({ pharmacyId: pharmacy });
         await this.loadPharmacyProducts(String(pharmacy.id));
@@ -307,14 +346,16 @@ export class ProposalAdd implements OnInit {
     }
 
     if (proposal.counselorId) {
-      const counselor = this.counselors.find(c => c.id === proposal.counselorId);
+      const counselor = this.counselors.find(
+        (c) => c.id === proposal.counselorId
+      );
       if (counselor) {
         this.proposalForm.patchValue({ counselorId: counselor });
       }
     }
 
     if (proposal.couponId) {
-      const coupon = this.coupons.find(c => c.id === proposal.couponId);
+      const coupon = this.coupons.find((c) => c.id === proposal.couponId);
       if (coupon) {
         this.proposalForm.patchValue({ couponId: coupon });
         this.selectedCoupon = coupon;
@@ -322,45 +363,66 @@ export class ProposalAdd implements OnInit {
     }
 
     if (proposal.pharmacyShippingMethodId) {
-      this.selectedShippingMethod = this.pharmacyShippingMethods.find(method => method.id === proposal.pharmacyShippingMethodId) || null;
+      this.selectedShippingMethod =
+        this.pharmacyShippingMethods.find(
+          (method) => method.id === proposal.pharmacyShippingMethodId
+        ) || null;
 
-      if (this.selectedShippingMethod?.name !== 'Pick Up' && this.currentPatientId) {
+      if (
+        this.selectedShippingMethod?.name !== 'Pick Up' &&
+        this.currentPatientId
+      ) {
         await this.loadAddresses(this.currentPatientId);
       }
     }
 
     this.selectedShippingAddressId = proposal.shippingAddressId || null;
-    this.isAddressVerified = proposal.status == Status.Rejected ? false : proposal.isAddressVerified || false;
+    this.isAddressVerified =
+      proposal.status == Status.Rejected
+        ? false
+        : proposal.isAddressVerified || false;
 
     if (this.selectedShippingAddressId) {
-      this.addressVerificationMap.set(this.selectedShippingAddressId, this.isAddressVerified);
-      this.proposalForm.patchValue({ shippingAddressId: this.selectedShippingAddressId });
+      this.addressVerificationMap.set(
+        this.selectedShippingAddressId,
+        this.isAddressVerified
+      );
+      this.proposalForm.patchValue({
+        shippingAddressId: this.selectedShippingAddressId,
+      });
     }
 
-    this.selectedCreditCard = proposal.patientCreditCardId ?
-      this.patientCreditCards().find(card => card.id === proposal.patientCreditCardId) || null : null;
+    this.selectedCreditCard = proposal.patientCreditCardId
+      ? this.patientCreditCards().find(
+          (card) => card.id === proposal.patientCreditCardId
+        ) || null
+      : null;
     this.enableCreditCardPayment = !!proposal.patientCreditCardId;
 
     this.customShippingValue = proposal.deliveryCharge || 0;
     if (this.selectedShippingMethod && proposal.deliveryCharge) {
-      const originalShippingCost = parseFloat(this.selectedShippingMethod.value) || 0;
-      this.toggleModifyShippingValue = proposal.deliveryCharge !== originalShippingCost;
+      const originalShippingCost =
+        parseFloat(this.selectedShippingMethod.value) || 0;
+      this.toggleModifyShippingValue =
+        proposal.deliveryCharge !== originalShippingCost;
     }
 
-    this.selectedProducts = (proposal.proposalDetails || []).map((detail: any) => ({
-      id: detail.id,
-      productPharmacyPriceListItemId: detail.productPharmacyPriceListItemId,
-      productId: detail.productId,
-      productName: detail.productName,
-      protocol: detail.protocol || '',
-      amount: detail.amount || 0,
-      status: 1,
-      isColdStorageProduct: detail.isColdStorageProduct || false,
-      quantity: detail.quantity || 1,
-      finalAmount: detail.amount || 0,
-      perUnitPrice: detail.perUnitAmount || detail.amount || 0,
-      togglePerUnitPrice: false
-    }));
+    this.selectedProducts = (proposal.proposalDetails || []).map(
+      (detail: any) => ({
+        id: detail.id,
+        productPharmacyPriceListItemId: detail.productPharmacyPriceListItemId,
+        productId: detail.productId,
+        productName: detail.productName,
+        protocol: detail.protocol || '',
+        amount: detail.amount || 0,
+        status: 1,
+        isColdStorageProduct: detail.isColdStorageProduct || false,
+        quantity: detail.quantity || 1,
+        finalAmount: detail.amount || 0,
+        perUnitPrice: detail.perUnitAmount || detail.amount || 0,
+        togglePerUnitPrice: false,
+      })
+    );
 
     this.updateShippingMethodsForColdStorage();
     this.markFormPristineAndUntouched();
@@ -431,10 +493,16 @@ export class ProposalAdd implements OnInit {
       this.isSubmitting.set(true);
 
       const response = await firstValueFrom(
-        this.proposalService.updateProposalStatus(this.proposalId, Status.Approved)
+        this.proposalService.updateProposalStatus(
+          this.proposalId,
+          Status.Approved
+        )
       );
 
-      this.notificationService.showSnackBar('Proposal accepted successfully', 'success');
+      this.notificationService.showSnackBar(
+        'Proposal accepted successfully',
+        'success'
+      );
 
       if (response) {
         if (!this.isUrlHasPatientId) {
@@ -443,14 +511,16 @@ export class ProposalAdd implements OnInit {
           this.router.navigate([
             '/order/edit',
             response.id,
-            this.currentPatientId
+            this.currentPatientId,
           ]);
         }
       }
-
     } catch (error) {
       console.error('Failed to accept proposal:', error);
-      this.notificationService.showSnackBar('Failed to accept proposal', 'failure');
+      this.notificationService.showSnackBar(
+        'Failed to accept proposal',
+        'failure'
+      );
     } finally {
       this.isSubmitting.set(false);
     }
@@ -470,15 +540,23 @@ export class ProposalAdd implements OnInit {
       this.isSubmitting.set(true);
 
       const response = await firstValueFrom(
-        this.proposalService.updateProposalStatus(this.proposalId, Status.ApprovedByPatient)
+        this.proposalService.updateProposalStatus(
+          this.proposalId,
+          Status.ApprovedByPatient
+        )
       );
 
-      this.notificationService.showSnackBar('Proposal accepted successfully', 'success');
+      this.notificationService.showSnackBar(
+        'Proposal accepted successfully',
+        'success'
+      );
       this.reinitializeForm();
-
     } catch (error) {
       console.error('Failed to accept proposal:', error);
-      this.notificationService.showSnackBar('Failed to accept proposal', 'failure');
+      this.notificationService.showSnackBar(
+        'Failed to accept proposal',
+        'failure'
+      );
     } finally {
       this.isSubmitting.set(false);
     }
@@ -489,7 +567,7 @@ export class ProposalAdd implements OnInit {
 
     const dialogRef = this.dialog.open(ReasonDialogComponent, {
       width: '400px',
-      data: { title: dialogTitle }
+      data: { title: dialogTitle },
     });
 
     dialogRef.afterClosed().subscribe((reason: string | null) => {
@@ -500,27 +578,35 @@ export class ProposalAdd implements OnInit {
         console.log('Dialog closed without providing a reason');
       }
     });
-
   }
 
-  onReasonSubmittedByPatient(statusId: number, reason: string | null = null): void {
+  onReasonSubmittedByPatient(
+    statusId: number,
+    reason: string | null = null
+  ): void {
     if (!this.proposalId) return;
     this.isSubmitting.set(true);
-    this.proposalService.updateProposalStatus(this.proposalId, statusId, reason).subscribe({
-      next: (response) => {
-        this.notificationService.showSnackBar(`Proposal rejected successfully`, 'success');
-        this.reinitializeForm();
-      },
-      error: (err) => {
-        this.notificationService.showSnackBar(`Failed to reject proposal.`, 'failure');
-      },
-      complete: () => {
-        this.isSubmitting.set(false);
-      }
-    });
+    this.proposalService
+      .updateProposalStatus(this.proposalId, statusId, reason)
+      .subscribe({
+        next: (response) => {
+          this.notificationService.showSnackBar(
+            `Proposal rejected successfully`,
+            'success'
+          );
+          this.reinitializeForm();
+        },
+        error: (err) => {
+          this.notificationService.showSnackBar(
+            `Failed to reject proposal.`,
+            'failure'
+          );
+        },
+        complete: () => {
+          this.isSubmitting.set(false);
+        },
+      });
   }
-
-
 
   // Reject proposal method
   onRejectProposal(): void {
@@ -528,7 +614,7 @@ export class ProposalAdd implements OnInit {
 
     const dialogRef = this.dialog.open(ReasonDialogComponent, {
       width: '400px',
-      data: { title: dialogTitle }
+      data: { title: dialogTitle },
     });
 
     dialogRef.afterClosed().subscribe((reason: string | null) => {
@@ -541,24 +627,31 @@ export class ProposalAdd implements OnInit {
     });
   }
 
-
   onReasonSubmitted(statusId: number, reason: string | null = null): void {
     if (!this.proposalId) return;
     this.isSubmitting.set(true);
-    this.proposalService.updateProposalStatus(this.proposalId, statusId, reason).subscribe({
-      next: (response) => {
-        this.notificationService.showSnackBar(`Proposal ${Status[statusId].toLowerCase()} successfully`, 'success');
-        this.reinitializeForm();
-      },
-      error: (err) => {
-        const errorTerm = statusId === Status.Rejected ? 'reject' : 'cancel';
-        console.error(`Failed to ${errorTerm} proposal with reason:`, err);
-        this.notificationService.showSnackBar(`Failed to ${errorTerm} proposal.`, 'failure');
-      },
-      complete: () => {
-        this.isSubmitting.set(false);
-      }
-    });
+    this.proposalService
+      .updateProposalStatus(this.proposalId, statusId, reason)
+      .subscribe({
+        next: (response) => {
+          this.notificationService.showSnackBar(
+            `Proposal ${Status[statusId].toLowerCase()} successfully`,
+            'success'
+          );
+          this.reinitializeForm();
+        },
+        error: (err) => {
+          const errorTerm = statusId === Status.Rejected ? 'reject' : 'cancel';
+          console.error(`Failed to ${errorTerm} proposal with reason:`, err);
+          this.notificationService.showSnackBar(
+            `Failed to ${errorTerm} proposal.`,
+            'failure'
+          );
+        },
+        complete: () => {
+          this.isSubmitting.set(false);
+        },
+      });
   }
 
   async onCancelProposal(): Promise<void> {
@@ -575,13 +668,16 @@ export class ProposalAdd implements OnInit {
   }
 
   // Helper method for confirmation dialogs
-  private async confirmAction(title: string, message: string): Promise<boolean> {
+  private async confirmAction(
+    title: string,
+    message: string
+  ): Promise<boolean> {
     return await firstValueFrom(
       this.confirmationDialogService.openConfirmation({
         title,
         message,
         confirmButtonText: 'Yes',
-        cancelButtonText: 'No'
+        cancelButtonText: 'No',
       })
     );
   }
@@ -590,12 +686,17 @@ export class ProposalAdd implements OnInit {
 
     if (typeof patientValue === 'object' && patientValue?.id) {
       patientId = String(patientValue.id);
-      const matchingPatient = this.patients.find(p => String(p.id) === patientId);
+      const matchingPatient = this.patients.find(
+        (p) => String(p.id) === patientId
+      );
       if (matchingPatient) {
-        this.proposalForm.patchValue({ patientId: matchingPatient }, { emitEvent: false });
+        this.proposalForm.patchValue(
+          { patientId: matchingPatient },
+          { emitEvent: false }
+        );
         if (matchingPatient.counselorId) {
           const matchingCounselor = this.counselors.find(
-            c => c.id === matchingPatient.counselorId
+            (c) => c.id === matchingPatient.counselorId
           );
           if (matchingCounselor) {
             this.proposalForm.patchValue({ counselorId: matchingCounselor });
@@ -608,35 +709,36 @@ export class ProposalAdd implements OnInit {
       this.currentPatientId = patientId;
       this.loadCreditCards(patientId);
       this.loadAddresses(patientId);
-      if (!this.proposalId)
-        this.loadPhyisianInfo(patientId);
+      if (!this.proposalId) this.loadPhyisianInfo(patientId);
     } else {
       this.resetPatientData();
     }
   }
 
   setupFormSubscriptions() {
-    this.proposalForm.get('pharmacyId')?.valueChanges.subscribe(async pharmacy => {
-      if (pharmacy?.id) {
-        this.resetPharmacyData();
-        this.toggleModifyShippingValue = false;
-        this.customShippingValue = 0;
-        this.loadPharmacyProducts(String(pharmacy.id));
-        if (pharmacy.isLab)
-          this.isLab.set(true);
-        else {
-          await this.loadPharmacyShippingMethods(String(pharmacy.id));
-          this.isLab.set(false);
+    this.proposalForm
+      .get('pharmacyId')
+      ?.valueChanges.subscribe(async (pharmacy) => {
+        if (pharmacy?.id) {
+          this.resetPharmacyData();
+          this.toggleModifyShippingValue = false;
+          this.customShippingValue = 0;
+          this.loadPharmacyProducts(String(pharmacy.id));
+          if (pharmacy.isLab) this.isLab.set(true);
+          else {
+            await this.loadPharmacyShippingMethods(String(pharmacy.id));
+            this.isLab.set(false);
+          }
+        } else {
+          this.resetPharmacyData();
         }
-      } else {
-        this.resetPharmacyData();
-      }
-    });
+      });
 
-    this.proposalForm.get('patientId')?.valueChanges.subscribe(patientValue => {
-      this.handlePatientSelection(patientValue);
-    });
-
+    this.proposalForm
+      .get('patientId')
+      ?.valueChanges.subscribe((patientValue) => {
+        this.handlePatientSelection(patientValue);
+      });
 
     // this.proposalForm.get('patientId')?.valueChanges.subscribe(patient => {
     //   if (patient?.id) {
@@ -647,21 +749,25 @@ export class ProposalAdd implements OnInit {
     //   }
     // });
 
-    this.proposalForm.get('couponId')?.valueChanges.subscribe(coupon => {
+    this.proposalForm.get('couponId')?.valueChanges.subscribe((coupon) => {
       this.selectedCoupon = coupon;
     });
 
-    this.proposalForm.get('shippingMethodId')?.valueChanges.subscribe(method => {
-      if (!method || method.name === 'Pick Up') {
-        this.resetShippingAddress();
-      }
-    });
+    this.proposalForm
+      .get('shippingMethodId')
+      ?.valueChanges.subscribe((method) => {
+        if (!method || method.name === 'Pick Up') {
+          this.resetShippingAddress();
+        }
+      });
 
-    this.proposalForm.get('shippingAddressId')?.valueChanges.subscribe(addressId => {
-      if (addressId && addressId !== this.selectedShippingAddressId) {
-        this.selectedShippingAddressId = addressId;
-      }
-    });
+    this.proposalForm
+      .get('shippingAddressId')
+      ?.valueChanges.subscribe((addressId) => {
+        if (addressId && addressId !== this.selectedShippingAddressId) {
+          this.selectedShippingAddressId = addressId;
+        }
+      });
   }
 
   // Reset Methods
@@ -700,12 +806,19 @@ export class ProposalAdd implements OnInit {
   private async loadAddresses(patientId: string): Promise<void> {
     this.isLoadingAddresses.set(true);
     try {
-      let addresses = await firstValueFrom(this.patientService.getAllAddressBasedOnPatientId(patientId));
-      addresses = addresses?.filter(addr => addr.isActive) || [];
+      let addresses = await firstValueFrom(
+        this.patientService.getAllAddressBasedOnPatientId(patientId)
+      );
+      addresses = addresses?.filter((addr) => addr.isActive) || [];
       this.shippingAddresses.set(addresses);
 
-      if (!this.selectedShippingAddressId && this.shippingAddresses().length > 0) {
-        const defaultAddress = this.shippingAddresses().find(addr => addr.isDefaultAddress === true);
+      if (
+        !this.selectedShippingAddressId &&
+        this.shippingAddresses().length > 0
+      ) {
+        const defaultAddress = this.shippingAddresses().find(
+          (addr) => addr.isDefaultAddress === true
+        );
 
         if (defaultAddress) {
           this.selectedShippingAddressId = defaultAddress.id;
@@ -718,7 +831,7 @@ export class ProposalAdd implements OnInit {
           }
 
           this.proposalForm.patchValue({
-            shippingAddressId: defaultAddress.id
+            shippingAddressId: defaultAddress.id,
           });
 
           this.isAddressVerified = false;
@@ -729,33 +842,38 @@ export class ProposalAdd implements OnInit {
           }, 100);
         }
       }
-
     } catch (err) {
       console.error('Failed to load addresses:', err);
       this.shippingAddresses.set([]);
-      this.notificationService.showSnackBar('Failed to load addresses', 'failure');
+      this.notificationService.showSnackBar(
+        'Failed to load addresses',
+        'failure'
+      );
     } finally {
       this.isLoadingAddresses.set(false);
     }
   }
   private async loadPhyisianInfo(patientId: string) {
-    const data = await firstValueFrom(this.patientService.getPhysianInfoBasedOnPatientId(patientId));
+    const data = await firstValueFrom(
+      this.patientService.getPhysianInfoBasedOnPatientId(patientId)
+    );
     if (data) {
       this.proposalForm.patchValue({ physicianId: data });
       this.cdr.detectChanges();
-    }
-    else {
+    } else {
       if (!data) {
-        this.confirmationService.openConfirmation({
-          title: 'Doctor Not Assigned',
-          message: 'Please assign a doctor before proceeding.',
-          confirmButtonText: 'OK',
-          showCancelButton: false
-        }).subscribe(() => {
-          this.proposalForm.patchValue({ physicianId: null });
-          this.cdr.detectChanges();
-          return;
-        });
+        this.confirmationService
+          .openConfirmation({
+            title: 'Doctor Not Assigned',
+            message: 'Please assign a doctor before proceeding.',
+            confirmButtonText: 'OK',
+            showCancelButton: false,
+          })
+          .subscribe(() => {
+            this.proposalForm.patchValue({ physicianId: null });
+            this.cdr.detectChanges();
+            return;
+          });
       }
     }
   }
@@ -764,7 +882,9 @@ export class ProposalAdd implements OnInit {
 
     try {
       const data = await firstValueFrom(
-        this.priceListItemService.getAllActivePriceListItemsByPharmacyId(pharmacyId)
+        this.priceListItemService.getAllActivePriceListItemsByPharmacyId(
+          pharmacyId
+        )
       );
       this.pharmacyProducts = data;
       this.filteredProducts = [...data];
@@ -772,28 +892,36 @@ export class ProposalAdd implements OnInit {
       console.error('Failed to load pharmacy products:', err);
       this.pharmacyProducts = [];
       this.filteredProducts = [];
-      this.notificationService.showSnackBar('Failed to load products', 'failure');
+      this.notificationService.showSnackBar(
+        'Failed to load products',
+        'failure'
+      );
     } finally {
       this.isLoadingProducts.set(false);
     }
   }
   onProtocolChanged(proposalDetailId: string | number, event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    const product = this.selectedProducts.find(p => p.id === proposalDetailId);
+    const product = this.selectedProducts.find(
+      (p) => p.id === proposalDetailId
+    );
     if (product) {
       product.protocol = value;
     }
-
   }
 
   private async loadCreditCards(patientId: string): Promise<void> {
     this.isLoadingCreditCards.set(true);
 
     try {
-      const data = await firstValueFrom(this.patientService.getCreditCardByPatientId(patientId));
-      this.patientCreditCards.set(data.filter(card => card.isActive));
+      const data = await firstValueFrom(
+        this.patientService.getCreditCardByPatientId(patientId)
+      );
+      this.patientCreditCards.set(data.filter((card) => card.isActive));
       if (!this.selectedCreditCard && this.patientCreditCards().length > 0) {
-        const defaultCard = this.patientCreditCards().find(c => c.isDefaultCreditCard);
+        const defaultCard = this.patientCreditCards().find(
+          (c) => c.isDefaultCreditCard
+        );
         if (defaultCard) {
           this.selectedCreditCard = defaultCard;
           this.proposalForm.patchValue({ cardId: defaultCard.id });
@@ -802,7 +930,10 @@ export class ProposalAdd implements OnInit {
     } catch (err) {
       console.error('Failed to load credit cards:', err);
       this.patientCreditCards.set([]);
-      this.notificationService.showSnackBar('Failed to load credit cards', 'failure');
+      this.notificationService.showSnackBar(
+        'Failed to load credit cards',
+        'failure'
+      );
     } finally {
       this.isLoadingCreditCards.set(false);
     }
@@ -810,29 +941,36 @@ export class ProposalAdd implements OnInit {
 
   private async loadPharmacyShippingMethods(pharmacyId: string): Promise<void> {
     try {
-      const data = await firstValueFrom(this.pharmacyService.getAllPharmacyShippingMethods(pharmacyId));
+      const data = await firstValueFrom(
+        this.pharmacyService.getAllPharmacyShippingMethods(pharmacyId)
+      );
       if (data && data.length > 0) {
         this.pharmacyShippingMethods = data;
         this.updateShippingMethodsForColdStorage();
       } else {
-        this.confirmationDialogService.openConfirmation({
-          title: 'No Shipping Methods',
-          message: 'No shipping methods found. Add at least one!',
-          confirmButtonText: 'Ok',
-          showCancelButton: false
-        }).subscribe(() => { });
+        this.confirmationDialogService
+          .openConfirmation({
+            title: 'No Shipping Methods',
+            message: 'No shipping methods found. Add at least one!',
+            confirmButtonText: 'Ok',
+            showCancelButton: false,
+          })
+          .subscribe(() => {});
       }
     } catch (err) {
       console.error('Failed to load shipping methods:', err);
       this.pharmacyShippingMethods = [];
       this.filteredShippingMethods.set([]);
-      this.notificationService.showSnackBar('Failed to load shipping methods', 'failure');
+      this.notificationService.showSnackBar(
+        'Failed to load shipping methods',
+        'failure'
+      );
     }
   }
 
   // Validation Methods
   hasColdStorageProducts(): boolean {
-    return this.selectedProducts.some(p => p.isColdStorageProduct);
+    return this.selectedProducts.some((p) => p.isColdStorageProduct);
   }
 
   hasSelectedProducts(): boolean {
@@ -850,8 +988,10 @@ export class ProposalAdd implements OnInit {
   }
 
   shouldShowAddressSelection(): boolean {
-    return this.selectedShippingMethod !== null &&
-      this.selectedShippingMethod.name !== 'Pick Up';
+    return (
+      this.selectedShippingMethod !== null &&
+      this.selectedShippingMethod.name !== 'Pick Up'
+    );
   }
 
   hasShippingAddresses(): boolean {
@@ -859,12 +999,17 @@ export class ProposalAdd implements OnInit {
   }
 
   isAddressVerificationRequired(): boolean {
-    return this.shouldShowAddressSelection() && this.selectedShippingAddressId !== null;
+    return (
+      this.shouldShowAddressSelection() &&
+      this.selectedShippingAddressId !== null
+    );
   }
 
   canSubmitForm(): boolean {
-    const basicValidation = this.proposalForm.valid && this.selectedProducts.length > 0;
-    const addressValidation = !this.shouldShowAddressSelection() ||
+    const basicValidation =
+      this.proposalForm.valid && this.selectedProducts.length > 0;
+    const addressValidation =
+      !this.shouldShowAddressSelection() ||
       (!!this.selectedShippingAddressId && this.isAddressVerified);
     return basicValidation && addressValidation;
   }
@@ -874,18 +1019,26 @@ export class ProposalAdd implements OnInit {
     const hasColdStorageProducts = this.hasColdStorageProducts();
     let shippingMethods = [];
     if (hasColdStorageProducts) {
-      shippingMethods = this.pharmacyShippingMethods.filter(method =>
-        method.name === "OverNight Shipping" || method.name === "Pick Up"
+      shippingMethods = this.pharmacyShippingMethods.filter(
+        (method) =>
+          method.name === 'OverNight Shipping' || method.name === 'Pick Up'
       );
-      this.notificationService.showSnackBar('Shipping options limited due to cold storage products', 'normal');
+      this.notificationService.showSnackBar(
+        'Shipping options limited due to cold storage products',
+        'normal'
+      );
     } else {
       shippingMethods = [...this.pharmacyShippingMethods];
     }
 
     this.filteredShippingMethods.set(shippingMethods);
 
-    if (this.selectedShippingMethod &&
-      !this.filteredShippingMethods().some(m => m.id === this.selectedShippingMethod?.id)) {
+    if (
+      this.selectedShippingMethod &&
+      !this.filteredShippingMethods().some(
+        (m) => m.id === this.selectedShippingMethod?.id
+      )
+    ) {
       this.selectedShippingMethod = null;
       this.customShippingValue = 0;
       this.resetShippingAddress();
@@ -896,8 +1049,15 @@ export class ProposalAdd implements OnInit {
     const product = event.option.value;
     if (!product) return;
 
-    if (this.selectedProducts.some(p => p.productPharmacyPriceListItemId === product.id)) {
-      this.notificationService.showSnackBar('This product is already added to the proposal', 'normal');
+    if (
+      this.selectedProducts.some(
+        (p) => p.productPharmacyPriceListItemId === product.id
+      )
+    ) {
+      this.notificationService.showSnackBar(
+        'This product is already added to the proposal',
+        'normal'
+      );
       this.productControl.setValue('');
       return;
     }
@@ -921,11 +1081,16 @@ export class ProposalAdd implements OnInit {
     this.selectedProducts = [...this.selectedProducts, selectedProduct];
     this.productControl.setValue('');
     this.updateShippingMethodsForColdStorage();
-    this.notificationService.showSnackBar(`${product.productName} added to proposal`, 'success');
+    this.notificationService.showSnackBar(
+      `${product.productName} added to proposal`,
+      'success'
+    );
   }
 
   updateQuantity(priceListItemId: string, quantity: number) {
-    const product = this.selectedProducts.find(p => p.productPharmacyPriceListItemId === priceListItemId);
+    const product = this.selectedProducts.find(
+      (p) => p.productPharmacyPriceListItemId === priceListItemId
+    );
     if (!product) return;
     const validQuantity = this.mathMax(1, quantity || 1);
     product.quantity = validQuantity;
@@ -933,13 +1098,18 @@ export class ProposalAdd implements OnInit {
   }
 
   updatePerUnitPrice(priceListItemId: string, perUnitPrice: number) {
-    const product = this.selectedProducts.find(p => p.productPharmacyPriceListItemId === priceListItemId);
+    const product = this.selectedProducts.find(
+      (p) => p.productPharmacyPriceListItemId === priceListItemId
+    );
     if (!product || !product.togglePerUnitPrice) return;
 
     const validPrice = this.mathMax(0, perUnitPrice || 0);
 
     if (perUnitPrice < 0) {
-      this.notificationService.showSnackBar('Price cannot be negative', 'normal');
+      this.notificationService.showSnackBar(
+        'Price cannot be negative',
+        'normal'
+      );
     }
 
     product.perUnitPrice = validPrice;
@@ -947,7 +1117,9 @@ export class ProposalAdd implements OnInit {
   }
 
   togglePerUnitPriceModification(priceListItemId: string, isEnabled: boolean) {
-    const product = this.selectedProducts.find(p => p.productPharmacyPriceListItemId === priceListItemId);
+    const product = this.selectedProducts.find(
+      (p) => p.productPharmacyPriceListItemId === priceListItemId
+    );
     if (!product) return;
 
     product.togglePerUnitPrice = isEnabled;
@@ -958,19 +1130,28 @@ export class ProposalAdd implements OnInit {
   }
 
   removeProduct(productId: string): void {
-    this.selectedProducts = this.selectedProducts.filter(p => p.productPharmacyPriceListItemId !== productId);
+    this.selectedProducts = this.selectedProducts.filter(
+      (p) => p.productPharmacyPriceListItemId !== productId
+    );
     this.updateShippingMethodsForColdStorage();
-    this.notificationService.showSnackBar('Product removed (changes pending save)', 'normal');
+    this.notificationService.showSnackBar(
+      'Product removed (changes pending save)',
+      'normal'
+    );
   }
 
   // Calculation Methods
   getProductSubTotal(): number {
-    return this.selectedProducts.reduce((total, product) => total + product.finalAmount, 0);
+    return this.selectedProducts.reduce(
+      (total, product) => total + product.finalAmount,
+      0
+    );
   }
 
   getCreditCardSurcharge(): number {
     if (!this.enableCreditCardPayment || !this.selectedCreditCard) return 0;
-    const subtotal = this.getProductSubTotal() + (this.customShippingValue || 0);
+    const subtotal =
+      this.getProductSubTotal() + (this.customShippingValue || 0);
     return subtotal * this.creditCardSurchargeRate;
   }
 
@@ -980,18 +1161,22 @@ export class ProposalAdd implements OnInit {
     const creditCardSurcharge = this.getCreditCardSurcharge();
     const couponDiscount = this.getCouponDiscount();
 
-    return this.mathMax(0, productTotal + shippingCost + creditCardSurcharge - couponDiscount);
+    return this.mathMax(
+      0,
+      productTotal + shippingCost + creditCardSurcharge - couponDiscount
+    );
   }
 
   getCouponDiscount(): number {
     if (!this.selectedCoupon) return 0;
 
-    const subtotal = this.getProductSubTotal() + (this.customShippingValue || 0);
+    const subtotal =
+      this.getProductSubTotal() + (this.customShippingValue || 0);
     let discount = 0;
 
     const fixedDiscount = this.selectedCoupon.amount || 0;
     const percentageDiscount = this.selectedCoupon.percentage
-      ? (subtotal * this.selectedCoupon.percentage / 100)
+      ? (subtotal * this.selectedCoupon.percentage) / 100
       : 0;
 
     if (this.selectedCoupon.amount && this.selectedCoupon.percentage) {
@@ -1008,7 +1193,9 @@ export class ProposalAdd implements OnInit {
   getTotalPriceSavings(): number {
     return this.selectedProducts.reduce((savings, product) => {
       if (product.amount && product.perUnitPrice < product.amount) {
-        return savings + ((product.amount - product.perUnitPrice) * product.quantity);
+        return (
+          savings + (product.amount - product.perUnitPrice) * product.quantity
+        );
       }
       return savings;
     }, 0);
@@ -1019,12 +1206,15 @@ export class ProposalAdd implements OnInit {
     this.isAddressVerified = isVerified;
 
     if (this.selectedShippingAddressId) {
-      this.addressVerificationMap.set(this.selectedShippingAddressId, isVerified);
+      this.addressVerificationMap.set(
+        this.selectedShippingAddressId,
+        isVerified
+      );
     }
 
-    const message = isVerified ?
-      'Address marked as verified' :
-      'Address marked as unverified';
+    const message = isVerified
+      ? 'Address marked as verified'
+      : 'Address marked as unverified';
     this.notificationService.showSnackBar(message, 'success');
   }
 
@@ -1035,39 +1225,52 @@ export class ProposalAdd implements OnInit {
     this.proposalForm.get('shippingAddressId')?.setValue(addressId);
 
     const hasStoredVerification = this.addressVerificationMap.has(addressId);
-    const storedVerificationStatus = this.addressVerificationMap.get(addressId) || false;
+    const storedVerificationStatus =
+      this.addressVerificationMap.get(addressId) || false;
 
     if (previousAddressId && previousAddressId !== addressId) {
       if (hasStoredVerification) {
         this.isAddressVerified = storedVerificationStatus;
-        const statusMessage = storedVerificationStatus ?
-          'Address selected - verification status restored (verified)' :
-          'Address selected - verification status restored (unverified)';
+        const statusMessage = storedVerificationStatus
+          ? 'Address selected - verification status restored (verified)'
+          : 'Address selected - verification status restored (unverified)';
         this.notificationService.showSnackBar(statusMessage, 'success');
       } else {
         this.isAddressVerified = false;
-        this.notificationService.showSnackBar('Address changed - verification reset. Please verify the new address.', 'normal');
+        this.notificationService.showSnackBar(
+          'Address changed - verification reset. Please verify the new address.',
+          'normal'
+        );
       }
     } else if (!previousAddressId) {
       if (hasStoredVerification) {
         this.isAddressVerified = storedVerificationStatus;
-        const statusMessage = storedVerificationStatus ?
-          'Address selected - previously verified' :
-          'Address selected - please verify this address';
+        const statusMessage = storedVerificationStatus
+          ? 'Address selected - previously verified'
+          : 'Address selected - please verify this address';
         this.notificationService.showSnackBar(statusMessage, 'success');
       } else {
         this.isAddressVerified = false;
-        this.notificationService.showSnackBar('Shipping address selected - please verify', 'success');
+        this.notificationService.showSnackBar(
+          'Shipping address selected - please verify',
+          'success'
+        );
       }
     } else {
-      this.notificationService.showSnackBar('Shipping address confirmed', 'success');
+      this.notificationService.showSnackBar(
+        'Shipping address confirmed',
+        'success'
+      );
     }
   }
 
   // Address Modal Management
   openAddAddressModal() {
     if (!this.currentPatientId) {
-      this.notificationService.showSnackBar('Please select a patient first', 'normal');
+      this.notificationService.showSnackBar(
+        'Please select a patient first',
+        'normal'
+      );
       return;
     }
 
@@ -1077,7 +1280,10 @@ export class ProposalAdd implements OnInit {
 
   openEditAddressModal(addressId: string) {
     if (!this.currentPatientId) {
-      this.notificationService.showSnackBar('Please select a patient first', 'normal');
+      this.notificationService.showSnackBar(
+        'Please select a patient first',
+        'normal'
+      );
       return;
     }
 
@@ -1098,7 +1304,10 @@ export class ProposalAdd implements OnInit {
       this.proposalForm.get('shippingAddressId')?.setValue(newAddress.id);
       this.isAddressVerified = false;
       this.addressVerificationMap.set(newAddress.id, false);
-      this.notificationService.showSnackBar('New address added - please verify the address', 'success');
+      this.notificationService.showSnackBar(
+        'New address added - please verify the address',
+        'success'
+      );
     }
   }
 
@@ -1113,12 +1322,21 @@ export class ProposalAdd implements OnInit {
     if (updatedAddress?.id === this.selectedShippingAddressId) {
       this.isAddressVerified = false;
       this.addressVerificationMap.set(updatedAddress.id, false);
-      this.notificationService.showSnackBar('Address updated - please re-verify the address', 'normal');
+      this.notificationService.showSnackBar(
+        'Address updated - please re-verify the address',
+        'normal'
+      );
     } else if (updatedAddress?.id) {
       this.addressVerificationMap.set(updatedAddress.id, false);
-      this.notificationService.showSnackBar('Address updated successfully', 'success');
+      this.notificationService.showSnackBar(
+        'Address updated successfully',
+        'success'
+      );
     } else {
-      this.notificationService.showSnackBar('Address updated successfully', 'success');
+      this.notificationService.showSnackBar(
+        'Address updated successfully',
+        'success'
+      );
     }
   }
 
@@ -1141,17 +1359,23 @@ export class ProposalAdd implements OnInit {
       }
     }
 
-    this.notificationService.showSnackBar(`Shipping method selected: ${shippingMethod.name}`, 'success');
+    this.notificationService.showSnackBar(
+      `Shipping method selected: ${shippingMethod.name}`,
+      'success'
+    );
   }
 
   toggleShippingValueModification(isEnabled: boolean) {
     this.toggleModifyShippingValue = isEnabled;
 
     if (!isEnabled && this.selectedShippingMethod) {
-      this.customShippingValue = parseFloat(this.selectedShippingMethod.value) || 0;
+      this.customShippingValue =
+        parseFloat(this.selectedShippingMethod.value) || 0;
     }
 
-    const message = isEnabled ? 'Custom shipping cost enabled' : 'Custom shipping cost disabled';
+    const message = isEnabled
+      ? 'Custom shipping cost enabled'
+      : 'Custom shipping cost disabled';
     this.notificationService.showSnackBar(message, 'success');
   }
 
@@ -1159,7 +1383,10 @@ export class ProposalAdd implements OnInit {
     const validValue = this.mathMax(0, value || 0);
 
     if (value < 0) {
-      this.notificationService.showSnackBar('Shipping cost cannot be negative', 'normal');
+      this.notificationService.showSnackBar(
+        'Shipping cost cannot be negative',
+        'normal'
+      );
     }
 
     this.customShippingValue = validValue;
@@ -1171,7 +1398,9 @@ export class ProposalAdd implements OnInit {
       this.selectedCreditCard = null;
     }
 
-    const message = isEnabled ? 'Credit card payment enabled' : 'Credit card payment disabled';
+    const message = isEnabled
+      ? 'Credit card payment enabled'
+      : 'Credit card payment disabled';
     this.notificationService.showSnackBar(message, 'success');
   }
 
@@ -1201,8 +1430,8 @@ export class ProposalAdd implements OnInit {
       address.city,
       address.stateName,
       address.countryName,
-      address.postalCode
-    ].filter(part => part && part.trim());
+      address.postalCode,
+    ].filter((part) => part && part.trim());
 
     let formattedAddress = parts.join(', ');
 
@@ -1216,14 +1445,14 @@ export class ProposalAdd implements OnInit {
   // Filter Methods
   filterProducts(value: string) {
     const filterValue = value.toLowerCase();
-    this.filteredProducts = this.pharmacyProducts.filter(product =>
+    this.filteredProducts = this.pharmacyProducts.filter((product) =>
       product.productName?.toLowerCase().includes(filterValue)
     );
   }
 
   filterPharmacies(value: string) {
     const filterValue = value.toLowerCase();
-    const filteredPharmacies = this.pharmacies.filter(p =>
+    const filteredPharmacies = this.pharmacies.filter((p) =>
       p.name.toLowerCase().includes(filterValue)
     );
     this.filteredPharmacies.set(filteredPharmacies);
@@ -1231,21 +1460,21 @@ export class ProposalAdd implements OnInit {
 
   filterPatients(value: string) {
     const filterValue = value.toLowerCase();
-    this.filteredPatients = this.patients.filter(p =>
+    this.filteredPatients = this.patients.filter((p) =>
       p.name.toLowerCase().includes(filterValue)
     );
   }
 
   filterCounselors(value: string) {
     const filterValue = value.toLowerCase();
-    this.filteredCounselors = this.counselors.filter(c =>
+    this.filteredCounselors = this.counselors.filter((c) =>
       c.value.toLowerCase().includes(filterValue)
     );
   }
 
   filterCoupons(value: string) {
     const filterValue = value.toLowerCase();
-    this.filteredCoupons = this.coupons.filter(c =>
+    this.filteredCoupons = this.coupons.filter((c) =>
       (c.couponName || '').toLowerCase().includes(filterValue)
     );
   }
@@ -1253,7 +1482,7 @@ export class ProposalAdd implements OnInit {
   // Display Functions
   displayProductFn = (product: any): string => {
     return product ? product.productName : '';
-  }
+  };
 
   displayFn = (item: any): string => {
     if (!item) return '';
@@ -1261,11 +1490,11 @@ export class ProposalAdd implements OnInit {
     if (item.name) return item.name;
     if (item.couponName) return item.couponName;
     return '';
-  }
+  };
 
   // Status Helper Methods
   getStatusDisplayText(statusValue: number): string {
-    const status = this.statusList.find(s => s.value === statusValue);
+    const status = this.statusList.find((s) => s.value === statusValue);
     return status ? status.name : 'Unknown';
   }
 
@@ -1290,7 +1519,6 @@ export class ProposalAdd implements OnInit {
     }
   }
 
-
   // Validation Helper Methods
   isFieldInvalid(fieldName: string): boolean {
     const field = this.proposalForm.get(fieldName);
@@ -1308,29 +1536,33 @@ export class ProposalAdd implements OnInit {
     if (field?.errors) {
       if (field.errors['required']) return `${label} is required`;
       if (field.errors['email']) return 'Please enter a valid email';
-      if (field.errors['minlength']) return `${label} must be at least ${field.errors['minlength'].requiredLength} characters`;
+      if (field.errors['minlength'])
+        return `${label} must be at least ${field.errors['minlength'].requiredLength} characters`;
       if (field.errors['pattern']) return `${label} format is invalid`;
-      if (field.errors['whitespace']) return `${label} cannot be empty or only spaces`;
+      if (field.errors['whitespace'])
+        return `${label} cannot be empty or only spaces`;
     }
     return '';
   }
 
   // Form State Management
   private markFormGroupTouched(): void {
-    Object.values(this.proposalForm.controls).forEach(control => {
+    Object.values(this.proposalForm.controls).forEach((control) => {
       if (control instanceof FormGroup) {
-        Object.values(control.controls).forEach(ctrl => ctrl.markAsTouched());
+        Object.values(control.controls).forEach((ctrl) => ctrl.markAsTouched());
       } else {
         control.markAsTouched();
       }
     });
   }
 
-  private markFormPristineAndUntouched(formGroup: FormGroup = this.proposalForm) {
+  private markFormPristineAndUntouched(
+    formGroup: FormGroup = this.proposalForm
+  ) {
     formGroup.markAsPristine();
     formGroup.markAsUntouched();
 
-    Object.values(formGroup.controls).forEach(control => {
+    Object.values(formGroup.controls).forEach((control) => {
       if (control instanceof FormGroup) {
         this.markFormPristineAndUntouched(control);
       } else {
@@ -1355,8 +1587,10 @@ export class ProposalAdd implements OnInit {
       name: formValue.name.trim(),
       patientId: formValue.patientId?.id || formValue.patientId,
       pharmacyId: formValue.pharmacyId?.id || formValue.pharmacyId,
-      counselorId: parseInt(formValue.counselorId?.id || formValue.counselorId) || 0,
-      phyisianId: parseInt(formValue.physicianId?.id || formValue.phyisianId) || 0,
+      counselorId:
+        parseInt(formValue.counselorId?.id || formValue.counselorId) || 0,
+      phyisianId:
+        parseInt(formValue.physicianId?.id || formValue.phyisianId) || 0,
       couponId: formValue.couponId?.id || formValue.couponId || undefined,
       patientCreditCardId: this.selectedCreditCard?.id || undefined,
       pharmacyShippingMethodId: this.selectedShippingMethod?.id || null,
@@ -1372,23 +1606,27 @@ export class ProposalAdd implements OnInit {
       status: Status.Draft,
       description: formValue.description || undefined,
 
-      proposalDetails: this.getProductDetialsPayload()
+      proposalDetails: this.getProductDetialsPayload(),
     };
     return payload;
   }
 
   getProductDetialsPayload(): ProposalDetailRequestDto[] {
-    return this.selectedProducts.map(product => ({
-      id: product.id,
-      productPharmacyPriceListItemId: product.productPharmacyPriceListItemId,
-      productId: product.productId,
-      quantity: product.quantity,
-      amount: product.finalAmount,
-      protocol: product.protocol,
-      perUnitAmount: product.perUnitPrice,
-      totalAmount: product.finalAmount
-    } as ProposalDetailRequestDto))
-  };
+    return this.selectedProducts.map(
+      (product) =>
+        ({
+          id: product.id,
+          productPharmacyPriceListItemId:
+            product.productPharmacyPriceListItemId,
+          productId: product.productId,
+          quantity: product.quantity,
+          amount: product.finalAmount,
+          protocol: product.protocol,
+          perUnitAmount: product.perUnitPrice,
+          totalAmount: product.finalAmount,
+        } as ProposalDetailRequestDto)
+    );
+  }
 
   updateProposalDetails(): Promise<boolean> {
     return new Promise((resolve) => {
@@ -1397,63 +1635,102 @@ export class ProposalAdd implements OnInit {
       }
       this.isSavingProposalDetails.set(true);
       const detailsPayload = this.getProductDetialsPayload();
-      this.proposalService.updateProposalDetails(this.proposalId, detailsPayload).subscribe({
-        next: (res: BulkOperationResponseDto) => {
-          this.selectedProducts = this.selectedProducts.map(p => ({
-            ...p,
-            togglePerUnitPrice: false
-          }));
-          this.notificationService.showSnackBar('Protocols updated successfully', 'success');
-          resolve(true);
-        }
-        , error: (err) => {
-          console.error('Failed to update protocols:', err);
-          this.notificationService.showSnackBar('Failed to update protocols', 'failure');
-          resolve(false);
-        },
-        complete: () => {
-          this.isSavingProposalDetails.set(false);
-        }
-      });
+      this.proposalService
+        .updateProposalDetails(this.proposalId, detailsPayload)
+        .subscribe({
+          next: (res: BulkOperationResponseDto) => {
+            this.selectedProducts = this.selectedProducts.map((p) => ({
+              ...p,
+              togglePerUnitPrice: false,
+            }));
+            this.notificationService.showSnackBar(
+              'Protocols updated successfully',
+              'success'
+            );
+            resolve(true);
+          },
+          error: (err) => {
+            console.error('Failed to update protocols:', err);
+            this.notificationService.showSnackBar(
+              'Failed to update protocols',
+              'failure'
+            );
+            resolve(false);
+          },
+          complete: () => {
+            this.isSavingProposalDetails.set(false);
+          },
+        });
     });
   }
 
-  onSaveInformation(shouldClose: boolean = false, shouldSubmit: boolean = false): Promise<number> {
+  onSaveInformation(
+    shouldClose: boolean = false,
+    shouldSubmit: boolean = false
+  ): Promise<number> {
     this.appRef.whenStable().then(() => {
       this.scrollToFirstInvalidControl();
     });
     return new Promise((resolve) => {
       if (this.isReadOnlyMode()) {
-        this.notificationService.showSnackBar('Form is in readonly mode', 'normal');
+        this.notificationService.showSnackBar(
+          'Form is in readonly mode',
+          'normal'
+        );
         return resolve(0);
       }
 
       if (this.proposalForm.invalid) {
         this.markFormGroupTouched();
-        this.notificationService.showSnackBar('Please fill in all required fields correctly.', 'normal');
+        this.notificationService.showSnackBar(
+          'Please fill in all required fields correctly.',
+          'normal'
+        );
         return resolve(0);
       }
       if (!this.proposalForm.value.physicianId) {
-        this.notificationService.showSnackBar('Assign physician to the patient', 'normal');
+        this.notificationService.showSnackBar(
+          'Assign physician to the patient',
+          'normal'
+        );
         return resolve(0);
       }
       if (shouldSubmit) {
         if (this.selectedProducts.length === 0) {
-          this.notificationService.showSnackBar('Please add at least one product to the proposal', 'normal');
+          this.notificationService.showSnackBar(
+            'Please add at least one product to the proposal',
+            'normal'
+          );
           return resolve(0);
         }
 
         if (!this.isLab() && !this.hasSelectedShippingMethod()) {
-          this.notificationService.showSnackBar('Please select a shipping method', 'normal');
+          this.notificationService.showSnackBar(
+            'Please select a shipping method',
+            'normal'
+          );
           return resolve(0);
         }
-        if (this.shouldShowAddressSelection() && !this.selectedShippingAddressId) {
-          this.notificationService.showSnackBar('Please select a shipping address', 'normal');
+        if (
+          this.shouldShowAddressSelection() &&
+          !this.selectedShippingAddressId
+        ) {
+          this.notificationService.showSnackBar(
+            'Please select a shipping address',
+            'normal'
+          );
           return resolve(0);
         }
 
-        if (this.shouldShowAddressSelection() && this.selectedShippingAddressId && !this.isAddressVerified) {
-          this.notificationService.showSnackBar('Please verify the shipping address before submitting', 'normal');
+        if (
+          this.shouldShowAddressSelection() &&
+          this.selectedShippingAddressId &&
+          !this.isAddressVerified
+        ) {
+          this.notificationService.showSnackBar(
+            'Please verify the shipping address before submitting',
+            'normal'
+          );
           return resolve(0);
         }
       }
@@ -1467,7 +1744,10 @@ export class ProposalAdd implements OnInit {
         this.proposalService.createProposal(payload).subscribe({
           next: (res: CommonOperationResponseDto) => {
             this.proposalId = res?.id ? String(res.id) : null;
-            this.notificationService.showSnackBar('Proposal successfully created!', 'success');
+            this.notificationService.showSnackBar(
+              'Proposal successfully created!',
+              'success'
+            );
 
             if (shouldClose) {
               this.goBackToProposalView();
@@ -1480,7 +1760,7 @@ export class ProposalAdd implements OnInit {
                 this.currentPatientId,
                 'proposal',
                 'edit',
-                this.proposalId
+                this.proposalId,
               ]);
             } else {
               this.router.navigate(['/proposal/edit', this.proposalId]);
@@ -1490,34 +1770,45 @@ export class ProposalAdd implements OnInit {
             resolve(1);
           },
           error: () => {
-            this.notificationService.showSnackBar('Failed to create proposal. Please try again.', 'failure');
+            this.notificationService.showSnackBar(
+              'Failed to create proposal. Please try again.',
+              'failure'
+            );
             this.isSubmitting.set(false);
             resolve(-1);
-          }
+          },
         });
       } else {
-        this.proposalService.updateProposal(this.proposalId, payload).subscribe({
-          next: () => {
-            this.notificationService.showSnackBar('Proposal updated successfully!', 'success');
+        this.proposalService
+          .updateProposal(this.proposalId, payload)
+          .subscribe({
+            next: () => {
+              this.notificationService.showSnackBar(
+                'Proposal updated successfully!',
+                'success'
+              );
 
-            if (shouldClose) {
-              this.goBackToProposalView();
-              return;
-            }
+              if (shouldClose) {
+                this.goBackToProposalView();
+                return;
+              }
 
-            setTimeout(() => {
-              this.reinitializeForm();
-            }, 1000);
+              setTimeout(() => {
+                this.reinitializeForm();
+              }, 1000);
 
-            this.isSubmitting.set(false);
-            resolve(1);
-          },
-          error: () => {
-            this.notificationService.showSnackBar('Failed to update proposal.', 'failure');
-            this.isSubmitting.set(false);
-            resolve(-1);
-          }
-        });
+              this.isSubmitting.set(false);
+              resolve(1);
+            },
+            error: () => {
+              this.notificationService.showSnackBar(
+                'Failed to update proposal.',
+                'failure'
+              );
+              this.isSubmitting.set(false);
+              resolve(-1);
+            },
+          });
       }
     });
   }
@@ -1539,7 +1830,9 @@ export class ProposalAdd implements OnInit {
 
       if (this.isUrlHasPatientId && this.currentPatientId) {
         this.router.navigate(['/proposal/add', this.currentPatientId]);
-        let matchingPatient = this.patients.find(p => String(p.id) === this.currentPatientId);
+        let matchingPatient = this.patients.find(
+          (p) => String(p.id) === this.currentPatientId
+        );
         this.handlePatientSelection(matchingPatient);
       } else {
         this.currentPatientId = null;
@@ -1548,32 +1841,37 @@ export class ProposalAdd implements OnInit {
     };
 
     if (this.proposalForm.dirty) {
-      this.confirmationDialogService.openConfirmation({
-        title: 'Unsaved Changes',
-        message: 'You have unsaved changes. Are you sure you want to continue without saving?',
-      }).subscribe(confirmed => {
-        if (confirmed) {
-          navigateToAdd();
-        }
-      });
+      this.confirmationDialogService
+        .openConfirmation({
+          title: 'Unsaved Changes',
+          message:
+            'You have unsaved changes. Are you sure you want to continue without saving?',
+        })
+        .subscribe((confirmed) => {
+          if (confirmed) {
+            navigateToAdd();
+          }
+        });
     } else {
       navigateToAdd();
     }
   }
 
-
   onClose(): void {
     if (this.isReadOnlyMode()) {
       this.goBackToProposalView();
     } else if (this.proposalForm.dirty) {
-      this.confirmationDialogService.openConfirmation({
-        title: 'Unsaved Changes',
-        message: 'You have unsaved changes. Are you sure you want to close without saving?',
-      }).subscribe(confirmed => {
-        if (confirmed) {
-          this.goBackToProposalView();
-        }
-      });
+      this.confirmationDialogService
+        .openConfirmation({
+          title: 'Unsaved Changes',
+          message:
+            'You have unsaved changes. Are you sure you want to close without saving?',
+        })
+        .subscribe((confirmed) => {
+          if (confirmed) {
+            this.goBackToProposalView();
+          }
+        });
     } else {
       this.goBackToProposalView();
     }
@@ -1582,15 +1880,15 @@ export class ProposalAdd implements OnInit {
   goBackToProposalView() {
     if (this.isUrlHasPatientId && this.currentPatientId) {
       this.router.navigate(['/proposals/view', this.currentPatientId]);
-    }
-    else if (this.proposalForm.get('status')?.value === Status.InReview && this.fromDashboard) {
+    } else if (
+      this.proposalForm.get('status')?.value === Status.InReview &&
+      this.fromDashboard
+    ) {
       this.router.navigate(['/dashboard']);
-    }
-    else {
+    } else {
       this.router.navigate(['/proposals/view']);
     }
   }
-
 
   resetForm(): void {
     this.proposalForm.reset();
@@ -1627,7 +1925,9 @@ export class ProposalAdd implements OnInit {
 
   getSelectedAddress(): ShippingAddressResponseDto | undefined {
     if (!this.selectedShippingAddressId) return undefined;
-    return this.shippingAddresses().find(a => a.id === this.selectedShippingAddressId);
+    return this.shippingAddresses().find(
+      (a) => a.id === this.selectedShippingAddressId
+    );
   }
 
   isSelectedAddressDefault(): boolean {
@@ -1643,33 +1943,47 @@ export class ProposalAdd implements OnInit {
   onDeleteClick(): void {
     if (this.isReadOnlyMode()) return;
 
-    this.confirmationDialogService.openConfirmation({
-      title: 'Confirm Delete',
-      message: `Are you sure you want to delete this proposal?`,
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
-      showCancelButton: true,
-    }).subscribe(confirmed => {
-      if (confirmed) {
-        if (!this.proposalId) {
-          this.notificationService.showSnackBar('Proposal ID is missing. Cannot delete.', 'failure');
-          return;
-        }
-        this.proposalService.deleteProposal([this.proposalId]).subscribe({
-          next: (res: BulkOperationResponseDto) => {
-            if (res.successCount > 0) {
-              this.notificationService.showSnackBar(res.message ?? 'Proposal deleted successfully.', 'success');
-              this.onClose();
-            } else {
-              this.notificationService.showSnackBar(res.message ?? 'Failed to delete proposal.', 'failure');
-            }
-          },
-          error: () => {
-            this.notificationService.showSnackBar('Server error while deleting proposal.', 'failure');
+    this.confirmationDialogService
+      .openConfirmation({
+        title: 'Confirm Delete',
+        message: `Are you sure you want to delete this proposal?`,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        showCancelButton: true,
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          if (!this.proposalId) {
+            this.notificationService.showSnackBar(
+              'Proposal ID is missing. Cannot delete.',
+              'failure'
+            );
+            return;
           }
-        });
-      }
-    });
+          this.proposalService.deleteProposal([this.proposalId]).subscribe({
+            next: (res: BulkOperationResponseDto) => {
+              if (res.successCount > 0) {
+                this.notificationService.showSnackBar(
+                  res.message ?? 'Proposal deleted successfully.',
+                  'success'
+                );
+                this.onClose();
+              } else {
+                this.notificationService.showSnackBar(
+                  res.message ?? 'Failed to delete proposal.',
+                  'failure'
+                );
+              }
+            },
+            error: () => {
+              this.notificationService.showSnackBar(
+                'Server error while deleting proposal.',
+                'failure'
+              );
+            },
+          });
+        }
+      });
   }
 
   onSubmitProposalClick() {
@@ -1679,7 +1993,10 @@ export class ProposalAdd implements OnInit {
   private scrollToFirstInvalidControl() {
     for (const control of this.formControls.toArray()) {
       if (control.nativeElement.classList.contains('ng-invalid')) {
-        control.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        control.nativeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
         control.nativeElement.focus();
         break;
       }
