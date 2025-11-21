@@ -1,5 +1,5 @@
 <!-- Header -->
-<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden px-4 pt-2">
+<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden px-4 pb-2">
   <!-- First Row: Back + Title & Right Actions -->
   <div class="flex flex-wrap items-center justify-between">
     <div class="flex items-center space-x-3">
@@ -14,16 +14,16 @@
     <!-- Right Side Buttons -->
     <div class="flex items-center space-x-4 flex items-center space-x-2 ml-auto mt-2 sm:mt-0">
       @if(isEditMode()){
-        <!-- Add Product Button -->
-        <button type="submit" mat-flat-button class="!py-1 !px-4 text-sm action-button secondry-button-add"
-          (click)="navigateToAddPharmacyConfiguration()">
-          Add Pharmacy Configuration
-          <mat-icon class="mr-1">add</mat-icon>
-        </button>
+      <!-- Add Product Button -->
+      <button type="submit" mat-flat-button class="!py-1 !px-4 text-sm action-button primary-btn"
+        (click)="navigateToAddPharmacyConfiguration()">
+        Add Pharmacy Configuration
+        <mat-icon class="mr-1">add</mat-icon>
+      </button>
       }
 
       <!-- Save Button -->
-      <button mat-flat-button class="primary-btn-add !text-xs !py-1 !px-4 font-semibold" (click)="submitForm()">
+      <button mat-flat-button class="save-btn !text-xs !py-1 !px-4 font-semibold" (click)="submitForm()">
         Save
       </button>
 
@@ -53,11 +53,10 @@
   </div>
 </div>
 
-<div class="card-color p-6 rounded-lg shadow-sm border border-gray-200">
+<div class="card-color p-6 rounded-lg shadow-sm border border-gray-200 mid-body-scrollable-height">
   <ng-container>
     <form [formGroup]="pharmacyConfigurationForm">
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4">
         <!--Status-->
         <div class="space-y-2 custom-text-box">
           <label class="block text-sm font-medium text-gray-700">
@@ -102,9 +101,11 @@
               <input matInput [formControlName]="getKeyControlName(key.id)" />
               <mat-error *ngIf="pharmacyConfigurationForm.get(getKeyControlName(key.id))?.touched">
                 {{
-                  pharmacyConfigurationForm.get(getKeyControlName(key.id))?.hasError('required') ? (key.label + ' is required') :
-                  pharmacyConfigurationForm.get(getKeyControlName(key.id))?.hasError('whitespace') ? (key.label + ' cannot be empty or only spaces') :
-                  ''
+                pharmacyConfigurationForm.get(getKeyControlName(key.id))?.hasError('required') ? (key.label + ' is
+                required') :
+                pharmacyConfigurationForm.get(getKeyControlName(key.id))?.hasError('whitespace') ? (key.label + ' cannot
+                be empty or only spaces') :
+                ''
                 }}
               </mat-error>
             </mat-form-field>

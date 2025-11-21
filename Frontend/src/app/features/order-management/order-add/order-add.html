@@ -93,17 +93,20 @@
 
         <!-- Prescription Submenu -->
         <mat-menu #prescriptionMenu="matMenu">
-          <button mat-menu-item (click)="openReceiptDialog(false)">
+
+          <!-- Commented for future work -->
+
+          <!-- <button mat-menu-item (click)="openPrescriptionReceiptDialog(undefined,true)">
             <span class="blue-text">View Receipt</span>
-          </button>
-          <button mat-menu-item (click)="openPrescriptionDialog()">
+          </button> -->
+          <!-- <button mat-menu-item (click)="openPrescriptionReceiptDialog()">
             <span class="blue-text">Full Prescription</span>
-          </button>
-          <button mat-menu-item (click)="openPrescriptionDialog(true)">
+          </button> -->
+          <button mat-menu-item (click)="openPrescriptionReceiptDialog(true)">
             <span class="blue-text">Signed Prescription</span>
           </button>
-          <button mat-menu-item (click)="openPrescriptionDialog(false)">
-            <span class="blue-text">UnSigned Prescription</span>
+          <button mat-menu-item (click)="openPrescriptionReceiptDialog(false)">
+            <span class="blue-text">Unsigned Prescription</span>
           </button>
         </mat-menu>
       </div>
@@ -114,7 +117,7 @@
 </div>
 
 <!-- ===== Page Body ===== -->
-<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color"
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color mid-body-scrollable-height"
   [class.readonly-form]="isReadOnlyMode()">
   <div *ngIf="outstandingRefundBalance() !==0 && shouldShowOutstandingBalanceWarning()" class="flex items-center gap-2 ml-4 p-2 bg-yellow-100 rounded-md">
     <mat-icon class="text-yellow-600">warning</mat-icon>
@@ -124,8 +127,6 @@
         {{ getOutstandingBalanceDisplayString() }}:
         ${{ getAbsoluteOutstandingBalance() | number:'1.2-2' }}
       </span>
-
-      <!-- ✅ Subtext (new line, same div) -->
       <span class="text-yellow-700 text-xs leading-tight">
         {{ getSubText() }}
       </span>

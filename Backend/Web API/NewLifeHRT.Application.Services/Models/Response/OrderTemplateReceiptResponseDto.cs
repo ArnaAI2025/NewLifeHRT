@@ -5,6 +5,7 @@ namespace NewLifeHRT.Application.Services.Models.Response
     public class OrderTemplateReceiptResponseDto : TemplateBaseModel
     {
         public Guid Id { get; set; }
+        public string? Number { get; set; }
         public string? Name { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? PhoneNumber { get; set; }

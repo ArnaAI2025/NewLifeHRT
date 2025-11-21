@@ -1,4 +1,4 @@
-<div class="card-color rounded-lg shadow-sm flex-wrap gap-4 mb-6 table-view-header border border-gray-200 p-6">
+<div class="relative">
 
     <!-- Header Section -->
     <div class="flex items-center flex-wrap gap-4 justify-between mb-6 table-view-header">
@@ -32,8 +32,8 @@
     </div>
 
     <!-- Bulk SMS Table -->
-    <div class="overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
-        <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+    <div class="table-container custom-table-view" [class.opacity-50]="isLoading()">
+        <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
 
             <!-- Subject Column -->
             <ng-container matColumnDef="relatedTo">
@@ -94,7 +94,7 @@
             </ng-container>
 
             <!-- Header and Row Definitions -->
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
     </div>
@@ -109,8 +109,8 @@
     <!-- Paginator -->
     <div class="main-paginator">
         <div class="paginator-section p-0">
-            <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" [showFirstLastButtons]="true"
-                [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()"
+            <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100"
+                [showFirstLastButtons]="true" [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()"
                 class="mat-mdc-paginator-container disabled:opacity-50">
             </mat-paginator>
         </div>

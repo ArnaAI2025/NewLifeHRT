@@ -20,8 +20,7 @@ namespace NewLifeHRT.Application.Services.Interfaces
         Task<BulkOperationResponseDto> BulkDeleteOrdersAsync(IList<Guid> orderIds);
         Task<BulkOperationResponseDto> BulkDeleteAsync(IList<Guid> orderIds);
         Task<CommonOperationResponseDto<Guid?>> UpdateOrderStatusAsync(Guid orderId, int status, string? reasonForRejection, int userId);
-        Task<OrderTemplateReceiptResponseDto?> GetReceiptByIdAsync(Guid orderId);
-        Task<OrderTemplateReceiptResponseDto?> GetFullOrderByIdAsync(Guid orderId, bool? isScheduledDrug);
+        Task<OrderTemplateReceiptResponseDto?> GetFullOrderByIdAsync(Guid orderId, bool? isScheduledDrug,bool? isReceipt);
         Task<MarkReadyToLifeFileResponseDto> MarkOrderReadyForLifeFileAsync(Guid orderId, int userId);
         Task<UpdateOrderPaymentResponseDto> UpdateOrderPaymentAsync(UpdateOrderPaymentRequestDto request, int userId);
         Task<CommonOperationResponseDto<Guid>> CancelGeneratedCommissionAsync(Guid id, int userId);
@@ -31,5 +30,6 @@ namespace NewLifeHRT.Application.Services.Interfaces
         Task<CommonOperationResponseDto<Guid?>> ProcessRefundAsync(Guid orderId, decimal refundAmount, int userId);
         Task<CommonOperationResponseDto<Guid?>> SettleOutstandingRefundAsync(Guid orderId, decimal settleAmount, int userId);
         Task<List<CommonDropDownResponseDto<int>>> GetAllCourierServicesAsync();
+        Task<PrescriptionReceiptDto?> GetPrescriptionReceiptDataAsync(Guid orderId, bool? isScheduledDrug,bool? isReceipt = false);
     }
 }

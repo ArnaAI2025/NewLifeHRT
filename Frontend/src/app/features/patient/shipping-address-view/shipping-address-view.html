@@ -3,7 +3,7 @@
   (saveAndClose)="onSaveAndClose()" (toggleActiveStatus)="togglePatientActiveStatus($event)">
 </app-patient-navigation-bar>
 
-<div class="card-color rounded-lg shadow-sm border border-gray-200 p-6">
+<div class="relative">
   <!-- Header -->
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-4">
@@ -44,9 +44,9 @@
   </div>
 
   <!-- Table -->
-  <div class="relative overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()"
+  <div class="table-container custom-table-view" [class.opacity-50]="isLoading()"
     [class.pointer-events-none]="isLoading()">
-    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
       <!-- Select Checkbox -->
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef class="!w-16 !pl-6">
@@ -108,7 +108,7 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-50/50"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="!bg-gray-50/50"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"
         class="hover:bg-gray-50/50 transition-colors !border-b !border-gray-100"></tr>
     </table>

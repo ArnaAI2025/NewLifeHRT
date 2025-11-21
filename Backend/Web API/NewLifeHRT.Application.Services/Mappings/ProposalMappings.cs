@@ -107,7 +107,8 @@ namespace NewLifeHRT.Application.Services.Mappings
                     ProductPharmacyPriceListItemId = od.ProductPharmacyPriceListItemId,
                     Quantity = od.Quantity,
                     PerUnitAmount = od.PerUnitAmount,
-                    Amount = od.Amount ?? 0
+                    Amount = od.Amount ?? 0,
+                    Protocol = od.Protocol
                 }).ToList() ?? new List<ProposalDetailRequestDto>(),
             };
         }

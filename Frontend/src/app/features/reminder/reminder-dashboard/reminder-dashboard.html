@@ -1,4 +1,4 @@
-<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden px-4 pt-2">
+<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden px-4 pb-2">
   <div class="flex py-2 ">
     <mat-button-toggle-group #toggleGroup="matButtonToggleGroup" [hideSingleSelectionIndicator]="true"
       (change)="updateTab($event)" class="toggle-group">
@@ -14,7 +14,7 @@
   </div>
 </div>
 
-<div class="card-color rounded-lg shadow-sm border border-gray-200 p-6 relative">
+<div class="relative">
   <div *ngIf="isLoading()"
     class="absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50 rounded-lg">
     <mat-spinner diameter="50"></mat-spinner>
@@ -45,8 +45,8 @@
     </div>
   </div>
 
-  <div class="overflow-x-auto custom-table-view">
-    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+  <div class="table-container custom-table-view">
+    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
 
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
@@ -98,7 +98,7 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
       <tr class="mat-row" *matNoDataRow>

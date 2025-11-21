@@ -210,26 +210,24 @@ export class ApiHelper {
     getAllStatesByCountryId: 'get-all-active-states-by-countryId',
   };
   static readonly order = {
-    base: 'Order',
-    getAll: 'get-all',
-    getById: 'get-by-id',
-    create: 'create',
-    update: 'update',
-    delete: 'delete',
-    accept: 'accept-order',
-    getReceiptByOrderId: 'receipt-by-order',
-    getPrescriptionByOrderId: 'prescription-by-order',
-    getSignedPrescriptionByOrderId: 'signed-prescription-by-order',
-    markReadyToLifeFile: 'mark-ready-to-lifefile',
-    generateCommission: 'generate-commission',
-    getAllOrderprocessingApiTrackingErrors:
-      'get-all-orderprocessing-api-tracking-errors',
+    base : 'Order',
+    getAll : 'get-all',
+    getById : 'get-by-id',
+    create : 'create',
+    update : 'update',
+    delete : 'delete',
+    accept : 'accept-order',
+    getReceiptByOrderId : 'receipt-by-order',
+    markReadyToLifeFile : 'mark-ready-to-lifefile',
+    generateCommission : 'generate-commission',
+    getAllOrderprocessingApiTrackingErrors : 'get-all-orderprocessing-api-tracking-errors',
     updatePayment: 'update-payment',
     cancelGenerateCommission : 'cancel-commission',
     processRefund : 'refund',
     settleOutstandingRefund : 'settle-outstanding-refund',
-    getAllCourierServices : 'get-all-courier-services'
-
+    getAllCourierServices : 'get-all-courier-services',
+    getPrescription : 'prescription',
+    downloadOrderPdf: 'template/download'
   }
 
   static readonly appointment = {

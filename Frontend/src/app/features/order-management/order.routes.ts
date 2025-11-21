@@ -47,14 +47,6 @@ export const OrderRoutes: Routes = [
     canActivate: [AuthGuard]
   },
 
-  // Receipt
-  {
-    path: 'order-receipt',
-    loadComponent: () =>
-      import('./order-receipt/order-receipt').then(m => m.OrderReceipt),
-    canActivate: [AuthGuard]
-  },
-
   // Full Prescription
   {
     path: 'order-full',

@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Inject, signal } from '@angular/core';
+import { Component, OnInit, Inject, signal, ChangeDetectorRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { OrderService } from '../order-service';
-import { firstValueFrom } from 'rxjs';
-import { OrderReceiptResponse } from '../model/order-receipt-response.model';
+import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
+import { FullPageLoaderComponent } from '../../../shared/components/full-page-loader/full-page-loader.component';
+import { PrescriptionReceiptDto } from './prescription.model';
 
 @Component({
   selector: 'app-prescription',
@@ -18,20 +19,26 @@ import { OrderReceiptResponse } from '../model/order-receipt-response.model';
     MatButtonModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    FullPageLoaderComponent
   ],
   templateUrl: './prescription.html',
   styleUrls: ['./prescription.scss'],
 })
 export class Prescription implements OnInit {
-  order = signal<OrderReceiptResponse | null>(null);
-  isLoading = signal(true);
-  error = signal<string | null>(null);
+   orderId!: string;
+  isScheduleDrug?: boolean;
+  safeHtml?: SafeHtml;
+  pdfDataUrl?: SafeResourceUrl;
+  dto?: PrescriptionReceiptDto;
+  loading = signal(false);
+  error?: string;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: {
       orderId: string | null;
       isSigned: boolean;
+      isReceipt:boolean;
       doctorInfo?: {
         name: string;
         clinic: string;
@@ -42,31 +49,65 @@ export class Prescription implements OnInit {
     },
     private dialogRef: MatDialogRef<Prescription>,
     private orderService: OrderService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    if (!this.data?.orderId) {
-      this.error.set('No order ID provided');
-      this.isLoading.set(false);
-      return;
-    }
+  ngOnInit(): void {
+    this.fetch();
+  }
 
-    try {
-      const result = await firstValueFrom(
-        this.orderService.getSignedPrescriptionOrderById(this.data.orderId, this.data.isSigned )
-      );
-      this.order.set(result); 
-      this.error.set(null);
-    } catch (err) {
-      console.error('Failed to load prescription:', err);
-      this.error.set('Failed to load prescription data');
-      this.snackBar.open('Failed to load prescription data', 'Close', {
-        duration: 5000,
-        panelClass: ['error-snackbar']
+   fetch() {
+    this.loading.set(true);
+    if(this.data.isReceipt){
+      this.orderService.getReceiptById(this.data.orderId).subscribe({
+        next: (dto) => {
+          this.dto = dto;
+          // sanitize HTML (server generated HTML considered trusted)
+          if (dto.renderedHtml) {
+            this.safeHtml = this.sanitizer.bypassSecurityTrustHtml(dto.renderedHtml);
+          }
+          
+          // prepare PDF preview (data URL) - only if pdfBase64 exists
+          if (dto.pdfBase64) {
+            const dataUrl = `data:application/pdf;base64,${dto.pdfBase64}`;
+            this.pdfDataUrl = this.sanitizer.bypassSecurityTrustResourceUrl(dataUrl);
+          }
+          
+          this.loading.set(false);
+          this.cdr.detectChanges();
+        },
+        error: (err:any) => {
+          this.error = 'Failed to load template';
+          this.loading.set(false);
+          console.error(err);
+        }
       });
-    } finally {
-      this.isLoading.set(false);
+    }else{
+      this.orderService.getOrderTemplate(this.data.orderId, this.data.isSigned).subscribe({
+        next: (dto) => {
+          this.dto = dto;
+          // sanitize HTML (server generated HTML considered trusted)
+          if (dto.renderedHtml) {
+            this.safeHtml = this.sanitizer.bypassSecurityTrustHtml(dto.renderedHtml);
+          }
+          
+          // prepare PDF preview (data URL) - only if pdfBase64 exists
+          if (dto.pdfBase64) {
+            const dataUrl = `data:application/pdf;base64,${dto.pdfBase64}`;
+            this.pdfDataUrl = this.sanitizer.bypassSecurityTrustResourceUrl(dataUrl);
+          }
+          
+          this.loading.set(false);
+          this.cdr.detectChanges();
+        },
+        error: (err:any) => {
+          this.error = 'Failed to load template';
+          this.loading.set(false);
+          console.error(err);
+        }
+      });
     }
   }
 
@@ -74,54 +115,43 @@ export class Prescription implements OnInit {
     this.dialogRef.close();
   }
 
-  onPrint(): void {
-    window.print();
+  downloadFromBase64() {
+    if (!this.dto?.pdfBase64) return;
+    const byteString = atob(this.dto.pdfBase64);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    const blob = new Blob([ab], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `order_${this.orderId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   }
 
-  onDownload(): void {
-    this.snackBar.open('Download functionality not implemented yet', 'Close', {
-      duration: 3000
+  // recommended: download from server endpoint (streams)
+  downloadFromServer() {
+    this.orderService.downloadOrderPdf(this.data.orderId, this.data.isSigned,this.data.isReceipt).subscribe({
+      next: (blob:any) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `order_${this.data.orderId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Failed to download PDF');
+      }
     });
   }
 
-  getDoctorInfo() {
-  const o = this.order();
-  if (!o) {
-    return {
-      name: '-',
-      clinic: '-',
-      address: '-',
-      phone: '-',
-      license: '-'
-    };
-  }
-
-  return {
-    name: o.doctorName || '-',
-    clinic: o.description || '-', 
-    address: o.doctorShippingAddress?.addressLine1
-      ? `${o.doctorShippingAddress.addressLine1}, ${o.doctorShippingAddress.city}, ${o.doctorShippingAddress.stateOrProvince} ${o.doctorShippingAddress.postalCode}`
-      : '-',
-    phone: o.phoneNumber || '-',  
-    license: o.drivingLicence || '-' 
-  };
-}
-
-
-  hasValidOrderDetails(): boolean {
-    const o = this.order();
-    return !!(o?.orderDetails && o.orderDetails.length > 0);
-  }
-
-  getProductDisplay(detail: any): string {
-    if (detail?.protocol) return detail.protocol;
-    if (detail?.productType) return detail.productType;
-    return 'No instructions provided';
-  }
-
-  getTotalQuantity(): number {
-    const o = this.order();
-    if (!o?.orderDetails?.length) return 0;
-    return o.orderDetails.reduce((total, item) => total + item.quantity, 0);
-  }
 }

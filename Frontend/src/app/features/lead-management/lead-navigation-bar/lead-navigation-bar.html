@@ -1,7 +1,7 @@
 <div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden">
 
     <!-- First Row: Back Button, Title, and Action Buttons -->
-    <div class="flex flex-wrap items-center justify-between py-2 px-4">
+    <div class="flex flex-wrap items-center justify-between pb-2 px-4">
         <!-- Back and Title -->
         <div class="flex items-center space-x-2">
             <button mat-icon-button (click)="onClose()" class="header-back-button">
@@ -14,13 +14,13 @@
         <div class="flex items-center space-x-4 ml-auto mt-2 sm:mt-0">
             @if(isEditMode){
                 <button type="button" mat-flat-button (click)="onClickAddLead()"
-                    class="!py-1 !px-4 text-sm action-button secondry-button-add" [disabled]="isSavingValue">
+                    class="!py-1 !px-4 text-sm action-button primary-btn" [disabled]="isSavingValue">
                     Add Lead
                     <mat-icon class="ml-1">add</mat-icon>
                 </button>
             }
 
-            <button *ngIf="activeView === 'form'" mat-flat-button class="primary-btn" (click)="onSubmit()"
+            <button *ngIf="activeView === 'form'" mat-flat-button class="save-btn" (click)="onSubmit()"
                 [disabled]="isSavingValue" [ngClass]="{'disabled': isSavingValue}">
                 {{ isSaving ? 'Saving...' : 'Save' }}
             </button>

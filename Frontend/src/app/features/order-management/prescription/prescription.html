@@ -1,92 +1,29 @@
-<div class="bg-white p-6 text-xs font-sans leading-tight rounded-lg shadow-md">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-4 border-b pb-2">
-        <h2 class="text-lg font-semibold">Prescription</h2>
+@if(!loading()){
+  <ng-container>
+    <div class="flex justify-between items-center mb-1 border-b p-2">
+      @if(!data.isReceipt){
+        <div>
+          <h2 class="text-lg font-semibold">Prescription</h2>
+        </div>
+      }@else{
+        <div></div>
+      }
+      <div class="flex gap-2">
+        @if(!error){
+          <button type="button" (click)="downloadFromServer()" mat-icon-button><mat-icon>file_download</mat-icon></button>
+        }
         <button mat-icon-button (click)="onClose()" class="text-gray-600 hover:text-black">
-            <mat-icon>close</mat-icon>
+          <mat-icon>close</mat-icon>
         </button>
+      </div>
     </div>
-
-    <!-- Doctor Info -->
-    <div class="flex justify-between">
-        <div>
-            <div class="font-bold text-sm">{{ getDoctorInfo().name }}</div>
-            <div>{{ getDoctorInfo().clinic }}</div>
-            <div>{{ getDoctorInfo().address }}</div>
-            <div>Phone: {{ getDoctorInfo().phone }}</div>
-        </div>
-        <div class="text-right">
-            <div><span class="font-semibold">Date:</span> {{ order()?.createdAt | date:'MM/dd/yyyy' }}</div>
-            <div><span class="font-semibold">License:</span> {{ getDoctorInfo().license || '-' }}</div>
-            <div><span class="font-semibold">Last office visit:</span>
-                {{ order()?.lastOfficeVisit ? (order()?.lastOfficeVisit | date:'MM/dd/yyyy') : '-' }}
-            </div>
-        </div>
+    <!-- <button mat-icon-button (click)="downloadFromBase64()" [disabled]="!dto?.pdfBase64"><mat-icon>file_download</mat-icon>Download (from base64)</button> -->
+    <div *ngIf="safeHtml">
+      <div [innerHTML]="safeHtml"></div>
     </div>
-
-    <hr class="border-black my-3">
-
-    <!-- Patient & Shipping -->
-    <div class="flex justify-between">
-        <!-- Patient -->
-        <div>
-            <div><span class="font-semibold">Patient Name:</span> {{ order()?.patientName }}</div>
-            <div>{{ order()?.patientShippingAddress?.addressLine1 }}</div>
-            <div>
-                {{ order()?.patientShippingAddress?.city }},
-                {{ order()?.patientShippingAddress?.stateOrProvince }}
-                {{ order()?.patientShippingAddress?.postalCode }}
-            </div>
-            <div>US</div>
-            <div><span class="font-semibold">DOB:</span>
-                {{ order()?.dateOfBirth ? (order()?.dateOfBirth | date:'MM/dd/yyyy') : '-' }}
-            </div>
-            <div><span class="font-semibold">Phone:</span> {{ order()?.phoneNumber }}</div>
-            <div><span class="font-semibold">DL#:</span> {{ order()?.drivingLicence || '-' }}</div>
-            <div><span class="font-semibold">Allergies:</span> {{ order()?.allergies || 'NKA' }}</div>
-        </div>
-
-        <!-- Shipping -->
-        <div class="text-right">
-            <div><span class="font-semibold">SHIP TO:</span> {{ order()?.patientName }}</div>
-            <div><span class="font-semibold">Shipping Method:</span> {{ order()?.shippingMethodName || '-' }}</div>
-            <div><span class="font-semibold">Signature required:</span> No</div>
-            <div><span class="font-semibold">Shipping Address:</span> {{ order()?.patientShippingAddress?.addressLine1
-                }}</div>
-            <div>
-                {{ order()?.patientShippingAddress?.city }},
-                {{ order()?.patientShippingAddress?.stateOrProvince }}
-                {{ order()?.patientShippingAddress?.postalCode }}
-            </div>
-        </div>
-    </div>
-
-    <!-- Prescription content -->
-    <div class="mt-4 space-y-4" *ngIf="hasValidOrderDetails(); else noDetails">
-        <div *ngFor="let detail of order()?.orderDetails" class="whitespace-pre-line border-b pb-2">
-            <div class="font-medium">{{ detail.productName }}</div>
-            <div># {{ detail.quantity }}</div>
-            <div>{{ getProductDisplay(detail) }}</div>
-            <div class="text-gray-600 text-[11px]">
-                Amount: {{ detail.amount | currency:'USD' }}
-            </div>
-        </div>
-    </div>
-
-    <ng-template #noDetails>
-        <div class="text-red-600 mt-4">No prescription details available.</div>
-    </ng-template>
-
-    <!-- Totals -->
-    <div class="mt-6 border-t pt-2 text-sm">
-        <div><span class="font-semibold">Subtotal:</span> {{ order()?.subtotal | currency:'USD' }}</div>
-        <div><span class="font-semibold">Surcharge:</span> {{ order()?.surcharge | currency:'USD' }}</div>
-        <div class="font-bold text-base">Total: {{ order()?.totalAmount | currency:'USD' }}</div>
-    </div>
-
-    <!-- Signature -->
-    <div class="flex justify-between mt-6">
-        <div class="font-semibold">Signature</div>
-        <div>{{ order()?.signed || '' }}</div>
-    </div>
-</div>
+  </ng-container>
+}
+<app-full-page-loader [visible]="loading()" />
+@if(error){
+  <div class="text-center">{{ error }}</div>
+}

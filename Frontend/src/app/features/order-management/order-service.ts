@@ -8,11 +8,11 @@ import { BulkOperationResponseDto } from "../../shared/models/bulk-operation-res
 import { OrderResponseDto } from "./model/order.model";
 import { CommonOperationResponseDto } from "../../shared/models/common-operation-response.model";
 import { OrderStatus } from "../../shared/enums/order-status.enus";
-import { OrderReceiptResponse } from "./model/order-receipt-response.model";
 import { MarkReadyToLifeFileResponseDto } from "./model/mark-ready-lifefile-response.model";
 import { OrderPaymentRequestDto } from "./model/order-payment-request.model";
 import { OrderPaymentResponseDto } from "./model/order-payment-response.model";
 import { DropDownResponseDto } from "../../shared/models/drop-down-response.model";
+import { PrescriptionReceiptDto } from "./prescription/prescription.model";
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private baseHttp = inject(HttpService);
@@ -62,21 +62,11 @@ export class OrderService {
 
     return this.baseHttp.patch<CommonOperationResponseDto>(`${url}/${orderId}`, payload);
   }
-  getReceiptById(id: string): Observable<OrderReceiptResponse> {
+  getReceiptById(id: string | null): Observable<PrescriptionReceiptDto> {
     const url = ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.getReceiptByOrderId) + '/' + id;
-    return this.baseHttp.get<OrderReceiptResponse>(url);
+    return this.baseHttp.get<PrescriptionReceiptDto>(url);
   }
-  getPrescriptionOrderById(id: string): Observable<OrderReceiptResponse> {
-    const url = ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.getPrescriptionByOrderId) + '/' + id;
-    return this.baseHttp.get<OrderReceiptResponse>(url);
-  }
-  getSignedPrescriptionOrderById(id: string, isSigned: boolean | null): Observable<OrderReceiptResponse> {
-    let url = `${ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.getSignedPrescriptionByOrderId)}/${id}`;
-    if (isSigned !== null && isSigned !== undefined) {
-      url += `?isSigned=${isSigned}`;
-    }
-    return this.baseHttp.get<OrderReceiptResponse>(url);
-  }
+  
   markReadyToLifeFile(id: string): Observable<MarkReadyToLifeFileResponseDto> {
     const url = `${ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.markReadyToLifeFile)}/${id}`;
     return this.baseHttp.patch<MarkReadyToLifeFileResponseDto>(url, {});
@@ -105,4 +95,27 @@ export class OrderService {
       const url = ApiResource.getURI(ApiHelper.order.base, ApiHelper.order.getAllCourierServices);
       return this.baseHttp.get(url);
   }
+  getOrderTemplate(orderId: string | null, isScheduleDrug?: boolean): Observable<PrescriptionReceiptDto> {
+    const queryParams: any = {};
+    if (isScheduleDrug !== undefined) {
+      queryParams.isScheduleDrug = isScheduleDrug;
+    }
+    const url = ApiResource.getURI(ApiHelper.order.base,`${orderId}/${ApiHelper.order.getPrescription}`,undefined,queryParams);
+    return this.baseHttp.get<PrescriptionReceiptDto>(url);
+  }
+
+  downloadOrderPdf(orderId: string|null, isScheduleDrug?: boolean,isReceipt?:boolean) {
+    const params: Record<string, any> = {};
+    if (isScheduleDrug !== undefined) {
+      params["isScheduleDrug"] = isScheduleDrug;
+    }
+    if(isReceipt != undefined){
+      params["isReceipt"] = isReceipt;
+    }
+    const url = ApiResource.getURI(ApiHelper.order.base,`${orderId}/${ApiHelper.order.downloadOrderPdf}`,undefined,params);
+    return this.baseHttp.get(url, {
+      responseType: 'blob' as 'blob'
+    });
+  }
+  
 }

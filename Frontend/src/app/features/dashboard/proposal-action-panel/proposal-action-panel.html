@@ -1,4 +1,4 @@
-<div class="card-color rounded-lg shadow-sm border border-gray-200 p-6">
+<div class="relative">
     <!-- Header -->
     <div class="flex items-center flex-wrap gap-4 justify-between mb-6">
       <div class="flex items-center gap-4">
@@ -31,8 +31,13 @@
     </div>
 
     <!-- Table -->
-    <div class="relative overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()" [class.pointer-events-none]="isLoading()">
-      <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+    <div class="table-container custom-table-view" [class.opacity-50]="isLoading()" [class.pointer-events-none]="isLoading()">
+      <table
+    mat-table
+    [dataSource]="dataSource"
+    matSort
+    class="w-full custom-table mat-elevation-z0"
+  >
           <!-- Name -->
           <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef mat-sort-header
@@ -96,7 +101,7 @@
               </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-50/50"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="!bg-gray-50/50"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"
               class="hover:bg-gray-50/50 transition-colors !border-b !border-gray-100"></tr>
       </table>

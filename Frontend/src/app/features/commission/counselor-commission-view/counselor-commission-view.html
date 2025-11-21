@@ -1,4 +1,4 @@
-<div class="card-color rounded-lg shadow-sm flex-wrap gap-4 mb-6 table-view-header border border-gray-200 p-6">
+<div class="relative">
     <div class="flex items-center flex-wrap gap-4 justify-between mb-6 table-view-header">
         <div class="flex items-center flex-wrap w-full">
             <button mat-icon-button (click)="back()" class="header-back-button">
@@ -22,8 +22,8 @@
         <mat-spinner diameter="40"></mat-spinner>
     </div>
 
-    <div class="overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
-        <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+    <div class="table-container custom-table-view" [class.opacity-50]="isLoading()">
+        <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
             <ng-container matColumnDef="patientName">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Patient</th>
                 <td mat-cell *matCellDef="let el">{{ el.patientName }}</td>
@@ -32,11 +32,11 @@
             <ng-container matColumnDef="pharmacyName">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Pharmacy</th>
                 <!-- <td mat-cell *matCellDef="let el">{{ el.pharmacyName }}</td> -->
-                                <td mat-cell *matCellDef="let el" (click)="onEdit(el)">
-                                    <span class="primary-text-color hover:underline cursor-pointer">
-                                        {{ el.pharmacyName }}
-                                    </span>
-                                </td>
+                <td mat-cell *matCellDef="let el" (click)="onEdit(el)">
+                    <span class="primary-text-color hover:underline cursor-pointer">
+                        {{ el.pharmacyName }}
+                    </span>
+                </td>
             </ng-container>
 
             <ng-container matColumnDef="totalSales">
@@ -69,7 +69,7 @@
                         aria-label="More actions">
                         <mat-icon>more_vert</mat-icon>
                     </button>
-            
+
                     <mat-menu #actionMenu="matMenu">
                         <button mat-menu-item (click)="onEdit(element)">
                             <span>Edit</span>
@@ -79,7 +79,7 @@
             </ng-container>
 
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
     </div>

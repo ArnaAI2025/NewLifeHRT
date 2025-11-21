@@ -8,10 +8,10 @@
   </div>
 </div>
 
-<form class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color" #holidayForm="ngForm"
+<form class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color mid-body-scrollable-height" #holidayForm="ngForm"
   (ngSubmit)="submit(holidayForm)">
   <div>
-    <h2 class="text-sm font-medium text-gray-500">User Details</h2>
+   <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wide">User Details</h3>
     <div class="mt-3">
       <label class="block text-xs text-gray-500 mb-1" for="selectUser">Select User <span
           class="text-red-500">*</span></label>
@@ -35,9 +35,8 @@
   </div>
 
   <div class="border-t border-gray-200"></div>
-
-  <div>
-    <h2 class="text-sm font-medium text-gray-500 pt-5">Leave Details</h2>
+  <div class="mt-6">
+    <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wide">Leave Details</h3>
     <div class="mt-3">
       <label class="block text-xs text-gray-500 mb-1" for="leaveType">Select Leave Type <span
           class="text-red-500">*</span></label>
@@ -61,8 +60,8 @@
   <div class="border-t border-gray-200"></div>
 
   <ng-container *ngIf="leaveType==='custom'">
-    <div class="space-y-4">
-      <h3 class="text-sm font-medium text-gray-500 pt-5">Custom Dates</h3>
+    <div class="space-y-4 mt-6">
+      <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wide">Custom Dates</h3>
       <p class="text-xs text-gray-500">Select one or multiple dates. Then set the time for each date. You can also
         apply one time range to all selected dates.</p>
 
@@ -282,9 +281,7 @@
           [(ngModel)]="description" name="description" placeholder="Add any special requests"></textarea>
       </div>
       <div class="flex justify-end">
-        <button type="submit"
-          class="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none">Apply
-          Holiday</button>
+       <button type="submit" mat-flat-button  class="!py-1 !px-4 text-sm action-button primary-btn">Apply Holiday</button>
       </div>
     </div>
   </ng-container>

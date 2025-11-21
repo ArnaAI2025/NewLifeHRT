@@ -436,39 +436,8 @@ namespace NewLifeHRT.Application.Services.Services
                 Message = "order status modified successfully."
             };
         }
-        /// <summary>
-        /// genertes pdf receipt.
-        /// </summary>
-        public async Task<OrderTemplateReceiptResponseDto?> GetReceiptByIdAsync(Guid orderId)
-        {
-            try
-            {
-                //var containerUrl = _azureBlobStorageSettings;
-                //var data = _clinicInformationSettings;
-                var includes = new[] { "OrderDetails", "OrderDetails.Product", "Patient", "PharmacyShippingMethod", "PharmacyShippingMethod.ShippingMethod" };
-
-                var order = await _orderRepository.GetWithIncludeAsync(orderId, includes);
-                if (order == null) return null;
-                var response = order.ToOrderTemplateReceiptResponseDto();
-                response.Logo = $"{_azureBlobStorageSettings.ContainerSasUrl}/{_clinicInformationSettings.Name}/logo.png?{_azureBlobStorageSettings.SasToken}";
-                if (!string.IsNullOrWhiteSpace(response.Logo))
-                {
-                    response.Logo = await ImageHelper.ConvertImageUrlToBase64Async(response.Logo);
-                }
-                response.TemplatePath = "OrderReceiptTemplate.cshtml";
-                var res = _templateContentGenerator.GetTemplateContent(response);
-                var pdfResult = _pdfConverter.ConvertToPdf(res);
-                return response;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-        /// <summary>
-        /// genertes signed and unsigned report.
-        /// </summary>
-        public async Task<OrderTemplateReceiptResponseDto?> GetFullOrderByIdAsync(Guid orderId, bool? isScheduleDrug)
+        
+        public async Task<OrderTemplateReceiptResponseDto?> GetFullOrderByIdAsync(Guid orderId, bool? isScheduleDrug,bool? isReceipt)
         {
             var includes = new[]
             {
@@ -538,11 +507,17 @@ namespace NewLifeHRT.Application.Services.Services
             {
                 response.Logo = await ImageHelper.ConvertImageUrlToBase64Async(response.Logo);
             }
-            response.TemplatePath = "PrescriptionTemplate.cshtml";
+            if(isReceipt == true)
+            {
+                response.TemplatePath = "OrderReceiptTemplate.cshtml";
+            }
+            else
+            {
+                response.TemplatePath = "PrescriptionTemplate.cshtml";
+            }
             response.IsScheduleDrug = isScheduleDrug;
             response.LicenseNumber = physicianLicense?.Number ?? null;
-            var res = _templateContentGenerator.GetTemplateContent(response);
-            var pdfResult = _pdfConverter.ConvertToPdf(res);
+            
             return response;
         }
 
@@ -977,6 +952,14 @@ namespace NewLifeHRT.Application.Services.Services
         {
             var courierServices = await _courierServiceRepository.FindAsync(vt => vt.IsActive);
             return courierServices.ToCourierServiceResponseDtoList();
+        }
+
+        public async Task<PrescriptionReceiptDto?> GetPrescriptionReceiptDataAsync(Guid orderId, bool? isScheduledDrug,bool? isReceipt)
+        {
+            var orderData = await GetFullOrderByIdAsync(orderId,isScheduledDrug, isReceipt);
+            var res = _templateContentGenerator.GetTemplateContent(orderData);
+            var pdfResult = _pdfConverter.ConvertToPdf(res);
+            return new PrescriptionReceiptDto(res,pdfResult);
         }
 
     }

@@ -1,6 +1,6 @@
 <app-full-page-loader [visible]="isLoadingPage()" />
 <!-- Header -->
-<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden px-4 pt-2">
+<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden px-4 pb-2">
   <!-- First Row: Back + Title & Right Actions -->
   <div class="flex flex-wrap items-center justify-between">
     <div class="flex items-center space-x-3">
@@ -87,7 +87,7 @@
   </div>
 </div>
 <!-- Form -->
-<div class="card-color p-6 rounded-lg shadow-sm border border-gray-200">
+<div class="card-color p-6 rounded-lg shadow-sm border border-gray-200 mid-body-scrollable-height-tabs">
   <ng-container [ngSwitch]="activeTab">
     <ng-container *ngSwitchCase="'product'">
       <form [formGroup]="productForm">
@@ -402,9 +402,7 @@
               <mat-error></mat-error>
             </mat-form-field>
           </div>
-
         </div>
-
       </form>
     </ng-container>
 

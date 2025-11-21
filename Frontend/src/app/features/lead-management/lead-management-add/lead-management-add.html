@@ -46,12 +46,11 @@
 </div> -->
 
 <!-- Main Form -->
-<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color">
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color mid-body-scrollable-height-tabs">
   <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-
     <!-- LEAD INFORMATION SECTION -->
-    <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Lead Information</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+    <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wide">Lead Information</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 mb-6">
       <!-- Subject -->
       <div class="space-y-2 custom-text-box">
         <label class="block text-sm font-medium text-gray-700">Subject <span class="text-red-500">*</span></label>
@@ -99,8 +98,8 @@
       <div class="space-y-2 custom-text-box">
         <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
         <mat-form-field appearance="outline" class="w-full form-input form-input-text">
-          <input matInput [matDatepicker]="picker" [max]="maxDate" formControlName="dateOfBirth" placeholder="Date of birth"
-            readonly (click)="picker.open()" />
+          <input matInput [matDatepicker]="picker" [max]="maxDate" formControlName="dateOfBirth"
+            placeholder="Date of birth" readonly (click)="picker.open()" />
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
@@ -109,8 +108,10 @@
       <div class="space-y-2 custom-text-box">
         <label class="block text-sm font-medium text-gray-700">Gender</label>
         <mat-form-field appearance="outline" class="w-full form-input form-input-text">
-          <input type="text" matInput formControlName="gender" placeholder="Select Gender" [matAutocomplete]="genderAuto"/>
-          <mat-autocomplete #genderAuto="matAutocomplete" (optionSelected)="onGenderSelected($event)" [displayWith]="displayGenderLabel">
+          <input type="text" matInput formControlName="gender" placeholder="Select Gender"
+            [matAutocomplete]="genderAuto" />
+          <mat-autocomplete #genderAuto="matAutocomplete" (optionSelected)="onGenderSelected($event)"
+            [displayWith]="displayGenderLabel">
             <mat-option *ngFor="let g of genderOptions" [value]="g.id">
               {{ g.label }}
             </mat-option>
@@ -162,17 +163,15 @@
       <div class="space-y-2 custom-text-box">
         <label class="block text-sm font-medium text-gray-700">Description</label>
         <mat-form-field appearance="outline" class="w-full form-des-input">
-        <textarea matInput formControlName="description" placeholder="Description"></textarea>
-      </mat-form-field>
+          <textarea matInput formControlName="description" placeholder="Description"></textarea>
+        </mat-form-field>
       </div>
 
     </div>
-
-
-
+    <div class="border-b mt-1 my-6"></div>
     <!-- ADDRESS SECTION -->
     <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wide">Address Information</h3>
-    <div formGroupName="addressDto" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+    <div formGroupName="addressDto" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 mb-6">
       <div class="space-y-2 custom-text-box">
         <label class="block text-sm font-medium text-gray-700">Address Line 1</label>
         <mat-form-field appearance="outline" class="w-full form-input form-input-text">
@@ -185,7 +184,7 @@
           <input matInput formControlName="city" placeholder="City" class="text-sm" />
         </mat-form-field>
       </div>
-      
+
       <div class="space-y-2 custom-text-box">
         <label class="block text-sm font-medium text-gray-700">Country</label>
         <mat-form-field appearance="outline" class="w-full form-input form-input-text">
@@ -203,25 +202,25 @@
           </mat-error>
         </mat-form-field>
       </div>
-<div class="space-y-2 custom-text-box">
-  <label class="block text-sm font-medium text-gray-700">State</label>
-  <mat-form-field appearance="outline" class="w-full form-input form-input-text">
-    <mat-select formControlName="stateId" placeholder="Select State" [disabled]="allStates.length === 0">
-      <mat-option *ngFor="let state of allStates" [value]="state.id">
-        {{ state.value }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
-      
-      
+      <div class="space-y-2 custom-text-box">
+        <label class="block text-sm font-medium text-gray-700">State</label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <mat-select formControlName="stateId" placeholder="Select State" [disabled]="allStates.length === 0">
+            <mat-option *ngFor="let state of allStates" [value]="state.id">
+              {{ state.value }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+
 
       <div class="space-y-2 custom-text-box">
         <label class="block text-sm font-medium text-gray-700">Postal Code</label>
         <mat-form-field appearance="outline" class="w-full form-input form-input-text">
           <input matInput formControlName="postalCode" placeholder="Postal Code" class="text-sm" />
         </mat-form-field>
-      </div>      
+      </div>
     </div>
   </form>
 </div>

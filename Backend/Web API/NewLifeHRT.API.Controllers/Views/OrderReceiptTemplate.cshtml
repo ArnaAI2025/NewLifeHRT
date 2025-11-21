@@ -26,6 +26,7 @@
         .receipt-container {
             max-width: 800px;
             margin: 0 auto;
+            padding:15px;
         }
 
         /* Header */
@@ -165,42 +166,9 @@
             margin-top: 3px;
         }
 
-        /* Totals */
-        .totals-section {
-            width: 100%;
-            margin-top: 20px;
+        .summary td{
+            border:none;
         }
-
-        .totals-table {
-            width: 300px;
-            margin-left: auto;
-            border-collapse: collapse;
-        }
-
-            .totals-table td {
-                padding: 8px 10px;
-                font-size: 12px;
-            }
-
-            .totals-table .label {
-                text-align: right;
-                font-weight: normal;
-            }
-
-            .totals-table .amount {
-                text-align: right;
-                width: 120px;
-                border: 1px solid #000;
-            }
-
-            .totals-table .total-row .label {
-                font-weight: bold;
-            }
-
-            .totals-table .total-row .amount {
-                font-weight: bold;
-                border: 2px solid #000;
-            }
 
         /* Footer */
         .footer {
@@ -265,9 +233,9 @@
                 @* <div class="subtitle">HORMONE REPLACEMENT THERAPY</div> *@
             </div>
             <div class="receipt-info">
-                <div class="receipt-title">NEWLIFE<br />RECEIPT</div>
+                <div class="receipt-title">NEWLIFE <div style="padding-top:10px;"></div>RECEIPT</div>
                 <div class="order-details">
-                    <div><span class="label">ORDER ID:</span> @Model.Id.ToString()</div>
+                    <div><span class="label">ORDER ID:</span> @(Model.Number?.ToString() ?? "")</div>
                     <div><span class="label">TOTAL AMOUNT:</span> @Model.TotalAmount.ToString("C", usdCulture)</div>
                     <div><span class="label">CREATE DATE:</span> @Model.CreatedAt.ToString("M/d/yyyy h:mm tt")</div>
                 </div>
@@ -327,29 +295,29 @@
                         <td class="total">@Model.ShippingMethodAmount.Value.ToString("C", usdCulture)</td>
                     </tr>
                 }
-            </tbody>
-        </table>
-
-        <!-- Totals -->
-        <div class="totals-section">
-            <table class="totals-table">
-                <tr>
-                    <td class="label">SUBTOTAL</td>
-                    <td class="amount">@Model.Subtotal.ToString("C", usdCulture)</td>
+                <tr class="summary">
+                    <td></td>
+                    <td></td>
+                    <td class="price">SUBTOTAL</td>
+                    <td class="total" style="border:1px solid black">@Model.Subtotal.ToString("C", usdCulture)</td>
                 </tr>
                 @if (Model.Surcharge != null && Model.Surcharge > 0)
                 {
-                    <tr>
-                        <td class="label">SURCHARGE (@((Model.Surcharge.Value / Model.Subtotal * 100).ToString("0.00"))%)</td>
-                        <td class="amount">@Model.Surcharge.Value.ToString("C", usdCulture)</td>
+                    <tr class="summary">
+                        <td></td>
+                        <td></td>
+                        <td class="price">SURCHARGE (@((Model.Surcharge.Value / Model.Subtotal * 100).ToString("0.00"))%)</td>
+                        <td class="total" style="border:1px solid black">@Model.Surcharge.Value.ToString("C", usdCulture)</td>
                     </tr>
                 }
-                <tr class="total-row">
-                    <td class="label">TOTAL DUE</td>
-                    <td class="amount">@Model.TotalAmount.ToString("C", usdCulture)</td>
+                <tr class="summary">
+                    <td></td>
+                    <td></td>
+                    <td class="price">TOTAL DUE</td>
+                    <td class="total" style="border:1px solid black">@Model.TotalAmount.ToString("C", usdCulture)</td>
                 </tr>
-            </table>
-        </div>
+            </tbody>
+        </table>
 
         <!-- Footer -->
         <div class="footer">

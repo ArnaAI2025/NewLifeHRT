@@ -50,7 +50,7 @@
 
 .content-wrapper {
   flex: 1;
-  overflow-y: auto;
+  // overflow-y: auto;
 }
 
 .content-wrapper::-webkit-scrollbar {
@@ -386,12 +386,15 @@
 }
 
 @media (max-width: 768px) {
+   .main-layout-shell {
+    padding: 0;
+  }
   .mobile-top-bar {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 0.4rem;
   }
 
   .mobile-left {
@@ -403,6 +406,7 @@
   .mobile-logo img {
     height: 28px;
     display: block;
+    margin: -10px 0 0 0;
   }
 
   .mobile-right {

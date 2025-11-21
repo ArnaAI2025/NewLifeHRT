@@ -1,9 +1,10 @@
-<app-patient-navigation-bar *ngIf="patientId" [isEditMode]="true" [isSaving]="false" [isActive]="undefined" [patientId]="patientId"
-  (close)="onClose()" [activeView]="'proposals'" (save)="onSubmit()" (addPatient)="onClickAddPatient()"
-  (saveAndClose)="onSaveAndClose()" (toggleActiveStatus)="togglePatientActiveStatus($event)">
+<app-patient-navigation-bar *ngIf="patientId" [isEditMode]="true" [isSaving]="false" [isActive]="undefined"
+  [patientId]="patientId" (close)="onClose()" [activeView]="'proposals'" (save)="onSubmit()"
+  (addPatient)="onClickAddPatient()" (saveAndClose)="onSaveAndClose()"
+  (toggleActiveStatus)="togglePatientActiveStatus($event)">
 </app-patient-navigation-bar>
 
-<div class="card-color rounded-lg shadow-sm border border-gray-200 p-6">
+<div class="relative">
   <!-- Header -->
   <div class="flex items-center flex-wrap gap-4 justify-between mb-6 table-view-header">
     <div class="flex items-center">
@@ -14,19 +15,19 @@
           <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
           <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword"
             (input)="applyFilter()" [disabled]="isLoading()"
-            class="pl-10 text-left pr-4 py-2 border border-gray-300 rounded-md  w-64 disabled:bg-gray-100 disabled:cursor-not-allowed"/>
+            class="pl-10 text-left pr-4 py-2 border border-gray-300 rounded-md  w-64 disabled:bg-gray-100 disabled:cursor-not-allowed" />
         </div>
       </div>
     </div>
 
     <div class="flex items-center gap-4 justify-end ml-auto">
       <div *ngIf="getSelectedCount() > 0"
-              class="p-2 bg-blue-50 border border-blue-200 rounded-md flex items-center justify-between">
-              <div class="flex items-center">
-                <mat-icon class="text-blue-600 mr-2">info</mat-icon>
-                <span class="text-blue-800">{{ getSelectedCount() }} Proposal{{
-                  getSelectedCount() > 1 ? 's' : '' }} selected</span>
-              </div>
+        class="p-2 bg-blue-50 border border-blue-200 rounded-md flex items-center justify-between">
+        <div class="flex items-center">
+          <mat-icon class="text-blue-600 mr-2">info</mat-icon>
+          <span class="text-blue-800">{{ getSelectedCount() }} Proposal{{
+            getSelectedCount() > 1 ? 's' : '' }} selected</span>
+        </div>
       </div>
       <!-- Add Proposal Button -->
       <button mat-flat-button (click)="onAddProposal()" [disabled]="isLoading()"
@@ -56,7 +57,7 @@
         <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
         <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword" (input)="applyFilter()"
           [disabled]="isLoading()"
-          class="pl-10 text-left pr-4 py-2 border border-gray-300 rounded-md w-full bg-transparent disabled:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed !bg-transparent"/>
+          class="pl-10 text-left pr-4 py-2 border border-gray-300 rounded-md w-full bg-transparent disabled:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed !bg-transparent" />
 
       </div>
     </div>
@@ -69,12 +70,13 @@
   </div>
 
   <!-- Table -->
-  <div class="relative overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()"
+  <div class="table-container custom-table-view" [class.opacity-50]="isLoading()"
     [class.pointer-events-none]="isLoading()">
-    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
       <!-- Select Checkbox -->
       <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef class="!text-left !py-3 !px-4 rounded-tl-lg rounded-bl-lg font-medium text-gray-700">
+        <th mat-header-cell *matHeaderCellDef
+          class="!text-left !py-3 !px-4 rounded-tl-lg rounded-bl-lg font-medium text-gray-700">
           <mat-checkbox (change)="$event ? masterToggle() : null" class="custom-mat-checkbox"
             [checked]="isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"
             [disabled]="dataSource.filteredData.length === 0"></mat-checkbox>
@@ -148,11 +150,11 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-50/50"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="!bg-gray-50/50"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"
         class="hover:bg-gray-50/50 transition-colors !border-b !border-gray-100"></tr>
     </table>
-     <!-- No Data -->
+    <!-- No Data -->
     <div class="text-center py-8 " *ngIf="!dataSource.filteredData.length && !isLoading()">
       <mat-icon class="text-gray-400 text-4xl mb-2">person_off</mat-icon>
       <p class="text-gray-500" *ngIf="searchKeyword">No results for "{{searchKeyword}}"</p>
@@ -165,16 +167,18 @@
     <ng-container *ngIf="dataSource.filteredData.length > 0">
       <div class="flex items-center gap-2">
         <mat-checkbox class="custom-mat-checkbox" (change)="$event ? masterToggle() : null" [checked]="isAllSelected()"
-              [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
+          [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
         <span class="font-bold">Details</span>
       </div>
-      <div class="mobile-view-table" *ngFor = "let element of pagedData">
+      <div class="mobile-view-table" *ngFor="let element of pagedData">
         <div class="toggle-table flex items-center gap-4">
           <div>
-            <mat-checkbox class="custom-mat-checkbox" (change)="toggleRowSelection(element)" [checked]="isSelected(element)" [disabled]="isLoading()"></mat-checkbox>
+            <mat-checkbox class="custom-mat-checkbox" (change)="toggleRowSelection(element)"
+              [checked]="isSelected(element)" [disabled]="isLoading()"></mat-checkbox>
           </div>
           <div>
-            <p class="m-0"><span class="user-name" (click)="onEdit(element)">{{element.name}}</span>({{getStatusDisplayText(element.status) }})</p>
+            <p class="m-0"><span class="user-name"
+                (click)="onEdit(element)">{{element.name}}</span>({{getStatusDisplayText(element.status) }})</p>
             <p class="m-0">{{element.patientName}}</p>
             <p class="m-0">{{element.pharmacyName}}</p>
           </div>
@@ -195,7 +199,7 @@
   <!-- Paginator -->
   <div class="main-paginator">
     <div class="paginator-section p-0">
-      <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100"  [showFirstLastButtons]="true"
+      <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" [showFirstLastButtons]="true"
         [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()">
       </mat-paginator>
     </div>
@@ -205,11 +209,10 @@
 <!-- Action Menu -->
 <mat-menu #actionMenu="matMenu">
   <button mat-menu-item (click)="onEdit(activeRow)">
-  {{ activeRow?.status === 3 || activeRow?.status === 4 || activeRow?.status === 8  ? 'View' : 'Edit' }}
-</button>
+    {{ activeRow?.status === 3 || activeRow?.status === 4 || activeRow?.status === 8 ? 'View' : 'Edit' }}
+  </button>
 
   <button mat-menu-item (click)="onDelete(activeRow)" class="text-red-600">
     <span>Delete</span>
   </button>
 </mat-menu>
-

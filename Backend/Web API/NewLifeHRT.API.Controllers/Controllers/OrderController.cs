@@ -90,48 +90,9 @@ namespace NewLifeHRT.API.Controllers.Controllers
         [HttpGet("receipt-by-order/{id}")]
         public async Task<IActionResult> GetReceiptById(Guid id)
         {
-            var userId = GetUserId();
-            if (!userId.HasValue)
-            {
-                return Unauthorized("User not authenticated.");
-            }
-            var order = await _orderService.GetReceiptByIdAsync(id);
-            if (order is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(order);
-        }
-        [HttpGet("prescription-by-order/{id}")]
-        public async Task<IActionResult> GetFullOrderById(Guid id)
-        {
-            var userId = GetUserId();
-            if (!userId.HasValue)
-            {
-                return Unauthorized("User not authenticated.");
-            }
-            var order = await _orderService.GetFullOrderByIdAsync(id, null);
-            if (order is null)
-            {
-                return NotFound();
-            }
-            return Ok(order);
-        }
-        [HttpGet("signed-prescription-by-order/{id}")]
-        public async Task<IActionResult> GetSignedOrderById(Guid id, bool? isSigned)
-        {
-            var userId = GetUserId();
-            if (!userId.HasValue)
-            {
-                return Unauthorized("User not authenticated.");
-            }
-            var order = await _orderService.GetFullOrderByIdAsync(id, isSigned);
-            if (order is null)
-            {
-                return NotFound();
-            }
-            return Ok(order);
+            var dto = await _orderService.GetPrescriptionReceiptDataAsync(id, null,true);
+            if (dto == null) return NotFound();
+            return Ok(dto);
         }
 
         [HttpPatch("mark-ready-to-lifefile/{orderId}")]
@@ -225,6 +186,26 @@ namespace NewLifeHRT.API.Controllers.Controllers
         {
             var result = await _orderService.GetAllCourierServicesAsync();
             return Ok(result);
+        }
+
+        [HttpGet("{orderId}/prescription")]
+        public async Task<IActionResult> GetOrderPrescriptionTemplate(Guid orderId, [FromQuery] bool? isScheduleDrug = null)
+        {
+            var dto = await _orderService.GetPrescriptionReceiptDataAsync(orderId, isScheduleDrug);
+            if (dto == null) return NotFound();
+            return Ok(dto);
+        }
+
+        // Stream the PDF file for download
+        [HttpGet("{orderId}/template/download")]
+        public async Task<IActionResult> DownloadOrderPdf(Guid orderId, [FromQuery] bool? isScheduleDrug = null, [FromQuery] bool? isReceipt = null)
+        {
+            var dto = await _orderService.GetPrescriptionReceiptDataAsync(orderId, isScheduleDrug, isReceipt);
+            if (dto == null || string.IsNullOrWhiteSpace(dto.PdfBase64)) return NotFound();
+
+            var pdfBytes = Convert.FromBase64String(dto.PdfBase64);
+            var fileName = $"order_{orderId}.pdf";
+            return File(pdfBytes, "application/pdf", fileName);
         }
 
     }

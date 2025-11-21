@@ -36,7 +36,7 @@
         /* ===== PAGE STRUCTURE FOR SCHEDULED DRUGS ===== */
         .page {
             page-break-after: always;
-            padding: 20px 30px;
+            padding: 10px 30px;
             min-height: 100vh;
             position: relative;
         }
@@ -146,7 +146,7 @@
         .product-details {
             white-space: pre-line;
             margin: 2px 0 8px 0;
-            line-height: 1.4;
+            line-height: 0.8;
             font-size: 9pt;
         }
 
@@ -197,6 +197,16 @@
             color: #666;
         }
 
+        .strip-container {
+            width: 100%;
+            height: 5px;
+            margin: 3px 0;
+        }
+
+        .strip-dark {
+            background-color: #ccc !important;
+        }
+
         @@media print {
             .page {
                 padding: 20px 30px;
@@ -222,7 +232,7 @@
                 <div class="header">
                     <div class="doctor-info">
                         <div class="name">@(Model.DoctorName ?? "-")</div>
-                        <div><span class="label">DEA#:</span> @(Model.DrivingLicence ?? "-")</div>
+                        <div><span class="label">DEA#:</span> @(Model.DrivingLicence)</div>
                         @if (!string.IsNullOrEmpty(Model.Description))
                         {
                             <div>@Model.Description</div>
@@ -237,7 +247,7 @@
                     <div class="header-right">
                         <div><span class="label">Date:</span> @(Model.CreatedAt.ToString("MM/dd/yyyy"))</div>
                         <div><span class="label">License:</span> @(Model.LicenseNumber)</div>
-                        <div><span class="label">Last office visit:</span> @(Model.LastOfficeVisit?.ToString("MM/dd/yyyy") ?? "-")</div>
+                        <div><span class="label">Last office visit:</span> @(Model.LastOfficeVisit?.ToString("MM/dd/yyyy"))</div>
                     </div>
 
                 </div>
@@ -252,14 +262,14 @@
                                 <div>@Model.PatientShippingAddress.City @Model.PatientShippingAddress.StateOrProvince @Model.PatientShippingAddress.PostalCode</div>
                         }
                         <div>@Model.PatientShippingAddress.Country</div>
-                        <div><span class="label">DOB:</span> @(Model.DateOfBirth?.ToString("MM/dd/yyyy") ?? "-")</div>
-                        <div><span class="label">Phone:</span> @(Model.PhoneNumber ?? "-")</div>
-                        <div><span class="label">DL#:</span> @(Model.DrivingLicence ?? "-")</div>
+                        <div><span class="label">DOB:</span> @(Model.DateOfBirth?.ToString("MM/dd/yyyy"))</div>
+                        <div><span class="label">Phone:</span> @(Model.PhoneNumber)</div>
+                        <div><span class="label">DL#:</span> @(Model.DrivingLicence)</div>
                         <div><span class="label">Allergies:</span> @(Model.Allergies ?? "NKA")</div>
                     </div>
 
                     <div class="shipping-info">
-                        <div><span class="label">SHIP TO</span> @Model.PatientName</div>
+                        <div><span class="label">SHIP TO:</span> @Model.PatientName</div>
                         <div><span class="label">Shipping Method:</span> @(Model.ShippingMethodName ?? "-")</div>
                         <div><span class="label">Signature required:</span>No</div>
                         @if (Model.PatientShippingAddress != null)
@@ -284,10 +294,6 @@
                             {
                                 @detail.ProductType
                             }
-                            else
-                            {
-                                <text>No instructions provided</text>
-                            }
                         </div>
                     </div>
                 </div>
@@ -309,10 +315,12 @@
                             }
                         </div>
                     </div>
-                    <div class="page-number">Page @pageNumber of @totalPages</div>
                 </div>
 
-                <div class="page-number">Page @pageNumber of @totalPages</div>
+                @if (pageNumber < Model.OrderDetails.Count())
+                {
+                    <div class="strip-container strip-dark"></div>
+                }
             </div>
         }
     }
@@ -323,8 +331,8 @@
             <!-- ======= HEADER ======= -->
             <div class="header">
                 <div class="doctor-info">
-                    <div class="name">@(Model.DoctorName ?? "-")</div>
-                    <div><span class="label">DEA#:</span> @(Model.DrivingLicence ?? "-")</div>
+                    <div class="name">@(Model.DoctorName)</div>
+                    <div><span class="label">DEA#:</span> @(Model.DrivingLicence)</div>
                     @if (!string.IsNullOrEmpty(Model.Description))
                     {
                         <div>@Model.Description</div>
@@ -334,12 +342,12 @@
                             <div>@Model.DoctorShippingAddress.AddressLine1</div>
                             <div>@Model.DoctorShippingAddress.City @Model.DoctorShippingAddress.StateOrProvince @Model.DoctorShippingAddress.PostalCode</div>
                     }
-                    <div><span class="label">Phone:</span> @(Model.PhoneNumber ?? "-")</div>
+                    <div><span class="label">Phone:</span> @(Model.PhoneNumber)</div>
                 </div>
                 <div class="header-right">
                     <div><span class="label">Date:</span> @(Model.CreatedAt.ToString("MM/dd/yyyy"))</div>
                     <div><span class="label">License:</span> @(Model.LicenseNumber)</div>
-                    <div><span class="label">Last office visit:</span> @(Model.LastOfficeVisit?.ToString("MM/dd/yyyy") ?? "-")</div>
+                    <div><span class="label">Last office visit:</span> @(Model.LastOfficeVisit?.ToString("MM/dd/yyyy"))</div>
                 </div>
             </div>
 
@@ -353,15 +361,15 @@
                             <div>@Model.PatientShippingAddress.City @Model.PatientShippingAddress.StateOrProvince @Model.PatientShippingAddress.PostalCode</div>
                     }
                     <div>@Model.PatientShippingAddress.Country</div>
-                    <div><span class="label">DOB:</span> @(Model.DateOfBirth?.ToString("MM/dd/yyyy") ?? "-")</div>
-                    <div><span class="label">Phone:</span> @(Model.PhoneNumber ?? "-")</div>
-                    <div><span class="label">DL#:</span> @(Model.DrivingLicence ?? "-")</div>
+                    <div><span class="label">DOB:</span> @(Model.DateOfBirth?.ToString("MM/dd/yyyy"))</div>
+                    <div><span class="label">Phone:</span> @(Model.PhoneNumber)</div>
+                    <div><span class="label">DL#:</span> @(Model.DrivingLicence)</div>
                     <div><span class="label">Allergies:</span> @(Model.Allergies ?? "NKA")</div>
                 </div>
 
                 <div class="shipping-info">
-                    <div><span class="label">SHIP TO</span> @Model.PatientName</div>
-                    <div><span class="label">Shipping Method:</span> @(Model.ShippingMethodName ?? "-")</div>
+                    <div><span class="label">SHIP TO:</span> @Model.PatientName</div>
+                    <div><span class="label">Shipping Method:</span> @(Model.ShippingMethodName)</div>
                     <div><span class="label">Signature required:</span>No</div>
                     @if (Model.PatientShippingAddress != null)
                     {
@@ -389,10 +397,7 @@
                                 {
                                     @detail.ProductType
                                 }
-                                else
-                                {
-                                    <text>No instructions provided</text>
-                                }
+                               
                             </div>
                         </div>
                     }

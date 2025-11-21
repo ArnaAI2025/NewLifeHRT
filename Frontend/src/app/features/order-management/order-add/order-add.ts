@@ -47,7 +47,6 @@ import { OrderService } from '../order-service';
 import { ProposalService } from '../../proposal/proposal.service';
 import { OrderStatus } from '../../../shared/enums/order-status.enus';
 import { OrderRequestDto } from '../model/order-request.model';
-import { OrderReceipt } from '../order-receipt/order-receipt';
 import { Prescription } from '../prescription/prescription';
 import { PharmaciesDropdownResponseDto } from '../../pharmacy/model/pharmacies-dropdown-response.model';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -1632,25 +1631,13 @@ export class OrderAddComponent implements OnInit {
     });
   }
 
-  openReceiptDialog(isPaidLogo: boolean): void {
-    if (this.orderId) {
-      this.dialog.open(OrderReceipt, {
-        width: '800px',
-        data: { orderId: this.orderId, isPaidLogo: isPaidLogo },
-        disableClose: false
-      });
-    } else {
-      this.notificationService.showSnackBar(
-        'No order to print receipt for.',
-        'normal'
-      );
-    }
-  }
-  openPrescriptionDialog(isSigned?: boolean): void {
+  
+  openPrescriptionReceiptDialog(isSigned?: boolean,isReceipt?:boolean): void {
     if (this.orderId) {
       this.dialog.open(Prescription, {
         width: '800px',
-        data: { orderId: this.orderId, isSigned: isSigned },
+        maxHeight: '90vh',
+        data: { orderId: this.orderId, isSigned: isSigned,isReceipt:isReceipt },
         disableClose: false
       });
     } else {

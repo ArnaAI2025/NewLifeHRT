@@ -1,28 +1,28 @@
 <app-full-page-loader [visible]="isLoading()" />
 <div class="calendar-toolbar appoinment-calendar-header">
 
+  <button mat-raised-button color="primary" (click)="clickToday()" [ngClass]="{'active-btn': activeBtn!=='today'}">
+    Today
+  </button>
+
   <div class="btn-group flex items-center justify-center space-x-2">
     <button mat-icon-button color="primary" (click)="clickPrevMonth()" [ngClass]="{'active-btn': activeBtn==='prev'}"
       aria-label="Previous month">
       <mat-icon>chevron_left</mat-icon>
     </button>
 
-    <button mat-raised-button color="primary" (click)="clickToday()" [ngClass]="{'active-btn': activeBtn!=='today'}">
-      Today
-    </button>
+    @if(view() != CalendarView.Agenda){
+    <h2>{{ viewDate | calendarDate:(view() + 'ViewTitle'):'en' }}</h2>
+    }
+    @else{
+    <h2>{{ viewDate | date:'MMMM yyyy' }}</h2>
+    }
 
     <button mat-icon-button color="primary" (click)="clickNextMonth()" [ngClass]="{'active-btn': activeBtn==='next'}"
       aria-label="Next month">
       <mat-icon>chevron_right</mat-icon>
     </button>
   </div>
-
-  @if(view() != CalendarView.Agenda){
-  <h2>{{ viewDate | calendarDate:(view() + 'ViewTitle'):'en' }}</h2>
-  }
-  @else{
-  <h2>{{ viewDate | date:'MMMM yyyy' }}</h2>
-  }
 
   <div class="flex py-2 ">
     <mat-button-toggle-group #toggleGroup="matButtonToggleGroup" [hideSingleSelectionIndicator]="true"
@@ -97,22 +97,23 @@
     </div>
   </ng-template>
 
-  <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events"
-    [excludeDays]="[0,6]" (eventClicked)="onDailyWeeklyEventClick($event.event)" [refresh]="refresh">
-  </mwl-calendar-week-view>
+  <ng-container *ngSwitchCase="CalendarView.Week">
+    <div class="day-view-container mid-body-scrollable-height-tabs">
+      <mwl-calendar-week-view [viewDate]="viewDate" [events]="events" [excludeDays]="[0,6]"
+        (eventClicked)="onDailyWeeklyEventClick($event.event)" [refresh]="refresh">
+      </mwl-calendar-week-view>
+    </div>
+  </ng-container>
 
   <ng-container *ngSwitchCase="CalendarView.Day">
-    <div *ngIf="!isWeekend(viewDate)" class="day-view-container">
+    <div *ngIf="!isWeekend(viewDate)" class="day-view-container mid-body-scrollable-height-tabs">
       <mwl-calendar-day-view [viewDate]="viewDate" [events]="events"
         (eventClicked)="onDailyWeeklyEventClick($event.event)" [refresh]="refresh">
       </mwl-calendar-day-view>
     </div>
   </ng-container>
 
-  <div *ngSwitchCase="CalendarView.Agenda" class="agenda-view">
-
-
-
+  <div *ngSwitchCase="CalendarView.Agenda" class="agenda-view mid-body-scrollable-height-tabs">
     <div *ngFor="let day of getAgendaDays()" class="agenda-day">
       <h3>{{ day | date:'EEEE, dd MMMM yyyy' }}</h3>
       <ul>

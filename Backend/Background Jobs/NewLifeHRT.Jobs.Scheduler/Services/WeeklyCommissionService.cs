@@ -478,8 +478,8 @@ namespace NewLifeHRT.Jobs.Scheduler.Services
             // Assign calculated results
             commissionsPayable.CommissionCalculationDetails = sb.ToString();
             commissionsPayable.CommissionPayable = totalCommission;
-            commissionsPayable.CTC = totalCtc;
-            commissionsPayable.FinancialResult = totalFinancialResult;
+            commissionsPayable.CTC = (totalCtc + (costOfShipping ?? 0m));
+            commissionsPayable.FinancialResult = (totalFinancialResult + (shippingProfit ?? 0m));
             commissionsPayable.SyringeCost = totalSyringeCost;
             commissionsPayable.IsMissingProductPrice = isAnyProductMissingPrice;
 

@@ -9,8 +9,8 @@
     </div>
   </div>
   <!-- Table -->
-  <div class="overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
-    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+  <div class="table-container custom-table-view" [class.opacity-50]="isLoading()">
+    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
 
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef
@@ -28,7 +28,8 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header
           class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">Product</th>
         <td mat-cell *matCellDef="let element">
-          <span class="primary-text-color hover:underline cursor-pointer font-medium" (click)="editPriceListItem(element.id)">
+          <span class="primary-text-color hover:underline cursor-pointer font-medium"
+            (click)="editPriceListItem(element.id)">
             {{ element.productName }}
           </span>
         </td>
@@ -96,7 +97,7 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-50"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="!bg-gray-50"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
     </table>
 
@@ -113,10 +114,10 @@
     <ng-container *ngIf="dataSource.filteredData.length > 0">
       <div class="flex items-center gap-2">
         <mat-checkbox class="custom-mat-checkbox" (change)="toggleSelectAll($event)" [checked]="isAllSelected()"
-              [indeterminate]="isPartialSelected()"></mat-checkbox>
+          [indeterminate]="isPartialSelected()"></mat-checkbox>
         <span class="font-bold">Details</span>
       </div>
-      <div class="mobile-view-table" *ngFor = "let element of pagedData">
+      <div class="mobile-view-table" *ngFor="let element of pagedData">
         <div class="toggle-table flex items-center gap-4">
           <div>
             <mat-checkbox class="custom-mat-checkbox" [(ngModel)]="element.selected"></mat-checkbox>
@@ -129,26 +130,27 @@
           </div>
         </div>
         <div>
-          <button  class="text-gray-400 hover:text-gray-600 disabled:opacity-50" mat-icon-button [matMenuTriggerFor]="actionMenu">
+          <button class="text-gray-400 hover:text-gray-600 disabled:opacity-50" mat-icon-button
+            [matMenuTriggerFor]="actionMenu">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #actionMenu="matMenu">
             <button mat-menu-item (click)="editPriceListItem(element.id)">Edit</button>
             @if(element.status === 'Inactive'){
-              <button mat-menu-item (click)="handleAction('activate', false, element.id)">
-                Activate
-              </button>
+            <button mat-menu-item (click)="handleAction('activate', false, element.id)">
+              Activate
+            </button>
             }
             @else{
-              <button mat-menu-item (click)="handleAction('deactivate', false, element.id)">
-                Deactivate
-              </button>
+            <button mat-menu-item (click)="handleAction('deactivate', false, element.id)">
+              Deactivate
+            </button>
             }
             <button mat-menu-item (click)="handleAction('delete', false, element.id)">
               Delete
             </button>
           </mat-menu>
-          </div>
+        </div>
       </div>
     </ng-container>
     <div *ngIf="!isLoading() && dataSource.filteredData.length === 0" class="text-center py-12">
@@ -159,10 +161,9 @@
   <!-- Paginator -->
   <div class="main-paginator">
     <div class="paginator-section p-0">
-      <mat-paginator #paginator
-        [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" 
-        [showFirstLastButtons]="true" [length]="dataSource.filteredData.length || 0"  [disabled]="isLoading()"  class="disabled:opacity-50">
+      <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" [showFirstLastButtons]="true"
+        [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()" class="disabled:opacity-50">
       </mat-paginator>
     </div>
-   </div>
+  </div>
 </div>

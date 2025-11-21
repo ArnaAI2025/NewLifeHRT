@@ -1,4 +1,4 @@
-<div class="card-color rounded-lg shadow-sm flex-wrap gap-4 mb-6 table-view-header border border-gray-200 p-6">
+<div class="relative">
 
     <!-- Header Section -->
     <div class="flex items-center flex-wrap gap-4 justify-between mb-6 table-view-header">
@@ -22,13 +22,13 @@
         </div>
 
         <div class="flex items-center space-x-3 w-full filter-input search-box-mb">
-                <div class="relative">
-                    <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
-                    <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword"
-                        (input)="applyFilter()" [disabled]="isLoading()"
-                        class="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-64" />
-                </div>
+            <div class="relative">
+                <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</mat-icon>
+                <input matInput type="text" placeholder="Filter by keywords" [(ngModel)]="searchKeyword"
+                    (input)="applyFilter()" [disabled]="isLoading()"
+                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-64" />
             </div>
+        </div>
     </div>
 
     <!-- Loading Spinner -->
@@ -38,8 +38,8 @@
     </div>
 
     <!-- Messages Table -->
-    <div class="overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
-        <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+    <div class="table-container custom-table-view" [class.opacity-50]="isLoading()">
+        <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
 
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
@@ -87,17 +87,18 @@
 
             <!-- Content Summary Column -->
             <ng-container matColumnDef="contentSummary">
-                <th mat-header-cell *matHeaderCellDef class="text-center rounded-tr-xl rounded-br-xl">Content Summary</th>
+                <th mat-header-cell *matHeaderCellDef class="text-center rounded-tr-xl rounded-br-xl">Content Summary
+                </th>
                 <td mat-cell *matCellDef="let element">
                     {{ getDetailedMediaSummary(element) }}
                 </td>
             </ng-container>
 
 
-            
+
 
             <!-- Header and Row Definitions -->
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
         </table>
@@ -113,8 +114,8 @@
     <!-- Paginator -->
     <div class="main-paginator">
         <div class="paginator-section p-0">
-            <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" [showFirstLastButtons]="true"
-                [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()"
+            <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100"
+                [showFirstLastButtons]="true" [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()"
                 class="mat-mdc-paginator-container disabled:opacity-50">
             </mat-paginator>
         </div>

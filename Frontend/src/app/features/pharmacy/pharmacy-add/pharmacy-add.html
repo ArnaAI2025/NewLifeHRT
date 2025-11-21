@@ -1,5 +1,5 @@
 <app-full-page-loader [visible]="isLoadingPage()" />
-<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden px-4 pt-2">
+<div class="sticky top-0 z-10 rounded-md shadow-sm mb-4 bg-white overflow-hidden px-4 pb-2">
   <div class="flex flex-wrap items-center justify-between">
     <div class="flex items-center space-x-2">
       <button mat-icon-button (click)="goBack()" class="header-back-button">
@@ -69,7 +69,7 @@
 </div>
 
 <!-- Form -->
-<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color">
+<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 bg-card-color mid-body-scrollable-height-tabs">
   <ng-container [ngSwitch]="activeTab">
     <ng-container *ngSwitchCase="'pharmacy'">
       <form [formGroup]="pharmacyForm">

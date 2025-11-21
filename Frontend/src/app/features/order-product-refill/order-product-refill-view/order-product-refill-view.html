@@ -1,6 +1,5 @@
 <!-- Main Pharmacy Table -->
-<div class="bg-white rounded-[16px] shadow-sm border border-gray-200 p-6 bg-card-color">
-
+<div class="relative">
   <div class="flex items-center justify-between flex-wrap gap-4 mb-6 table-view-header">
     <div class="flex items-center ">
       <h1 class="list-page-heading">Order Products - Refill</h1>
@@ -19,7 +18,8 @@
         class="p-2 bg-blue-50 border border-blue-200 rounded-md flex items-center justify-between">
         <div class="flex items-center">
           <mat-icon class="text-blue-600 mr-2">info</mat-icon>
-          <span class="text-blue-800">{{ selectedCount }} Order Product Refill Detail{{ selectedCount > 1 ? 's' : '' }} selected</span>
+          <span class="text-blue-800">{{ selectedCount }} Order Product Refill Detail{{ selectedCount > 1 ? 's' : '' }}
+            selected</span>
         </div>
       </div>
 
@@ -60,8 +60,8 @@
   </div>
 
   <!-- Table -->
-  <div class="overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
-    <table mat-table [dataSource]="dataSource" matSort class="custom-table">
+  <div class="table-container custom-table-view" [class.opacity-50]="isLoading()">
+    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef
           class="!text-left !py-3 !px-4 rounded-tl-lg rounded-bl-lg font-medium text-gray-700">
@@ -92,8 +92,9 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header
           class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">Product</th>
         <td mat-cell *matCellDef="let element">
-          <span class="primary-text-color hover:underline cursor-pointer" (click)="navigateToProductEdit(element.productId)"
-            [class.pointer-events-none]="isLoading()"> {{ element.productName}}</span>
+          <span class="primary-text-color hover:underline cursor-pointer"
+            (click)="navigateToProductEdit(element.productId)" [class.pointer-events-none]="isLoading()"> {{
+            element.productName}}</span>
         </td>
       </ng-container>
 
@@ -119,8 +120,9 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header
           class="!text-left !py-3 !px-4 !bg-gray-50 text-gray-700 border-opacity-0">Product Refill Date</th>
         <td mat-cell *matCellDef="let element">
-          <span class="primary-text-color hover:underline cursor-pointer" (click)="navigateToOrderProductRefillDetailEdit(element.id)"
-            [class.pointer-events-none]="isLoading()"> {{ element.productRefillDate}}</span>
+          <span class="primary-text-color hover:underline cursor-pointer"
+            (click)="navigateToOrderProductRefillDetailEdit(element.id)" [class.pointer-events-none]="isLoading()"> {{
+            element.productRefillDate}}</span>
         </td>
       </ng-container>
 
@@ -140,7 +142,7 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-50"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="!bg-gray-50"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
 
     </table>
@@ -155,10 +157,10 @@
   <!-- Paginator -->
   <div class="main-paginator">
     <div class="paginator-section p-0">
-      <mat-paginator #paginator
-      [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" 
-      [showFirstLastButtons]="true" [length]="dataSource.filteredData.length || 0"  [disabled]="isLoading()"  class="mat-mdc-paginator-container disabled:opacity-50">
-    </mat-paginator>
+      <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100" [showFirstLastButtons]="true"
+        [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()"
+        class="mat-mdc-paginator-container disabled:opacity-50">
+      </mat-paginator>
     </div>
   </div>
 </div>

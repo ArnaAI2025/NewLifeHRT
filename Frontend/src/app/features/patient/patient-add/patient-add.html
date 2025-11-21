@@ -1,51 +1,36 @@
 <!-- Navigation Bar -->
- <app-full-page-loader [visible]="isLoadingPage()" />
+<app-full-page-loader [visible]="isLoadingPage()" />
 <app-patient-navigation-bar [isEditMode]="isEditMode" [isSaving]="isSaving()" [isActive]="patientDataToLoad?.isActive"
   [patientId]="patientId" (close)="onClose()" (save)="onSubmit()" (addPatient)="onClickAddPatient()"
-  (saveAndClose)="onSaveAndClose()" (toggleActiveStatus)="togglePatientActiveStatus($event)" (delete)="onPatientDelete()">
+  (saveAndClose)="onSaveAndClose()" (toggleActiveStatus)="togglePatientActiveStatus($event)"
+  (delete)="onPatientDelete()">
 </app-patient-navigation-bar>
 
-<div>
+<div class="mid-body-scrollable-height-tabs">
   <div class="card-color p-6 rounded-lg shadow border border-gray-200">
     <form [formGroup]="patientForm" (ngSubmit)="onSubmit()">
       <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <!-- Profile Picture Upload -->
         <div class="col-span-1 flex flex-col items-center profile-container">
-<div
-  class="profile-pic rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden mb-4 text-5xl font-semibold text-blue-600 uppercase">
+          <div
+            class="profile-pic rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden mb-4 text-5xl font-semibold text-blue-600 uppercase">
 
-  <ng-container *ngIf="patientForm.get('profileUrl')?.value; else placeholder">
-    <img
-      [src]="patientForm.get('profileUrl')?.value"
-      alt="Profile"
-      class="object-cover w-full h-full" />
-  </ng-container>
+            <ng-container *ngIf="patientForm.get('profileUrl')?.value; else placeholder">
+              <img [src]="patientForm.get('profileUrl')?.value" alt="Profile" class="object-cover w-full h-full" />
+            </ng-container>
 
-  <ng-template #placeholder>
-    <div
-      class="rounded-xl bg-gray-100 text-blue-500 font-semibold text-[2rem] flex items-center justify-center">
-      {{ getInitials() }}
-    </div>
-  </ng-template>
-</div>
-
-
-          <button *ngIf = "!isPatientLoggedIn"
-  mat-flat-button
-  color="primary"
-  class="patient-upload-btn flex"
-  type="button"
-  (click)="fileInput.click()">
-  Upload Image
-</button>
-
-<input
-  type="file"
-  #fileInput
-  (change)="onUploadImage($event)"
-  accept="image/*"
-  style="display: none;" />
-
+            <ng-template #placeholder>
+              <div
+                class="rounded-xl bg-gray-100 text-blue-500 font-semibold text-[2rem] flex items-center justify-center">
+                {{ getInitials() }}
+              </div>
+            </ng-template>
+          </div>
+          <button *ngIf="!isPatientLoggedIn" mat-flat-button color="primary" class="patient-upload-btn flex"
+            type="button" (click)="fileInput.click()">
+            Upload Image
+          </button>
+          <input type="file" #fileInput (change)="onUploadImage($event)" accept="image/*" style="display: none;" />
         </div>
 
         <!-- Form Fields -->
@@ -84,22 +69,14 @@
 
           <!-- Date of Birth -->
           <div class="space-y-2 custom-text-box">
-  <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
-  <mat-form-field appearance="outline" class="w-full form-input form-input-text">
-    <input
-      matInput
-      [matDatepicker]="picker"
-      [max]="maxDate"
-      formControlName="dateOfBirth"
-      placeholder="Date of birth"
-      readonly
-      (click)="picker.open()"
-    />
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
-</div>
-
+            <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput [matDatepicker]="picker" [max]="maxDate" formControlName="dateOfBirth"
+                placeholder="Date of birth" readonly (click)="picker.open()" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
 
           <!-- Patient Number -->
           <div class="space-y-2 custom-text-box">
@@ -126,7 +103,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 mb-4">
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">Phone</label>
-                        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
               <input matInput type="tel" formControlName="phoneNumber" placeholder="+1 (123) 456-7890" maxlength="12"
                 class="text-sm" />
               <mat-error *ngIf="isFieldInvalid('phoneNumber')">
@@ -175,7 +152,7 @@
               </mat-error>
             </mat-form-field>
           </div>
-          
+
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">
               State<span class="text-red-500">*</span>
@@ -191,13 +168,14 @@
               </mat-error>
             </mat-form-field>
           </div>
-      
+
           <!-- Postal Code -->
           <div class="space-y-2 custom-text-box">
-            <label class="block text-sm font-medium text-gray-700">Postal Code <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700">Postal Code <span
+                class="text-red-500">*</span></label>
             <mat-form-field appearance="outline" class="w-full form-input form-input-text">
-              <input matInput formControlName="postalCode" placeholder="123456"
-                class="text-sm" (keypress)="allowOnlyNumbers($event)" (paste)="validatePaste($event)" maxlength="6"/>
+              <input matInput formControlName="postalCode" placeholder="123456" class="text-sm"
+                (keypress)="allowOnlyNumbers($event)" (paste)="validatePaste($event)" maxlength="6" />
               <mat-error *ngIf="isFieldInvalid('postalCode')">{{ getFieldError('postalCode') }}</mat-error>
             </mat-form-field>
           </div>
@@ -210,38 +188,30 @@
           <h3 class="attachments-heading text-lg font-bold text-gray-900 mt-10 mb-6 uppercase tracking-wide">
             Attachments</h3>
           <!-- Action Icons -->
-          <div class="flex gap-3" *ngIf = "!isPatientLoggedIn">
-            <button type="button" (click)="onClickDownloadDocument()" mat-icon-button><mat-icon>file_download</mat-icon></button>
+          <div class="flex gap-3" *ngIf="!isPatientLoggedIn">
+            <button type="button" (click)="onClickDownloadDocument()"
+              mat-icon-button><mat-icon>file_download</mat-icon></button>
             <button type="button" (click)="onClickDeleteDocument()" mat-icon-button><mat-icon>delete</mat-icon></button>
           </div>
         </div>
-       <!-- Table Header -->
-      <div class="grid grid-cols-5 gap-2 px-3 py-2 bg-gray-100 rounded-t patient-attachments-table">
-        <div class="form-checkbox custom-mat-checkbox">
-          <input
-            type="checkbox"
-            [checked]="isAllSelected"
-            [indeterminate]="isIndeterminate"
-            (change)="toggleSelectAll()"
-            [disabled]="uploadedFiles().length == 0"
-          />
+        <!-- Table Header -->
+        <div class="grid grid-cols-5 gap-2 px-3 py-2 bg-gray-100 rounded-t patient-attachments-table">
+          <div class="form-checkbox custom-mat-checkbox">
+            <input type="checkbox" [checked]="isAllSelected" [indeterminate]="isIndeterminate"
+              (change)="toggleSelectAll()" [disabled]="uploadedFiles().length == 0" />
+          </div>
+          <div class="col-span-1 font-medium">File Name</div>
+          <div class="col-span-1 font-medium">Category Name</div>
+          <div class="col-span-1 font-medium">Date Added</div>
+          <!-- <div class="col-span-1 font-medium">Action</div> -->
         </div>
-        <div class="col-span-1 font-medium">File Name</div>
-        <div class="col-span-1 font-medium">Category Name</div>
-        <div class="col-span-1 font-medium">Date Added</div>
-        <!-- <div class="col-span-1 font-medium">Action</div> -->
-      </div>
         <!-- Table Rows -->
         <div *ngFor="let file of uploadedFiles();"
-            class="grid grid-cols-5 gap-2 px-3 py-2 border-t border-l border-r border-gray-200">
+          class="grid grid-cols-5 gap-2 px-3 py-2 border-t border-l border-r border-gray-200">
 
           <div>
-            <input
-              type="checkbox"
-              class="form-checkbox"
-              [checked]="isFileSelected(file)"
-              (change)="toggleFileSelection(file, $event)"
-            >
+            <input type="checkbox" class="form-checkbox" [checked]="isFileSelected(file)"
+              (change)="toggleFileSelection(file, $event)">
           </div>
           <div class="truncate">{{ file.attachmentName }}</div>
           <div>{{ file.categoryName }}</div>
@@ -255,7 +225,8 @@
           </div> -->
         </div>
         <!-- No Files Row -->
-        <div *ngIf="uploadedFiles().length === 0" class="px-3 py-6 text-gray-500 flex items-center justify-center uploaded-card">
+        <div *ngIf="uploadedFiles().length === 0"
+          class="px-3 py-6 text-gray-500 flex items-center justify-center uploaded-card">
           <mat-icon class="mr-2">folder_open</mat-icon>
           No files uploaded yet.
         </div>
@@ -276,36 +247,31 @@
           <div class="text-sm text-gray-500 mt-2">Accepted formats: PDF, DOC, JPG, PNG</div>
         </div> -->
       </div>
-             <div class="w-full flex justify-end" *ngIf = "!isPatientLoggedIn">
-         <button type="button" mat-raised-button color="primary" class="mt-4 "
+      <div class="w-full flex justify-end" *ngIf="!isPatientLoggedIn">
+        <button type="button" mat-raised-button color="primary" class="mt-4 "
           (click)="openSelectCategoryDialog()">Upload Files</button>
-       </div>
- <div class="border-b mt-1 my-6"></div>
+      </div>
+      <div class="border-b mt-1 my-6"></div>
 
-       <div class="mt-1 rounded">
-   <h3 class="text-lg font-bold text-gray-900 mt-10 mb-6 uppercase tracking-wide">Financial</h3>
+      <div class="mt-1 rounded">
+        <h3 class="text-lg font-bold text-gray-900 mt-10 mb-6 uppercase tracking-wide">Financial</h3>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
-    <!-- Outstanding Refund Balance -->
-    <div class="space-y-2 custom-text-box">
-      <label class="block text-sm font-medium text-gray-700">Outstanding Refund Balance</label>
-      <mat-form-field appearance="outline" class="w-full form-input form-input-text">
-        <input
-          matInput
-          formControlName="outstandingRefundBalance"
-          placeholder="0.00"
-          type="number"
-        />
-      </mat-form-field>
-    </div>
-  </div>
-   <div class="border-b mt-1 my-6"></div>
-</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
+          <!-- Outstanding Refund Balance -->
+          <div class="space-y-2 custom-text-box">
+            <label class="block text-sm font-medium text-gray-700">Outstanding Refund Balance</label>
+            <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+              <input matInput formControlName="outstandingRefundBalance" placeholder="0.00" type="number" />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="border-b mt-1 my-6"></div>
+      </div>
 
       <!-- Visit & Medical Details Section -->
       <div class="mt-8 rounded-md">
         <h3 class="text-lg font-bold text-gray-900 mt-10 mb-6 uppercase tracking-wide">Visit & Medical Details</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6">
           <!-- Visit Type -->
           <div class="space-y-2 custom-text-box">
             <label class="block text-sm font-medium text-gray-700">Visit Type</label>
@@ -413,7 +379,7 @@
             </mat-form-field>
           </div>
         </div>
-         <div class="border-b mt-1 my-6"></div>
+        <div class="border-b mt-1 my-6"></div>
       </div>
 
 
@@ -460,21 +426,15 @@
         </mat-form-field>
       </div>
       <div class="space-y-2 custom-text-box">
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Lab Renewal Alert Date
-          </label>
-          <mat-form-field appearance="outline" class="w-full form-input form-input-text">
-            <input
-              matInput
-              [matDatepicker]="labRenewalAlertPicker"
-              formControlName="labRenewableAlertDate"
-              placeholder="YYYY-MM-DD"
-              readonly
-              (click)="labRenewalAlertPicker.open()"
-            />
-            <mat-datepicker-toggle matSuffix [for]="labRenewalAlertPicker"></mat-datepicker-toggle>
-            <mat-datepicker #labRenewalAlertPicker></mat-datepicker>
-          </mat-form-field>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Lab Renewal Alert Date
+        </label>
+        <mat-form-field appearance="outline" class="w-full form-input form-input-text">
+          <input matInput [matDatepicker]="labRenewalAlertPicker" formControlName="labRenewableAlertDate"
+            placeholder="YYYY-MM-DD" readonly (click)="labRenewalAlertPicker.open()" />
+          <mat-datepicker-toggle matSuffix [for]="labRenewalAlertPicker"></mat-datepicker-toggle>
+          <mat-datepicker #labRenewalAlertPicker></mat-datepicker>
+        </mat-form-field>
       </div>
       <!-- <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Lab Renewal Date</label>
@@ -488,7 +448,7 @@
 
     <!-- Add Credit Card -->
     <div class="card-color rounded-lg shadow p-6 space-y-4 border border-gray-200">
-      <div class="flex flex-wrap gap-2 justify-between items-center mb-4" *ngIf = "!isPatientLoggedIn">
+      <div class="flex flex-wrap gap-2 justify-between items-center mb-4" *ngIf="!isPatientLoggedIn">
         <h3 class="add-credit-card text-base font-bold text-gray-800 flex items-center">
           <mat-icon class="mr-2 text-blue-600 credit-card-checkbox">credit_card</mat-icon>
           {{ isEditingCreditCard ? 'Edit Credit Card' : 'Add Credit Card' }}
@@ -651,7 +611,8 @@
 
       <!-- Modal Footer -->
       <div class="flex justify-end space-x-2 p-6 pt-0 mt-4">
-        <button type="button" *ngIf = "hasCreditCardData()" mat-button (click)="closeCreditCardModal()" class="text-gray-600 secondry-button-add">
+        <button type="button" *ngIf="hasCreditCardData()" mat-button (click)="closeCreditCardModal()"
+          class="text-gray-600 secondry-button-add">
           Cancel
         </button>
         <button type="button" mat-raised-button color="primary" class="primary-btn-add" (click)="onSaveCreditCard()"
@@ -667,15 +628,13 @@
 </div>
 
 <!-- Step 1: Select Category -->
-<div *ngIf="isOpenSelectCategoryDialog()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+<div *ngIf="isOpenSelectCategoryDialog()"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
   <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-lg">
     <h2 class="text-xl font-semibold mb-6">Select The Category</h2>
     <div class="grid grid-cols-3 gap-4 mb-6  category-button">
-      <button *ngFor="let cat of documentCategories"
-        (click)="selectCategory(cat)"
-        type="button"
-        class="flex flex-col items-center p-4 border rounded-lg transition"
-        [ngClass]="{
+      <button *ngFor="let cat of documentCategories" (click)="selectCategory(cat)" type="button"
+        class="flex flex-col items-center p-4 border rounded-lg transition" [ngClass]="{
           'Category-button-active': selectedCategory?.id === cat.id,
           'Category-button-inactive': selectedCategory?.id !== cat.id
         }">
@@ -716,9 +675,11 @@
 
     <div class="flex justify-end space-x-4">
       <button mat-stroked-button (click)="cancel()">Cancel</button>
-      <button mat-flat-button class="primary-btn" [disabled]="files.length === 0"(click)="save('close')">{{ isEditMode ? 'Save & Close' : 'Add & Close' }}</button>
-      <button mat-stroked-button  [disabled]="files.length === 0" (click)="save('addMore')">{{ isEditMode ? 'Save & Add More' : 'Add & Add More' }}</button>
- </div>
+      <button mat-flat-button class="primary-btn" [disabled]="files.length === 0" (click)="save('close')">{{ isEditMode
+        ? 'Save & Close' : 'Add & Close' }}</button>
+      <button mat-stroked-button [disabled]="files.length === 0" (click)="save('addMore')">{{ isEditMode ? 'Save & Add
+        More' : 'Add & Add More' }}</button>
+    </div>
   </div>
 </div>
 
@@ -730,20 +691,16 @@
     <!-- Top Right Buttons -->
     <div class="absolute top-2 right-2 flex space-x-2">
       <!-- Download Button -->
-      <a *ngIf="selectedFileUrl"
-         [href]="selectedFileUrl"
-         [attr.download]="getDownloadFileName()"
-         target="_blank"
-         class="text-gray-600 hover:text-blue-600 p-1 rounded-full border border-gray-300 hover:border-blue-500"
-         matTooltip="Download File">
+      <a *ngIf="selectedFileUrl" [href]="selectedFileUrl" [attr.download]="getDownloadFileName()" target="_blank"
+        class="text-gray-600 hover:text-blue-600 p-1 rounded-full border border-gray-300 hover:border-blue-500"
+        matTooltip="Download File">
         <mat-icon>download</mat-icon>
       </a>
 
       <!-- Close Button -->
-      <button type="button"
-              (click)="closeFileModal()"
-              class="text-gray-600 hover:text-black p-1 rounded-full border border-gray-300 hover:border-black"
-              matTooltip="Close">
+      <button type="button" (click)="closeFileModal()"
+        class="text-gray-600 hover:text-black p-1 rounded-full border border-gray-300 hover:border-black"
+        matTooltip="Close">
         ✕
       </button>
     </div>
@@ -756,14 +713,10 @@
     <!-- File Content -->
     <ng-container *ngIf="!isFileLoading">
       <!-- Image -->
-      <img *ngIf="selectedFileType === 'image'"
-           [src]="selectedFileUrl"
-           class="w-full h-full object-contain" />
+      <img *ngIf="selectedFileType === 'image'" [src]="selectedFileUrl" class="w-full h-full object-contain" />
 
       <!-- PDF -->
-      <iframe *ngIf="selectedFileType === 'pdf'"
-              [src]="selectedFileUrl"
-              class="w-full h-full border-0"></iframe>
+      <iframe *ngIf="selectedFileType === 'pdf'" [src]="selectedFileUrl" class="w-full h-full border-0"></iframe>
 
       <!-- Office Docs -->
       <!-- <iframe *ngIf="selectedFileType === 'office'"
@@ -771,16 +724,11 @@
               class="w-full h-full border-0"></iframe> -->
 
       <!-- Other Files -->
-      <div *ngIf="selectedFileType === 'other'"
-           class="flex flex-col items-center justify-center h-full">
+      <div *ngIf="selectedFileType === 'other'" class="flex flex-col items-center justify-center h-full">
         <p class="mb-4">Preview not available for this file type.</p>
-        <a [href]="selectedFileUrl"
-           target="_blank"
-           class="text-blue-500 underline">Download file</a>
+        <a [href]="selectedFileUrl" target="_blank" class="text-blue-500 underline">Download file</a>
       </div>
     </ng-container>
 
   </div>
 </div>
-
-

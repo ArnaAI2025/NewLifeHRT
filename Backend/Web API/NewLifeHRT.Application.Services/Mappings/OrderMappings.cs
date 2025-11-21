@@ -249,6 +249,7 @@ namespace NewLifeHRT.Application.Services.Mappings
             {
                 Id = order.Id,
                 Name = order.Name,
+                Number = order.OrderNumber,
                 PatientName = (order.Patient?.FirstName ?? string.Empty) + " " + (order.Patient?.LastName ?? string.Empty),
                 DoctorName = (order.Physician?.FirstName ?? string.Empty) + " " + (order.Physician?.LastName ?? string.Empty),
                 DateOfBirth = order.Patient?.DateOfBirth,

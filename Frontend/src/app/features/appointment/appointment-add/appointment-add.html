@@ -10,10 +10,10 @@
 
 </div>
 
-<div [formGroup]="appointmentForm">
+<div [formGroup]="appointmentForm" class="mid-body-scrollable-height">
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 bg-card-color">
     <div class="p-5 sm:p-6">
-      <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Select a Service</h3>
+      <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wide">Select a Service</h3>
       <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         @for (service of clinicAppointmentServices(); track service.id) {
         @let serviceId = appointmentForm.get('clinicService')?.value;
@@ -58,10 +58,10 @@
       </div>
     </div>
   </div>
-  <div class="bg-white rounded-lg shadow-sm border mt-10 border-gray-200 bg-card-color">
+  <div class="bg-white rounded-lg shadow-sm border mt-4 border-gray-200 bg-card-color">
     <div class="p-5 sm:p-6">
       <div>
-        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Provider Details</h3>
+        <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wide">Provider Details</h3>
         <div class="space-y-2 custom-text-box">
           <label class="block text-sm font-medium text-gray-700">Select Provider <span
               class="text-red-500">*</span></label>
@@ -120,8 +120,8 @@
           </div>
         </div>
       </div>
-      <div>
-        <h3 class="text-lg font-medium text-gray-900 mb-6 uppercase tracking-wide">Appointments Details</h3>
+      <div class="mt-6">
+        <h3 class="text-lg font-bold text-gray-900 uppercase tracking-wide">Appointments Details</h3>
         <div class="flex flex-col md:flex-row md:space-x-2 space-y-2 md:space-y-0 w-full">
           <div class="custom-text-box patient-dropdown w-full md:flex-1">
             <label class="block text-sm font-medium text-gray-700 pb-2">

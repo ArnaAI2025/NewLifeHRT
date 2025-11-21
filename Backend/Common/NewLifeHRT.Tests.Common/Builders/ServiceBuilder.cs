@@ -26,6 +26,10 @@ namespace NewLifeHRT.Tests.Common.Builders
         protected Mock<AzureBlobStorageSettings> AzureBlobStorageSettingsMock{  get; set; } = new();
         protected Mock<IUserSignatureRepository> UserSignatureRepositoryMock { get; set; } = new();
         protected Mock<RoleManager<ApplicationRole>> RoleManagerMock{  get; set; } = new();
+        protected Mock<IUserOtpRepository> UserOtpRepositoryMock { get; set; } = new();
+        protected Mock<IRefreshTokenRepository> RefreshTokenRepositoryMock { get; set; } = new();
+        protected Mock<IJwtService> JwtServiceMock { get; set; } = new();
+        protected Mock<IMessageRepository> MessageRepositoryMock { get; set; } = new();
 
         public ServiceBuilder<T> SetParameter(Mock<IUserRepository> userRepositoryMock)
         {
@@ -85,6 +89,25 @@ namespace NewLifeHRT.Tests.Common.Builders
             UserSignatureRepositoryMock = userSignatureRepositoryMock;
             return this;
         }
-
+        public ServiceBuilder<T> SetParameter(Mock<IUserOtpRepository> userOtpRepositoryMock)
+        {
+            UserOtpRepositoryMock = userOtpRepositoryMock;
+            return this;
+        }
+        public ServiceBuilder<T> SetParameter(Mock<IRefreshTokenRepository> refreshTokenRepositoryMock)
+        {
+            RefreshTokenRepositoryMock = refreshTokenRepositoryMock;
+            return this;
+        }
+        public ServiceBuilder<T> SetParameter(Mock<IJwtService> jwtServiceMock)
+        {
+            JwtServiceMock = jwtServiceMock;
+            return this;
+        }
+        public ServiceBuilder<T> SetParameter(Mock<IMessageRepository> messageRepositoryMock)
+        {
+            MessageRepositoryMock = messageRepositoryMock;
+            return this;
+        }
     }
 }

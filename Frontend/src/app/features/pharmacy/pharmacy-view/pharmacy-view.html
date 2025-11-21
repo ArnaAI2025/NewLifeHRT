@@ -1,5 +1,5 @@
 <!-- Main Pharmacy Table -->
-<div class="bg-white rounded-[16px] shadow-sm border border-gray-200 p-6 bg-card-color">
+<div class="relative">
 
   <div class="flex items-center justify-between flex-wrap gap-4 mb-6 table-view-header">
     <div class="flex items-center ">
@@ -68,8 +68,8 @@
   </div>
 
   <!-- Table -->
-  <div class="overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
-    <table mat-table [dataSource]="dataSource" matSort class="custom-table">
+  <div class="table-container custom-table-view" [class.opacity-50]="isLoading()">
+    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
       <!-- Checkbox Column -->
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef
@@ -149,7 +149,7 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-50"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="!bg-gray-50"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
 
     </table>
@@ -176,7 +176,8 @@
           </div>
           <div>
             <p class="m-0"><span class="user-name" (click)="navigateToEdit(element.id)"
-              [class.pointer-events-none]="isLoading()">{{element.name}}</span>({{ element.isActive ? 'Active' : 'Inactive' }})
+                [class.pointer-events-none]="isLoading()">{{element.name}}</span>({{ element.isActive ? 'Active' :
+              'Inactive' }})
             </p>
             <p class="m-0">{{element.currencyName}}</p>
           </div>
@@ -188,7 +189,8 @@
           </button>
           <mat-menu #actionMenu="matMenu">
             <button mat-menu-item (click)="navigateToEdit(element.id)">Edit</button>
-            <button *ngIf="!element.isActive" mat-menu-item (click)="performAction('activate', element)">Activate</button>
+            <button *ngIf="!element.isActive" mat-menu-item
+              (click)="performAction('activate', element)">Activate</button>
             <button *ngIf="element.isActive" mat-menu-item
               (click)="performAction('deactivate', element)">Deactivate</button>
             <button mat-menu-item (click)="performAction('delete', element)">Delete</button>
@@ -204,10 +206,10 @@
   <!-- Paginator -->
   <div class="main-paginator">
     <div class="paginator-section p-0">
-      <mat-paginator #paginator
-      [pageSizeOptions]="[5, 10, 20, 30]" [pageSize]="5"
-      [showFirstLastButtons]="true" [length]="dataSource.filteredData.length || 0"  [disabled]="isLoading()"  class="mat-mdc-paginator-container disabled:opacity-50">
-    </mat-paginator>
+      <mat-paginator #paginator [pageSizeOptions]="[5, 10, 20, 30]" [pageSize]="5" [showFirstLastButtons]="true"
+        [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()"
+        class="mat-mdc-paginator-container disabled:opacity-50">
+      </mat-paginator>
     </div>
   </div>
 </div>

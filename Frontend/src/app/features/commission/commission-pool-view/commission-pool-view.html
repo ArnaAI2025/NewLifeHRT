@@ -1,4 +1,4 @@
-<div class="bg-white rounded-[16px] shadow-sm border border-gray-200 p-6 bg-card-color">
+<div class="relative">
   <!-- Header + Filters -->
   <div class="flex items-center justify-between flex-wrap gap-4 mb-4 table-view-header">
     <!-- Title + Search -->
@@ -114,8 +114,13 @@
   </div>
 
   <!-- Table -->
-  <div class="overflow-x-auto custom-table-view" [class.opacity-50]="isLoading()">
-    <table mat-table [dataSource]="dataSource" matSort class="custom-table">
+  <div class="table-container custom-table-view" [class.opacity-50]="isLoading()">
+    <table
+    mat-table
+    [dataSource]="dataSource"
+    matSort
+    class="w-full custom-table mat-elevation-z0"
+  >
       <!-- Counselor -->
       <ng-container matColumnDef="counselorName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Counselor</th>
@@ -169,7 +174,7 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
 

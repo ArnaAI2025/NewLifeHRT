@@ -1,5 +1,5 @@
 <!-- Main Product Table -->
-<div class="card-color rounded-lg shadow-sm border border-gray-200 p-6 relative">
+<div class="relative">
   <!-- Loading Overlay -->
   <div *ngIf="isLoading()"
     class="absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50 rounded-lg">
@@ -68,17 +68,27 @@
   </div>
 
   <!-- Table -->
-  <div class="overflow-x-auto custom-table-view">
-    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+  <div class="table-container custom-table-view">
+    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
       <!-- Checkbox Column -->
       <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef
-          class="!text-left !py-3 !px-4 rounded-tl-xl rounded-bl-xl font-medium text-gray-700">
-          <mat-checkbox class="custom-mat-checkbox" (change)="toggleSelectAll($event)" [checked]="isAllSelected()"
-            [indeterminate]="isPartialSelected()"></mat-checkbox>
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          class="!text-left !py-3 !px-4 rounded-tl-xl rounded-bl-xl font-medium text-gray-700"
+        >
+          <mat-checkbox
+            class="custom-mat-checkbox"
+            (change)="toggleSelectAll($event)"
+            [checked]="isAllSelected()"
+            [indeterminate]="isPartialSelected()"
+          ></mat-checkbox>
         </th>
         <td mat-cell *matCellDef="let row">
-          <mat-checkbox class="custom-mat-checkbox" [(ngModel)]="row.selected"></mat-checkbox>
+          <mat-checkbox
+            class="custom-mat-checkbox"
+            [(ngModel)]="row.selected"
+          ></mat-checkbox>
         </td>
       </ng-container>
 
@@ -86,7 +96,10 @@
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
         <td mat-cell *matCellDef="let element">
-          <a class="primary-text-color hover:underline cursor-pointer" (click)="navigateToEdit(element.id)">
+          <a
+            class="primary-text-color hover:underline cursor-pointer"
+            (click)="navigateToEdit(element.id)"
+          >
             {{ element.name }}
           </a>
         </td>
@@ -94,68 +107,121 @@
 
       <!-- Product ID -->
       <ng-container matColumnDef="productCode">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Product ID</th>
-        <td mat-cell *matCellDef="let element">{{ element.productCode }}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Product ID
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.productCode }}
+        </td>
       </ng-container>
 
       <!-- Parent -->
       <ng-container matColumnDef="parent">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Parent</th>
-        <td mat-cell *matCellDef="let element">{{ element.parent }}</td>
+        <td mat-cell *matCellDef="let element">
+          {{ element.parent }}
+        </td>
       </ng-container>
 
       <!-- Status -->
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
         <td mat-cell *matCellDef="let element">
-          <span class="px-2 py-1 rounded-full text-sm font-semibold border" [ngClass]="{
-    'bg-green-100 text-green-800 border-green-300': element.status === 'Active',
-    'bg-gray-100 text-gray-600 border-gray-300': element.status === 'Inactive'
-  }">
+          <span
+            class="px-2 py-1 rounded-full text-sm font-semibold border"
+            [ngClass]="{
+              'bg-green-100 text-green-800 border-green-300':
+                element.status === 'Active',
+              'bg-gray-100 text-gray-600 border-gray-300':
+                element.status === 'Inactive'
+            }"
+          >
             {{ element.status }}
           </span>
-
         </td>
       </ng-container>
 
       <!-- Modified On -->
       <ng-container matColumnDef="modifiedOn">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Modified On</th>
-        <td mat-cell *matCellDef="let element">{{ element.modifiedOn | date:'dd/MM/yyyy hh:mm a' }}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Modified On
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.modifiedOn | date: 'dd/MM/yyyy hh:mm a' }}
+        </td>
       </ng-container>
 
       <!-- Actions Column -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="table-right-corner">Actions</th>
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          class="table-right-corner"
+        >
+          Actions
+        </th>
         <td mat-cell *matCellDef="let element">
           <button mat-icon-button [matMenuTriggerFor]="actionMenu">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #actionMenu="matMenu">
-            <button mat-menu-item (click)="navigateToEdit(element.id)">Edit</button>
-            <button *ngIf="element.status === 'Draft'" mat-menu-item
-              (click)="performAction('publish', element)">Publish</button>
-            <button *ngIf="element.status === 'Active'" mat-menu-item (click)="performAction('deactivate', element)">
+            <button mat-menu-item (click)="navigateToEdit(element.id)">
+              Edit
+            </button>
+            <button
+              *ngIf="element.status === 'Draft'"
+              mat-menu-item
+              (click)="performAction('publish', element)"
+            >
+              Publish
+            </button>
+            <button
+              *ngIf="element.status === 'Active'"
+              mat-menu-item
+              (click)="performAction('deactivate', element)"
+            >
               <span>Retire</span>
             </button>
-            <button *ngIf="element.status === 'Retired'" mat-menu-item (click)="performAction('activate', element)">
+            <button
+              *ngIf="element.status === 'Retired'"
+              mat-menu-item
+              (click)="performAction('activate', element)"
+            >
               <span>Activate</span>
             </button>
-            <button mat-menu-item (click)="performAction('delete', element)">Delete</button>
+            <button
+              mat-menu-item
+              (click)="performAction('delete', element)"
+            >
+              Delete
+            </button>
           </mat-menu>
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <!-- Sticky Header & Rows -->
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedColumns; sticky: true"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+      ></tr>
 
       <!-- No Data -->
       <tr class="mat-row" *matNoDataRow>
         <td class="!text-center py-8" [attr.colspan]="displayedColumns.length">
           <div class="text-gray-500 flex justify-center items-center">
-            <mat-icon class="text-4xl text-gray-300 mr-2">info</mat-icon>
-            <span *ngIf="searchKeyword">No results for "{{searchKeyword}}"</span>
-            <span *ngIf="!searchKeyword">No product data available.</span>
+            <mat-icon class="text-4xl text-gray-300 mr-2">
+              info
+            </mat-icon>
+            <span *ngIf="searchKeyword">
+              No results for "{{ searchKeyword }}"
+            </span>
+            <span *ngIf="!searchKeyword">
+              No product data available.
+            </span>
           </div>
         </td>
       </tr>

@@ -1,4 +1,4 @@
-<div class="card-color rounded-lg shadow-sm border border-gray-200 p-6 relative">
+<div class="relative">
   <div *ngIf="isLoading()"
     class="absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50 rounded-lg">
     <mat-spinner diameter="50"></mat-spinner>
@@ -30,8 +30,8 @@
     </div>
   </div>
 
-  <div class="overflow-x-auto custom-table-view">
-    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+  <div class="table-container custom-table-view">
+    <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
 
       <ng-container matColumnDef="orderName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Order</th>
@@ -78,14 +78,13 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #actionMenu="matMenu">
-            <button mat-menu-item  (click)="openViewDialog(element)">Failed Log</button>
-            <button  mat-menu-item (click)="confirmStartLifeFile(element.orderId)"
-              >Retry</button>
+            <button mat-menu-item (click)="openViewDialog(element)">Failed Log</button>
+            <button mat-menu-item (click)="confirmStartLifeFile(element.orderId)">Retry</button>
           </mat-menu>
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-50"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="!bg-gray-50"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
     </table>
   </div>

@@ -1,8 +1,9 @@
-<app-patient-navigation-bar *ngIf="patientId" [isEditMode]="true" [isSaving]="false" [isActive]="undefined" [patientId]="patientId"
-    (close)="onClose()" [activeView]="'orders'" (save)="onSubmit()" (addPatient)="onClickAddPatient()"
-    (saveAndClose)="onSaveAndClose()" (toggleActiveStatus)="togglePatientActiveStatus($event)">
+<app-patient-navigation-bar *ngIf="patientId" [isEditMode]="true" [isSaving]="false" [isActive]="undefined"
+    [patientId]="patientId" (close)="onClose()" [activeView]="'orders'" (save)="onSubmit()"
+    (addPatient)="onClickAddPatient()" (saveAndClose)="onSaveAndClose()"
+    (toggleActiveStatus)="togglePatientActiveStatus($event)">
 </app-patient-navigation-bar>
-<div class="card-color rounded-lg shadow-sm border border-gray-200 p-6">
+<div class="relative">
     <!-- Header -->
     <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
         <div class="flex items-center">
@@ -20,12 +21,12 @@
 
         <div class="flex items-center gap-4 justify-end ml-auto">
             <div *ngIf="getSelectedCount() > 0"
-              class="p-2 bg-blue-50 border border-blue-200 rounded-md flex items-center justify-between">
-              <div class="flex items-center">
-                <mat-icon class="text-blue-600 mr-2">info</mat-icon>
-                <span class="text-blue-800">{{ getSelectedCount() }} Order{{
-                  getSelectedCount() > 1 ? 's' : '' }} selected</span>
-              </div>
+                class="p-2 bg-blue-50 border border-blue-200 rounded-md flex items-center justify-between">
+                <div class="flex items-center">
+                    <mat-icon class="text-blue-600 mr-2">info</mat-icon>
+                    <span class="text-blue-800">{{ getSelectedCount() }} Order{{
+                        getSelectedCount() > 1 ? 's' : '' }} selected</span>
+                </div>
             </div>
             <!-- Add Order Button -->
 
@@ -67,9 +68,9 @@
     </div>
 
     <!-- Table -->
-    <div class="relative overflow-x-auto custom-table-view" [class.opacity-50]="isLoading() || isDeleting()"
+    <div class="table-container custom-table-view" [class.opacity-50]="isLoading() || isDeleting()"
         [class.pointer-events-none]="isLoading() || isDeleting()">
-        <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table">
+        <table mat-table [dataSource]="dataSource" matSort class="w-full custom-table mat-elevation-z0">
 
             <!-- Select Checkbox -->
             <ng-container matColumnDef="select">
@@ -146,59 +147,64 @@
             <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef class="text-center rounded-tr-xl rounded-br-xl">Actions</th>
                 <td mat-cell *matCellDef="let row" class="text-center">
-                  <button mat-icon-button [matMenuTriggerFor]="actionMenu" (click)="activeRow = row" [disabled]="isLoading() || isDeleting()">
-                    <mat-icon>more_vert</mat-icon>
-                  </button>
+                    <button mat-icon-button [matMenuTriggerFor]="actionMenu" (click)="activeRow = row"
+                        [disabled]="isLoading() || isDeleting()">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
                 </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="bg-gray-50"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="bg-gray-50"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.selected]="isSelected(row)"></tr>
 
         </table>
     </div>
 
-     <!-- No Data -->
+    <!-- No Data -->
     <div class="text-center py-8 " *ngIf="!dataSource.filteredData.length && !isLoading()">
-      <mat-icon class="text-gray-400 text-4xl mb-2">person_off</mat-icon>
-      <p class="text-gray-500" *ngIf="searchKeyword">No results for "{{searchKeyword}}"</p>
-      <p class="text-gray-500" *ngIf="!searchKeyword">No order data available</p>
+        <mat-icon class="text-gray-400 text-4xl mb-2">person_off</mat-icon>
+        <p class="text-gray-500" *ngIf="searchKeyword">No results for "{{searchKeyword}}"</p>
+        <p class="text-gray-500" *ngIf="!searchKeyword">No order data available</p>
     </div>
 
     <!-- mobile view table card -->
     <div class="mobile-table-wapper pb-4">
-      <ng-container *ngIf="dataSource.filteredData.length > 0">
-        <div class="flex items-center gap-2">
-          <mat-checkbox class="custom-mat-checkbox" (change)="$event ? masterToggle() : null" [checked]="isAllSelected()"
-                [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
-          <span class="font-bold">Details</span>
-        </div>
-        <div class="mobile-view-table" *ngFor = "let element of pagedData">
-          <div class="toggle-table flex items-center gap-4">
-            <div>
-              <mat-checkbox class="custom-mat-checkbox" (change)="toggleRowSelection(element)" [checked]="isSelected(element)" [disabled]="isLoading()"></mat-checkbox>
+        <ng-container *ngIf="dataSource.filteredData.length > 0">
+            <div class="flex items-center gap-2">
+                <mat-checkbox class="custom-mat-checkbox" (change)="$event ? masterToggle() : null"
+                    [checked]="isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
+                <span class="font-bold">Details</span>
             </div>
-            <div>
-              <p class="m-0"><span class="user-name" (click)="onEdit(element)">{{element.name}}</span>({{getOrderStatusText(element.status) }})</p>
-              <p class="m-0">{{element.patientName}}</p>
-              <p class="m-0">{{element.pharmacyName}}</p>
+            <div class="mobile-view-table" *ngFor="let element of pagedData">
+                <div class="toggle-table flex items-center gap-4">
+                    <div>
+                        <mat-checkbox class="custom-mat-checkbox" (change)="toggleRowSelection(element)"
+                            [checked]="isSelected(element)" [disabled]="isLoading()"></mat-checkbox>
+                    </div>
+                    <div>
+                        <p class="m-0"><span class="user-name"
+                                (click)="onEdit(element)">{{element.name}}</span>({{getOrderStatusText(element.status)
+                            }})</p>
+                        <p class="m-0">{{element.patientName}}</p>
+                        <p class="m-0">{{element.pharmacyName}}</p>
+                    </div>
+                </div>
+                <div>
+                    <button mat-icon-button [matMenuTriggerFor]="actionMenu" (click)="activeRow = element">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                </div>
             </div>
-          </div>
-          <div>
-            <button mat-icon-button [matMenuTriggerFor]="actionMenu" (click)="activeRow = element">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-          </div>
-        </div>
-      </ng-container>
+        </ng-container>
     </div>
 
     <!-- <mat-paginator *ngIf="!isLoading() && dataSource.filteredData.length !== 0" #paginator [length]="dataSource.filteredData.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]"
         showFirstLastButtons [disabled]="isLoading() || isDeleting"></mat-paginator> -->
     <div class="main-paginator">
         <div class="paginator-section p-0">
-            <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100"  [showFirstLastButtons]="true"
-                [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()"
+            <mat-paginator #paginator [pageSizeOptions]="[50, 100, 250, 500]" [pageSize]="100"
+                [showFirstLastButtons]="true" [length]="dataSource.filteredData.length || 0" [disabled]="isLoading()"
                 class="mat-mdc-paginator-container">
             </mat-paginator>
         </div>
@@ -208,10 +214,11 @@
 
 <!-- Action Menu -->
 <mat-menu #actionMenu="matMenu">
-  <button mat-menu-item (click)="onEdit(activeRow)">
-    <span>Edit</span>
-  </button>
-  <button *ngIf="activeRow?.status !== OrderStatus.LifeFileProcessing" mat-menu-item (click)="onDelete(activeRow)" class="text-red-600">
-    <span>Delete</span>
-  </button>
+    <button mat-menu-item (click)="onEdit(activeRow)">
+        <span>Edit</span>
+    </button>
+    <button *ngIf="activeRow?.status !== OrderStatus.LifeFileProcessing" mat-menu-item (click)="onDelete(activeRow)"
+        class="text-red-600">
+        <span>Delete</span>
+    </button>
 </mat-menu>
