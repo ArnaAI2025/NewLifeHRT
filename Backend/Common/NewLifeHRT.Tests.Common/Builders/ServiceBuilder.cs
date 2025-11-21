@@ -30,6 +30,22 @@ namespace NewLifeHRT.Tests.Common.Builders
         protected Mock<IRefreshTokenRepository> RefreshTokenRepositoryMock { get; set; } = new();
         protected Mock<IJwtService> JwtServiceMock { get; set; } = new();
         protected Mock<IMessageRepository> MessageRepositoryMock { get; set; } = new();
+        protected Mock<IAppointmentRepository> AppointmentRepositoryMock { get; set; } = new();
+        protected Mock<IHolidayRepository> HolidayRepositoryMock { get; set; } = new();
+        protected Mock<ISingletonService> SingletonServiceMock { get; set; } = new();
+        protected Mock<ISlotRepository> SlotRepositoryMock { get; set; } = new();
+        protected Mock<IAgendaRepository> AgendaRepositoryMock { get; set; } = new();
+        protected Mock<IAppointmentModeRepository> AppointmentModeRepositoryMock { get; set; } = new();
+        protected Mock<IHolidayDateRepository> HolidayDateRepositoryMock { get; set; } = new();
+        protected Mock<IHolidayRecurrenceRepository> HolidayRecurrenceRepositoryMock { get; set; } = new();
+        protected Mock<ITimezoneRepository> TimezoneRepositoryMock { get; set; } = new();
+        protected Mock<IPharmacyRepository> PharmacyRepositoryMock { get; set; } = new();
+        protected Mock<IPharmacyShippingMethodService> PharmacyShippingMethodServiceMock { get; set; } = new();
+        protected Mock<IPharmacyShippingMethodRepository> PharmacyShippingMethodRepositoryMock { get; set; } = new();
+        protected Mock<IIntegrationTypeRepository> IntegrationTypeRepositoryMock { get; set; } = new();
+        protected Mock<IIntegrationKeyRepository> IntegrationKeyRepositoryMock { get; set; } = new();
+        protected Mock<IPharmacyConfigurationRepository> PharmacyConfigurationRepositoryMock { get; set; } = new();
+        protected Mock<IPharmacyConfigurationDataRepository> PharmacyConfigurationDataRepositoryMock { get; set; } = new();
 
         public ServiceBuilder<T> SetParameter(Mock<IUserRepository> userRepositoryMock)
         {
@@ -107,6 +123,102 @@ namespace NewLifeHRT.Tests.Common.Builders
         public ServiceBuilder<T> SetParameter(Mock<IMessageRepository> messageRepositoryMock)
         {
             MessageRepositoryMock = messageRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IAppointmentRepository> appointmentRepositoryMock)
+        {
+            AppointmentRepositoryMock = appointmentRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IHolidayRepository> holidayRepositoryMock)
+        {
+            HolidayRepositoryMock = holidayRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ISingletonService> singletonServiceMock)
+        {
+            SingletonServiceMock = singletonServiceMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ISlotRepository> slotRepositoryMock)
+        {
+            SlotRepositoryMock = slotRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IAgendaRepository> agendaRepositoryMock)
+        {
+            AgendaRepositoryMock = agendaRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IAppointmentModeRepository> appointmentModeRepositoryMock)
+        {
+            AppointmentModeRepositoryMock = appointmentModeRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IHolidayDateRepository> holidayDateRepositoryMock)
+        {
+            HolidayDateRepositoryMock = holidayDateRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IHolidayRecurrenceRepository> holidayRecurrenceRepositoryMock)
+        {
+            HolidayRecurrenceRepositoryMock = holidayRecurrenceRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ITimezoneRepository> timezoneRepositoryMock)
+        {
+            TimezoneRepositoryMock = timezoneRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IPharmacyRepository> pharmacyRepositoryMock)
+        {
+            PharmacyRepositoryMock = pharmacyRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IPharmacyShippingMethodService> pharmacyShippingMethodServiceMock)
+        {
+            PharmacyShippingMethodServiceMock = pharmacyShippingMethodServiceMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IPharmacyShippingMethodRepository> pharmacyShippingMethodRepositoryMock)
+        {
+            PharmacyShippingMethodRepositoryMock = pharmacyShippingMethodRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IIntegrationTypeRepository> integrationTypeRepositoryMock)
+        {
+            IntegrationTypeRepositoryMock = integrationTypeRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IIntegrationKeyRepository> integrationKeyRepositoryMock)
+        {
+            IntegrationKeyRepositoryMock = integrationKeyRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IPharmacyConfigurationRepository> pharmacyConfigurationRepositoryMock)
+        {
+            PharmacyConfigurationRepositoryMock = pharmacyConfigurationRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IPharmacyConfigurationDataRepository> pharmacyConfigurationDataRepositoryMock)
+        {
+            PharmacyConfigurationDataRepositoryMock = pharmacyConfigurationDataRepositoryMock;
             return this;
         }
     }
