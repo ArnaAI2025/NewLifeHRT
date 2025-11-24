@@ -1,13 +1,16 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using Moq;
 using NewLifeHRT.Application.Services.Interfaces;
 using NewLifeHRT.Common.Interfaces;
+using NewLifeHRT.Application.Services.Services.Hubs;
 using NewLifeHRT.Domain.Entities;
 using NewLifeHRT.Domain.Interfaces.Repositories;
 using NewLifeHRT.Infrastructure.Data;
 using NewLifeHRT.Infrastructure.Repositories;
 using NewLifeHRT.Infrastructure.Settings;
+using NewLifeHRT.External.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,6 +72,23 @@ namespace NewLifeHRT.Tests.Common.Builders
         protected Mock<IProductTypeRepository> ProductTypeRepositoryMock { get; set; } = new();
         protected Mock<IProductCategoryRepository> ProductCategoryRepositoryMock { get; set; } = new();
         protected Mock<IProductWebFormRepository> ProductWebFormRepositoryMock { get; set; } = new();
+        protected Mock<IBatchMessageRepository> BatchMessageRepositoryMock { get; set; } = new();
+        protected Mock<IBatchMessageRecipientRepository> BatchMessageRecipientRepositoryMock { get; set; } = new();
+        protected Mock<IConversationRepository> ConversationRepositoryMock { get; set; } = new();
+        protected Mock<IMessageContentRepository> MessageContentRepositoryMock { get; set; } = new();
+        protected Mock<ISmsService> SmsServiceMock { get; set; } = new();
+        protected Mock<IPatientService> PatientServiceMock { get; set; } = new();
+        protected Mock<ILeadService> LeadServiceMock { get; set; } = new();
+        protected Mock<IMessageService> MessageServiceMock { get; set; } = new();
+        protected Mock<IHubContext<SmsHub>> HubContextMock { get; set; } = new();
+        protected Mock<IAudioConverter> AudioConverterMock { get; set; } = new();
+        protected Mock<IReminderRepository> ReminderRepositoryMock { get; set; } = new();
+        protected Mock<IReminderTypeRepository> ReminderTypeRepositoryMock { get; set; } = new();
+        protected Mock<IRecurrenceRuleRepository> RecurrenceRuleRepositoryMock { get; set; } = new();
+        protected Mock<ILeadReminderRepository> LeadReminderRepositoryMock { get; set; } = new();
+        protected Mock<IPatientReminderRepository> PatientReminderRepositoryMock { get; set; } = new();
+        protected Mock<ILeadRepository> LeadRepositoryMock { get; set; } = new();
+        protected Mock<IBatchMessageRecipientService> BatchMessageRecipientServiceMock { get; set; } = new();
 
         public ServiceBuilder<T> SetParameter(Mock<IUserRepository> userRepositoryMock)
         {
@@ -338,6 +358,107 @@ namespace NewLifeHRT.Tests.Common.Builders
         public ServiceBuilder<T> SetParameter(Mock<IProductWebFormRepository> productWebFormRepositoryMock)
         {
             ProductWebFormRepositoryMock = productWebFormRepositoryMock;
+            return this;
+        }
+        public ServiceBuilder<T> SetParameter(Mock<IBatchMessageRepository> batchMessageRepositoryMock)
+        {
+            BatchMessageRepositoryMock = batchMessageRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IBatchMessageRecipientRepository> batchMessageRecipientRepositoryMock)
+        {
+            BatchMessageRecipientRepositoryMock = batchMessageRecipientRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IConversationRepository> conversationRepositoryMock)
+        {
+            ConversationRepositoryMock = conversationRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IMessageContentRepository> messageContentRepositoryMock)
+        {
+            MessageContentRepositoryMock = messageContentRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ISmsService> smsServiceMock)
+        {
+            SmsServiceMock = smsServiceMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IPatientService> patientServiceMock)
+        {
+            PatientServiceMock = patientServiceMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ILeadService> leadServiceMock)
+        {
+            LeadServiceMock = leadServiceMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IMessageService> messageServiceMock)
+        {
+            MessageServiceMock = messageServiceMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IHubContext<SmsHub>> hubContextMock)
+        {
+            HubContextMock = hubContextMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IAudioConverter> audioConverterMock)
+        {
+            AudioConverterMock = audioConverterMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IReminderRepository> reminderRepositoryMock)
+        {
+            ReminderRepositoryMock = reminderRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IReminderTypeRepository> reminderTypeRepositoryMock)
+        {
+            ReminderTypeRepositoryMock = reminderTypeRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IRecurrenceRuleRepository> recurrenceRuleRepositoryMock)
+        {
+            RecurrenceRuleRepositoryMock = recurrenceRuleRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ILeadReminderRepository> leadReminderRepositoryMock)
+        {
+            LeadReminderRepositoryMock = leadReminderRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IPatientReminderRepository> patientReminderRepositoryMock)
+        {
+            PatientReminderRepositoryMock = patientReminderRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ILeadRepository> leadRepositoryMock)
+        {
+            LeadRepositoryMock = leadRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IBatchMessageRecipientService> batchMessageRecipientServiceMock)
+        {
+            BatchMessageRecipientServiceMock = batchMessageRecipientServiceMock;
             return this;
         }
 

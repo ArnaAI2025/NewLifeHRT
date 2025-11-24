@@ -87,5 +87,42 @@ namespace NewLifeHRT.Application.Services.Tests.Controllers
             var okResult = Assert.IsType<OkObjectResult>(result);
             okResult.Value.Should().Be(response);
         }
+
+        [Fact]
+        public async Task Create_Should_ReturnBadRequest_When_RequestNull()
+        {
+            var controller = CreateController(4);
+
+            var result = await controller.Create(null!);
+
+            result.Should().BeOfType<BadRequestObjectResult>();
+            _conversationServiceMock.Verify(s => s.CreateConversation(It.IsAny<ConversationRequestDto>(), It.IsAny<int>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetLeadConversation_Should_ReturnUnauthorized_When_UserMissing()
+        {
+            var controller = CreateController();
+
+            var result = await controller.GetLeadConversation(Guid.NewGuid());
+
+            result.Should().BeOfType<UnauthorizedObjectResult>();
+        }
+
+        [Fact]
+        public async Task Create_Should_ReturnOk_When_ServiceSucceeds()
+        {
+            var dto = new ConversationRequestDto();
+            var expected = new CommonOperationResponseDto<Guid> { Id = Guid.NewGuid() };
+            _conversationServiceMock.Setup(s => s.CreateConversation(dto, 9))
+                .ReturnsAsync(expected);
+
+            var controller = CreateController(9);
+
+            var result = await controller.Create(dto);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            okResult.Value.Should().Be(expected);
+        }
     }
 }

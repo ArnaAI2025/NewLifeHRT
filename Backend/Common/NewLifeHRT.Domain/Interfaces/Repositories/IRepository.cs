@@ -23,13 +23,9 @@ namespace NewLifeHRT.Domain.Interfaces.Repositories
         Task<TEntity> GetWithIncludeAsync(object id, string[] includes);
         Task<IEnumerable<TEntity>> FindWithIncludeAsync(List<Expression<Func<TEntity, bool>>> predicates, string[] includes, bool noTracking = false);
         Task<List<TEntity>> BulkUpdateAsync(List<TEntity> entity);
-        Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> predicate,Func<IQueryable<TEntity>, IQueryable<TEntity>> include = null,bool noTracking = false);
+        Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IQueryable<TEntity>> include = null, bool noTracking = false);
         Task AddRangeAsync(List<TEntity> entites);
         Task<List<TEntity>> BulkDeleteAsync(List<TEntity> entities);
         Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate);
-
-
-
-
     }
 }

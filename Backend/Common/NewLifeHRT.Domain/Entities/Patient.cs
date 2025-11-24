@@ -57,8 +57,11 @@ namespace NewLifeHRT.Domain.Entities
         public virtual ICollection<PatientReminder> PatientReminders { get; set; } = new List<PatientReminder>();
 
         public virtual ICollection<PatientSelfReminder> PatientSelfReminders { get; set; } = new List<PatientSelfReminder>();
-
-
+        public Patient() : base("test", DateTime.UtcNow)
+        {
+            FirstName = string.Empty;
+            LastName = string.Empty;
+        }
         public Patient(
             int? visitTypeId, bool? splitCommission, string? patientGoal, string? patientNumber,
             Guid? referralId, string firstName, string lastName, GenderEnum? gender, string? phoneNumber,

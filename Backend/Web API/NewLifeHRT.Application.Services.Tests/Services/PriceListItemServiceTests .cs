@@ -89,43 +89,41 @@ namespace NewLifeHRT.Application.Services.Tests.Services
                 .ReturnsAsync(new List<ProductPharmacyPriceListItem>
                 {
                     new ProductPharmacyPriceListItem(
-    currencyId: null,
-    amount: 12m,
-    costOfProduct: null,
-    lifeFilePharmacyProductId: null,
-    lifeFielForeignPmsId: null,
-    lifeFileDrugFormId: null,
-    lifeFileDrugName: null,
-    lifeFileDrugStrength: null,
-    lifeFileQuantityUnitId: null,
-    lifeFileScheduledCodeId: null,
-    pharmacyId: Guid.NewGuid(),
-    productId: Guid.NewGuid(),
-    createdAt: DateTime.UtcNow,
-    createdBy: "test"
-)
-{
-    Id = firstId
-},
+                                currencyId: null,
+                                amount: 12m,
+                                costOfProduct: null,
+                                lifeFilePharmacyProductId: null,
+                                lifeFielForeignPmsId: null,
+                                lifeFileDrugFormId: null,
+                                lifeFileDrugName: null,
+                                lifeFileDrugStrength: null,
+                                lifeFileQuantityUnitId: null,
+                                lifeFileScheduledCodeId: null,
+                                pharmacyId: Guid.NewGuid(),
+                                productId: Guid.NewGuid(),
+                                createdAt: DateTime.UtcNow,
+                                createdBy: "test")
+                                {
+                                   Id = firstId
+                                },
                     new ProductPharmacyPriceListItem(
-    currencyId: null,
-    amount: 20m,
-    costOfProduct: null,
-    lifeFilePharmacyProductId: null,
-    lifeFielForeignPmsId: null,
-    lifeFileDrugFormId: null,
-    lifeFileDrugName: null,
-    lifeFileDrugStrength: null,
-    lifeFileQuantityUnitId: null,
-    lifeFileScheduledCodeId: null,
-    pharmacyId: Guid.NewGuid(),
-    productId: Guid.NewGuid(),
-    createdAt: DateTime.UtcNow,
-    createdBy: "test"
-)
-{
-    Id = secondId
-}
+                                currencyId: null,
+                                amount: 20m,
+                                costOfProduct: null,
+                                lifeFilePharmacyProductId: null,
+                                lifeFielForeignPmsId: null,
+                                lifeFileDrugFormId: null,
+                                lifeFileDrugName: null,
+                                lifeFileDrugStrength: null,
+                                lifeFileQuantityUnitId: null,
+                                lifeFileScheduledCodeId: null,
+                                pharmacyId: Guid.NewGuid(),
+                                productId: Guid.NewGuid(),
+                                createdAt: DateTime.UtcNow,
+                                createdBy: "test")
+                                {
+                                    Id = secondId
+                                }
                 });
 
             var service = new PriceListItemServiceBuilder()
