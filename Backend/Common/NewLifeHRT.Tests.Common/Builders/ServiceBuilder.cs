@@ -65,6 +65,12 @@ namespace NewLifeHRT.Tests.Common.Builders
         protected Mock<ISingletonService> SingletonServiceMock { get; set; } = new();
         protected Mock<IPharmacyShippingMethodService> PharmacyShippingMethodServiceMock { get; set; } = new();
         protected Mock<IUserService> UserServiceMock { get; set; } = new();
+        protected Mock<ICommisionRateRepository> CommisionRateRepositoryMock { get; set; } = new();
+        protected Mock<ICommissionsPayableRepository> CommissionsPayableRepositoryMock { get; set; } = new();
+        protected Mock<ICommissionsPayableDetailRepository> CommissionsPayableDetailRepositoryMock { get; set; } = new();
+        protected Mock<IPoolRepository> PoolRepositoryMock { get; set; } = new();
+        protected Mock<IPoolDetailRepository> PoolDetailRepositoryMock { get; set; } = new();
+        protected Mock<ICommissionsPayableDetailService> CommissionsPayableDetailServiceMock { get; set; } = new();
         protected Mock<IProductRepository> ProductRepositoryMock { get; set; } = new();
         protected Mock<IProductStrengthRepository> ProductStrengthRepositoryMock { get; set; } = new();
         protected Mock<IPriceListItemRepository> PriceListItemRepositoryMock { get; set; } = new();
@@ -465,6 +471,41 @@ namespace NewLifeHRT.Tests.Common.Builders
         public ServiceBuilder<T> SetParameter(IOptions<AzureBlobStorageSettings> azureBlobStorageOptions)
         {
             AzureBlobStorageOptions = azureBlobStorageOptions;
+            return this;
+        }
+        public ServiceBuilder<T> SetParameter(Mock<ICommisionRateRepository> commisionRateRepositoryMock)
+        {
+            CommisionRateRepositoryMock = commisionRateRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ICommissionsPayableRepository> commissionsPayableRepositoryMock)
+        {
+            CommissionsPayableRepositoryMock = commissionsPayableRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ICommissionsPayableDetailRepository> commissionsPayableDetailRepositoryMock)
+        {
+            CommissionsPayableDetailRepositoryMock = commissionsPayableDetailRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IPoolRepository> poolRepositoryMock)
+        {
+            PoolRepositoryMock = poolRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IPoolDetailRepository> poolDetailRepositoryMock)
+        {
+            PoolDetailRepositoryMock = poolDetailRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ICommissionsPayableDetailService> commissionsPayableDetailServiceMock)
+        {
+            CommissionsPayableDetailServiceMock = commissionsPayableDetailServiceMock;
             return this;
         }
     }
