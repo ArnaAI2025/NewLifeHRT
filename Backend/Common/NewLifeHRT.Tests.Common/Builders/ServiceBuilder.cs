@@ -62,6 +62,13 @@ namespace NewLifeHRT.Tests.Common.Builders
         protected Mock<ISingletonService> SingletonServiceMock { get; set; } = new();
         protected Mock<IPharmacyShippingMethodService> PharmacyShippingMethodServiceMock { get; set; } = new();
         protected Mock<IUserService> UserServiceMock { get; set; } = new();
+        protected Mock<IProductRepository> ProductRepositoryMock { get; set; } = new();
+        protected Mock<IProductStrengthRepository> ProductStrengthRepositoryMock { get; set; } = new();
+        protected Mock<IPriceListItemRepository> PriceListItemRepositoryMock { get; set; } = new();
+        protected Mock<IProductStatusRepository> ProductStatusRepositoryMock { get; set; } = new();
+        protected Mock<IProductTypeRepository> ProductTypeRepositoryMock { get; set; } = new();
+        protected Mock<IProductCategoryRepository> ProductCategoryRepositoryMock { get; set; } = new();
+        protected Mock<IProductWebFormRepository> ProductWebFormRepositoryMock { get; set; } = new();
 
         public ServiceBuilder<T> SetParameter(Mock<IUserRepository> userRepositoryMock)
         {
@@ -290,6 +297,47 @@ namespace NewLifeHRT.Tests.Common.Builders
         public ServiceBuilder<T> SetParameter(Mock<IUserService> userServiceMock)
         {
             UserServiceMock = userServiceMock;
+            return this;
+        }
+        public ServiceBuilder<T> SetParameter(Mock<IProductRepository> productRepositoryMock)
+        {
+            ProductRepositoryMock = productRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IProductStrengthRepository> productStrengthRepositoryMock)
+        {
+            ProductStrengthRepositoryMock = productStrengthRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IPriceListItemRepository> priceListItemRepositoryMock)
+        {
+            PriceListItemRepositoryMock = priceListItemRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IProductStatusRepository> productStatusRepositoryMock)
+        {
+            ProductStatusRepositoryMock = productStatusRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IProductTypeRepository> productTypeRepositoryMock)
+        {
+            ProductTypeRepositoryMock = productTypeRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IProductCategoryRepository> productCategoryRepositoryMock)
+        {
+            ProductCategoryRepositoryMock = productCategoryRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IProductWebFormRepository> productWebFormRepositoryMock)
+        {
+            ProductWebFormRepositoryMock = productWebFormRepositoryMock;
             return this;
         }
 
