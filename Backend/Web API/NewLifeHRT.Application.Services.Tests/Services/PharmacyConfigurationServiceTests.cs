@@ -35,7 +35,7 @@ namespace NewLifeHRT.Application.Services.Tests.Services
             {
                 PharmacyId = Guid.NewGuid(),
                 TypeId = 1,
-                ConfigData = Array.Empty<PharmacyConfigurationDataRequestDto>()
+                ConfigData = new List<PharmacyConfigurationKeyValueDto>()
             }, 1);
 
             response.Message.Should().Contain("Configuration data is required");

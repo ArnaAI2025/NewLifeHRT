@@ -33,7 +33,7 @@ namespace NewLifeHRT.Application.Services.Tests.Controllers
                 ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
             };
 
-            var result = await controller.CreatePharmacyConfiguration(new PharmacyConfigurationRequestDto { ConfigData = new[] { new PharmacyConfigurationDataRequestDto { KeyId = 1, Value = "v" } } });
+            var result = await controller.CreatePharmacyConfiguration(new PharmacyConfigurationRequestDto { ConfigData = new List<PharmacyConfigurationKeyValueDto> {new PharmacyConfigurationKeyValueDto { KeyId = 1, Value = "v" }}});
 
             result.Result.Should().BeOfType<UnauthorizedObjectResult>();
         }
