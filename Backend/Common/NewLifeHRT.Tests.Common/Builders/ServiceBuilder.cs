@@ -22,6 +22,7 @@ namespace NewLifeHRT.Tests.Common.Builders
     public abstract class ServiceBuilder<T> : BaseServiceBuilder<T> where T : class
     {
         protected Mock<IUserRepository> UserRepositoryMock { get; set; } = new();
+        protected Mock<IClinicServiceRepository> ClinicServiceRepositoryMock { get; set; } = new();
         protected Mock<IAddressRepository> AddressRepositoryMock { get; set; } = new();
         protected Mock<IAgendaRepository> AgendaRepositoryMock { get; set; } = new();
         protected Mock<IAppointmentModeRepository> AppointmentModeRepositoryMock { get; set; } = new();
@@ -29,6 +30,9 @@ namespace NewLifeHRT.Tests.Common.Builders
         protected Mock<IHolidayRepository> HolidayRepositoryMock { get; set; } = new();
         protected Mock<IHolidayDateRepository> HolidayDateRepositoryMock { get; set; } = new();
         protected Mock<IHolidayRecurrenceRepository> HolidayRecurrenceRepositoryMock { get; set; } = new();
+        protected Mock<ICouponRepository> CouponRepositoryMock { get; set; } = new();
+        protected Mock<ICountryRepository> CountryRepositoryMock { get; set; } = new();
+        protected Mock<IFollowUpLabTestRepository> FollowUpLabTestRepositoryMock { get; set; } = new();
         protected Mock<IIntegrationTypeRepository> IntegrationTypeRepositoryMock { get; set; } = new();
         protected Mock<IIntegrationKeyRepository> IntegrationKeyRepositoryMock { get; set; } = new();
         protected Mock<IPharmacyConfigurationRepository> PharmacyConfigurationRepositoryMock { get; set; } = new();
@@ -37,6 +41,7 @@ namespace NewLifeHRT.Tests.Common.Builders
         protected Mock<IPharmacyShippingMethodRepository> PharmacyShippingMethodRepositoryMock { get; set; } = new();
         protected Mock<ISlotRepository> SlotRepositoryMock { get; set; } = new();
         protected Mock<ITimezoneRepository> TimezoneRepositoryMock { get; set; } = new();
+        protected Mock<IStateRepository> StateRepositoryMock { get; set; } = new();
         protected Mock<IPatientRepository> PatientRepositoryMock { get; set; } = new();
         protected Mock<IShippingAddressRepository> ShippingAddressRepositoryMock { get; set; } = new();
         protected Mock<IPatientAttachmentRepository> PatientAttachmentRepositoryMock { get; set; } = new();
@@ -45,6 +50,7 @@ namespace NewLifeHRT.Tests.Common.Builders
         protected Mock<UserManager<ApplicationUser>> UserManagerMock { get; set; } = new(new Mock<IUserStore<ApplicationUser>>().Object, null, null, null, null, null, null, null, null);
         protected Mock<IUserServiceLinkRepository> UserServiceLinkRepositoryMock { get; set; } = new();
         protected Mock<ClinicDbContext> ClinicDbContextMock { get; set; } = new();
+        protected Mock<ILicenseInformationRepository> LicenseInformationRepositoryMock { get; set; } = new();
         protected Mock<ILicenseInformationService> LicenseInformationServiceMock { get; set; } = new();
         protected Mock<IBlobService> BlobServiceMock { get; set; } = new();
         protected Mock<AzureBlobStorageSettings> AzureBlobStorageSettingsMock { get; set; } = new();
@@ -101,6 +107,11 @@ namespace NewLifeHRT.Tests.Common.Builders
             UserRepositoryMock = userRepositoryMock;
             return this;
         }
+        public ServiceBuilder<T> SetParameter(Mock<IClinicServiceRepository> clinicServiceRepositoryMock)
+        {
+            ClinicServiceRepositoryMock = clinicServiceRepositoryMock;
+            return this;
+        }
 
         public ServiceBuilder<T> SetParameter(Mock<IAddressRepository> addressRepositoryMock)
         {
@@ -138,6 +149,23 @@ namespace NewLifeHRT.Tests.Common.Builders
             HolidayRecurrenceRepositoryMock = holidayRecurrenceRepositoryMock;
             return this;
         }
+        public ServiceBuilder<T> SetParameter(Mock<ICouponRepository> couponRepositoryMock)
+        {
+            CouponRepositoryMock = couponRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<ICountryRepository> countryRepositoryMock)
+        {
+            CountryRepositoryMock = countryRepositoryMock;
+            return this;
+        }
+
+        public ServiceBuilder<T> SetParameter(Mock<IFollowUpLabTestRepository> followUpLabTestRepositoryMock)
+        {
+            FollowUpLabTestRepositoryMock = followUpLabTestRepositoryMock;
+            return this;
+        }
         public ServiceBuilder<T> SetParameter(Mock<IIntegrationTypeRepository> integrationTypeRepositoryMock)
         {
             IntegrationTypeRepositoryMock = integrationTypeRepositoryMock;
@@ -171,6 +199,11 @@ namespace NewLifeHRT.Tests.Common.Builders
         public ServiceBuilder<T> SetParameter(Mock<ITimezoneRepository> timezoneRepositoryMock)
         {
             TimezoneRepositoryMock = timezoneRepositoryMock;
+            return this;
+        }
+        public ServiceBuilder<T> SetParameter(Mock<IStateRepository> stateRepositoryMock)
+        {
+            StateRepositoryMock = stateRepositoryMock;
             return this;
         }
         public ServiceBuilder<T> SetParameter(Mock<IPharmacyShippingMethodRepository> pharmacyShippingMethodRepositoryMock)
@@ -225,7 +258,11 @@ namespace NewLifeHRT.Tests.Common.Builders
             ClinicDbContextMock = clinicDbContextMock;
             return this;
         }
-
+        public ServiceBuilder<T> SetParameter(Mock<ILicenseInformationRepository> licenseInformationRepositoryMock)
+        {
+            LicenseInformationRepositoryMock = licenseInformationRepositoryMock;
+            return this;
+        }
         public ServiceBuilder<T> SetParameter(Mock<ILicenseInformationService> licenseInformationServiceMock)
         {
             LicenseInformationServiceMock = licenseInformationServiceMock;

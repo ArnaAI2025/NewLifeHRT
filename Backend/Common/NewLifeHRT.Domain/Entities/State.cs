@@ -26,11 +26,9 @@ namespace NewLifeHRT.Domain.Entities
                        .IsRequired(true)
                        .HasMaxLength(100);
                 builder.HasOne(s => s.Country)
-                   .WithMany(c => c.States) 
+                   .WithMany(c => c.States)
                    .HasForeignKey(s => s.CountryId)
                    .OnDelete(DeleteBehavior.Restrict);
-
-
             }
         }
     }
